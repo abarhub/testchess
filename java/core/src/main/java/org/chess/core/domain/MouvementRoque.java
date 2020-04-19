@@ -1,5 +1,8 @@
 package org.chess.core.domain;
 
+import java.util.Objects;
+import java.util.StringJoiner;
+
 public class MouvementRoque implements IMouvement {
 
     private final Position position;
@@ -34,5 +37,31 @@ public class MouvementRoque implements IMouvement {
 
     public Position getPositionTourDest() {
         return positionTourDest;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MouvementRoque that = (MouvementRoque) o;
+        return roqueCoteRoi == that.roqueCoteRoi &&
+                Objects.equals(position, that.position) &&
+                Objects.equals(positionTourSrc, that.positionTourSrc) &&
+                Objects.equals(positionTourDest, that.positionTourDest);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, roqueCoteRoi, positionTourSrc, positionTourDest);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", MouvementRoque.class.getSimpleName() + "[", "]")
+                .add("position=" + position)
+                .add("roqueCoteRoi=" + roqueCoteRoi)
+                .add("positionTourSrc=" + positionTourSrc)
+                .add("positionTourDest=" + positionTourDest)
+                .toString();
     }
 }

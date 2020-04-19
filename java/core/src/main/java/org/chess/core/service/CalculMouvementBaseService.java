@@ -62,6 +62,12 @@ public class CalculMouvementBaseService {
             }
         }
 
+        ajoutRoqueRoi(piece, plateau, mouvements);
+
+        return mouvements;
+    }
+
+    private void ajoutRoqueRoi(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements) {
         final RangeeEnum rangeRoi;
         final Couleur couleurRoi=piece.getCouleur();
 
@@ -106,14 +112,12 @@ public class CalculMouvementBaseService {
                     }
                 }
                 if(!caseNonVide){
-                    MouvementRoque mouvementRoque=new MouvementRoque(new Position(rangeRoi,ColonneEnum.COLONNEB),
-                            false,posTour,new Position(rangeRoi, ColonneEnum.COLONNEC));
+                    MouvementRoque mouvementRoque=new MouvementRoque(new Position(rangeRoi,ColonneEnum.COLONNEC),
+                            false,posTour2,new Position(rangeRoi, ColonneEnum.COLONNED));
                     mouvements.add(mouvementRoque);
                 }
             }
         }
-
-        return mouvements;
     }
 
     private boolean isPosition(PieceCouleurPosition piece, RangeeEnum rangeeEnum, ColonneEnum colonneEnum,Couleur couleur){
