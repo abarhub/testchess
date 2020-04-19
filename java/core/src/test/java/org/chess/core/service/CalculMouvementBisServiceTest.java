@@ -92,6 +92,9 @@ class CalculMouvementBisServiceTest {
         LOGGER.info("res={}", res);
         long nbCoups=nbCoups(res);
         LOGGER.info("nbCoups={}", nbCoups);
+        if(nbCoupsRef!=nbCoups){
+            LOGGER.error("plateau: \n{}",affichePlateau(partie.getPlateau()));
+        }
         assertEquals(nbCoupsRef, nbCoups);
     }
 
@@ -295,4 +298,7 @@ class CalculMouvementBisServiceTest {
         return resultat;
     }
 
+    private String affichePlateau(Plateau plateau){
+        return plateau.getRepresentation2().replaceAll(" ","_");
+    }
 }
