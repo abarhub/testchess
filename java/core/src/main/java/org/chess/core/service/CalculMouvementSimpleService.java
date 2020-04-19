@@ -3,48 +3,33 @@ package org.chess.core.service;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import org.apache.commons.collections4.CollectionUtils;
-
 import org.apache.commons.lang3.time.StopWatch;
 import org.chess.core.domain.*;
 import org.chess.core.utils.IteratorPlateau;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
-public class CalculMouvementBisService implements CalculMouvementService {
+public class CalculMouvementSimpleService extends AbstractCalculMouvementService implements CalculMouvementService {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(CalculMouvementBisService.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(CalculMouvementSimpleService.class);
 
     private CalculMouvementBaseService calculMouvementBaseService=new CalculMouvementBaseService();
 
-    private List<Duration> dureeListeMouvement=new ArrayList<>();
-
-    private List<Duration> dureeListeMouvement2=new ArrayList<>();
-
-    private List<Duration> dureeSuppressionEchecs=new ArrayList<>();
-
-    private List<Duration> dureeTotal=new ArrayList<>();
-
-    //private org.springframework.util.StopWatch stopWatch=new org.springframework.util.StopWatch();
     private StopWatch stopWatch2=new StopWatch();
     private StopWatch stopWatchListeDeplacement=new StopWatch();
     private StopWatch stopWatchSupprEchecs=new StopWatch();
     private StopWatch stopWatchGenereDeplacement=new StopWatch();
 
-    public ListeMouvements2 calculMouvements(Partie partie) {
-        Preconditions.checkNotNull(partie);
-        return calcul(partie.getPlateau(), partie.getJoueurCourant());
-    }
-
+    @Override
     public ListeMouvements2 calcul(Plateau plateau, Couleur joueurCourant) {
         Preconditions.checkNotNull(plateau);
         Preconditions.checkNotNull(joueurCourant);
 
-        Instant debut= Instant.now();
+        //Instant debut= Instant.now();
         //stopWatch.start();
         if(stopWatch2.isStopped()) {
             stopWatch2.start();
@@ -78,12 +63,13 @@ public class CalculMouvementBisService implements CalculMouvementService {
             resultat=listeMouvement;
         }
 
-        dureeTotal.add(Duration.between(debut, Instant.now()));
+        //dureeTotal.add(Duration.between(debut, Instant.now()));
 //        stopWatch.stop();
         //stopWatch2.stop();
         stopWatch2.suspend();
         return resultat;
     }
+
 
     private ListeMouvements2 rechercheMouvementStoperEchecRoi(IPlateau plateau, Couleur joueurCourant, Position positionRoi) {
         var listeMouvement = getPieceJoueur(plateau, joueurCourant);
@@ -100,10 +86,10 @@ public class CalculMouvementBisService implements CalculMouvementService {
         Preconditions.checkNotNull(positionRoi);
         Preconditions.checkNotNull(joueurCourant);
 
-        Instant debut= Instant.now();
+//        Instant debut= Instant.now();
         start(stopWatchSupprEchecs);
 
-        if(false) {
+        if(true) {
             Map<PieceCouleurPosition, List<IMouvement>> map = listeMouvement.getMapMouvements();
             var iter2 = map.entrySet().iterator();
             while (iter2.hasNext()) {
@@ -111,7 +97,7 @@ public class CalculMouvementBisService implements CalculMouvementService {
                 if (tmp.getKey().getPiece() == Piece.ROI) {
                     supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp);
                 } else {
-                //if (tmp.getKey().getPiece() != Piece.ROI) {
+                    //if (tmp.getKey().getPiece() != Piece.ROI) {
                     if (mvtAVerifier(tmp.getKey().getPosition(), positionRoi, plateau)) {
                         var iter = tmp.getValue().iterator();
                         Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
@@ -128,12 +114,12 @@ public class CalculMouvementBisService implements CalculMouvementService {
 //
 //                                plateauApresModification.undo();
 //                            } else {
-                                IPlateau plateauApresModification = new Plateau((Plateau) plateau);
-                                plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
+                            IPlateau plateauApresModification = new Plateau((Plateau) plateau);
+                            plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
 
-                                if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
-                                    iter.remove();
-                                }
+                            if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
+                                iter.remove();
+                            }
 //                            }
 
                         }
@@ -173,12 +159,12 @@ public class CalculMouvementBisService implements CalculMouvementService {
 //
 //                                    plateauApresModification.undo();
 //                                } else {
-                                    IPlateau plateauApresModification = new Plateau((Plateau) plateau);
-                                    plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
+                                IPlateau plateauApresModification = new Plateau((Plateau) plateau);
+                                plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
 
-                                    if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
-                                        iter.remove();
-                                    }
+                                if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
+                                    iter.remove();
+                                }
 //                                }
 
                             }
@@ -188,7 +174,7 @@ public class CalculMouvementBisService implements CalculMouvementService {
             }
         }
 
-        dureeSuppressionEchecs.add(Duration.between(debut, Instant.now()));
+        //dureeSuppressionEchecs.add(Duration.between(debut, Instant.now()));
         stop(stopWatchSupprEchecs);
     }
 
@@ -205,7 +191,7 @@ public class CalculMouvementBisService implements CalculMouvementService {
     }
 
     private CasesATester analyseCases(IPlateau plateau, Position positionRoi, Couleur joueurCourant,
-                                      boolean[][] tab) {
+                                                                boolean[][] tab) {
         CasesATester casesATester=new CasesATester();
         casesATester.tab=tab;
         boolean trouve=false;
@@ -380,20 +366,11 @@ public class CalculMouvementBisService implements CalculMouvementService {
         }
     }
 
-    public Couleur joueurAdversaire(Couleur couleur) {
-        Preconditions.checkNotNull(couleur);
-        if (couleur == Couleur.Blanc) {
-            return Couleur.Noir;
-        } else {
-            return Couleur.Blanc;
-        }
-    }
-
     public ListeMouvements2 getPieceJoueur(IPlateau plateau, Couleur joueur) {
         Preconditions.checkNotNull(plateau);
         Preconditions.checkNotNull(joueur);
 
-        Instant debut= Instant.now();
+        //Instant debut= Instant.now();
         start(stopWatchListeDeplacement);
         var res = new ListeMouvements2();
 
@@ -408,7 +385,7 @@ public class CalculMouvementBisService implements CalculMouvementService {
                 });
         res.setMapMouvements(map);
 
-        dureeListeMouvement.add(Duration.between(debut, Instant.now()));
+        //dureeListeMouvement.add(Duration.between(debut, Instant.now()));
         stop(stopWatchListeDeplacement);
         return res;
     }
@@ -417,11 +394,11 @@ public class CalculMouvementBisService implements CalculMouvementService {
         Preconditions.checkNotNull(plateau);
         Preconditions.checkNotNull(pos);
 
-        Instant debut= Instant.now();
+        //Instant debut= Instant.now();
         start(stopWatchGenereDeplacement);
         List<IMouvement> liste = calculMouvementBaseService.getMouvements(plateau, pos);
 
-        dureeListeMouvement2.add(Duration.between(debut, Instant.now()));
+        //dureeListeMouvement2.add(Duration.between(debut, Instant.now()));
         stop(stopWatchGenereDeplacement);
         return liste;
     }
@@ -437,64 +414,6 @@ public class CalculMouvementBisService implements CalculMouvementService {
                 .anyMatch(x -> x.contains(position));
     }
 
-    public Optional<PieceCouleur> getPiece(IPlateau plateau, Position position) {
-        Preconditions.checkNotNull(plateau);
-        Preconditions.checkNotNull(position);
-        PieceCouleur piece = plateau.getCase(position);
-        return Optional.ofNullable(piece);
-    }
-
-    public List<Position> getPositionsPieces(IPlateau plateau, Couleur joueur, Piece piece) {
-        Preconditions.checkNotNull(plateau);
-        Preconditions.checkNotNull(joueur);
-        Preconditions.checkNotNull(piece);
-        List<Position> liste = new ArrayList<>();
-        for (Position pos : IteratorPlateau.getIterablePlateau()) {
-            if (pos != null) {
-                Optional<PieceCouleur> pieceOpt = getPiece(plateau, pos);
-                if (pieceOpt.isPresent()) {
-                    PieceCouleur p = pieceOpt.get();
-                    if (p.getCouleur() == joueur && p.getPiece() == piece) {
-                        liste.add(pos);
-                    }
-                }
-            }
-        }
-        return liste;
-    }
-
-    public List<Duration> getDureeListeMouvement() {
-        return dureeListeMouvement;
-    }
-
-    public List<Duration> getDureeListeMouvement2() {
-        return dureeListeMouvement2;
-    }
-
-    public List<Duration> getDureeSuppressionEchecs() {
-        return dureeSuppressionEchecs;
-    }
-
-    public List<Duration> getDureeTotal() {
-        return dureeTotal;
-    }
-
-//    public org.springframework.util.StopWatch getStopWatch() {
-//        return stopWatch;
-//    }
-//
-//    public void setStopWatch(org.springframework.util.StopWatch stopWatch) {
-//        this.stopWatch = stopWatch;
-//    }
-
-    public StopWatch getStopWatch2() {
-        return stopWatch2;
-    }
-
-    public void setStopWatch2(StopWatch stopWatch2) {
-        this.stopWatch2 = stopWatch2;
-    }
-
     private void start(StopWatch stopWatch){
         if(stopWatch.isStopped()){
             stopWatch.start();
@@ -505,18 +424,6 @@ public class CalculMouvementBisService implements CalculMouvementService {
 
     private void stop(StopWatch stopWatch){
         stopWatch.suspend();
-    }
-
-    public StopWatch getStopWatchListeDeplacement() {
-        return stopWatchListeDeplacement;
-    }
-
-    public StopWatch getStopWatchSupprEchecs() {
-        return stopWatchSupprEchecs;
-    }
-
-    public StopWatch getStopWatchGenereDeplacement() {
-        return stopWatchGenereDeplacement;
     }
 
     class CasesATester {
