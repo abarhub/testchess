@@ -5,12 +5,9 @@ import com.google.common.base.Verify;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.chess.core.domain.*;
-import org.chess.core.utils.IteratorPlateau;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 
 public class CalculMouvementSimpleService extends AbstractCalculMouvementService implements CalculMouvementService {
@@ -115,7 +112,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
 //                                plateauApresModification.undo();
 //                            } else {
                             IPlateau plateauApresModification = new Plateau((Plateau) plateau);
-                            plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
+                            plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
 
                             if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
                                 iter.remove();
@@ -160,7 +157,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
 //                                    plateauApresModification.undo();
 //                                } else {
                                 IPlateau plateauApresModification = new Plateau((Plateau) plateau);
-                                plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
+                                plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
 
                                 if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
                                     iter.remove();
@@ -183,7 +180,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
         while (iter.hasNext()) {
             var mouvement = iter.next();
-            if (this.caseAttaquee(plateau, mouvement.getPosition(),
+            if (this.caseAttaquee(plateau, mouvement.getPositionDestination(),
                     joueurAdversaire(joueurCourant), true)) {
                 iter.remove();
             }

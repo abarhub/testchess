@@ -129,7 +129,7 @@ public class Plateau implements IPlateau {
 		Preconditions.checkNotNull(mouvement);
 		Verify.verifyNotNull(positionSrc);
 		if(mouvement instanceof MouvementSimple) {
-			Position positionDest=mouvement.getPosition();
+			Position positionDest=mouvement.getPositionDestination();
 			Verify.verifyNotNull(positionDest);
 			Verify.verify(!positionSrc.equals(positionDest));
 
@@ -139,7 +139,7 @@ public class Plateau implements IPlateau {
 			setCase(positionDest, p);
 		} else if(mouvement instanceof MouvementRoque){
 			MouvementRoque mouvementRoque= (MouvementRoque) mouvement;
-			Position positionDest=mouvement.getPosition();
+			Position positionDest=mouvement.getPositionDestination();
 			Verify.verifyNotNull(positionDest);
 			Verify.verify(!positionSrc.equals(positionDest));
 			Verify.verify(positionSrc.getRangee()==positionDest.getRangee());

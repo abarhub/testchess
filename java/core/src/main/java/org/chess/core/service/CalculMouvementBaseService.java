@@ -13,12 +13,12 @@ import java.util.Optional;
 public class CalculMouvementBaseService {
 
 
-    public List<IMouvement> getMouvements(IPlateau plateau, PieceCouleurPosition piece) {
+    public List<IMouvement> getMouvements(IPlateau plateau, PieceCouleurPosition piece, HistoriqueCoups historiqueCoups) {
         List<IMouvement> list;
         list = null;
         switch (piece.getPiece()) {
             case PION:
-                list = calculPion(piece, plateau);
+                list = calculPion(piece, plateau, historiqueCoups);
                 break;
             case CAVALIER:
                 list = calculCavalier(piece, plateau);
@@ -92,7 +92,7 @@ public class CalculMouvementBaseService {
                     }
                 }
                 if(!caseNonVide){
-                    MouvementRoque mouvementRoque=new MouvementRoque(new Position(rangeRoi,ColonneEnum.COLONNEG),
+                    MouvementRoque mouvementRoque=new MouvementRoque(piece.getPosition(), new Position(rangeRoi,ColonneEnum.COLONNEG),
                             true,posTour,new Position(rangeRoi, ColonneEnum.COLONNEF));
                     mouvements.add(mouvementRoque);
                 }
@@ -112,7 +112,7 @@ public class CalculMouvementBaseService {
                     }
                 }
                 if(!caseNonVide){
-                    MouvementRoque mouvementRoque=new MouvementRoque(new Position(rangeRoi,ColonneEnum.COLONNEC),
+                    MouvementRoque mouvementRoque=new MouvementRoque(piece.getPosition(), new Position(rangeRoi,ColonneEnum.COLONNEC),
                             false,posTour2,new Position(rangeRoi, ColonneEnum.COLONNED));
                     mouvements.add(mouvementRoque);
                 }
@@ -290,11 +290,11 @@ public class CalculMouvementBaseService {
 
         PieceCouleur caseCible = plateau.getCase(position);
         if (caseCible == null) {
-            var mouvement = new MouvementSimple(position, false);
+            var mouvement = new MouvementSimple(piece.getPosition(), position, false);
             mouvements.add(mouvement);
             return true;
         } else if (caseCible.getCouleur() != piece.getCouleur()) {
-            var mouvement = new MouvementSimple(position, true);
+            var mouvement = new MouvementSimple(piece.getPosition(), position, true);
             mouvements.add(mouvement);
             return false;
         }
@@ -302,7 +302,7 @@ public class CalculMouvementBaseService {
         return false;
     }
 
-    private List<IMouvement> calculPion(PieceCouleurPosition piece, IPlateau plateau) {
+    private List<IMouvement> calculPion(PieceCouleurPosition piece, IPlateau plateau, HistoriqueCoups historiqueCoups) {
         Preconditions.checkNotNull(piece);
         Preconditions.checkState(piece.getPiece() == Piece.PION);
 
@@ -320,10 +320,12 @@ public class CalculMouvementBaseService {
                 decalage2 = -2;
             }
         }
+        // piece avant
         Optional<Position> optPosition = PositionTools.getPosition(piece.getPosition(), decalage, 0);
         if (optPosition.isPresent()) {
             ajoutePositionPions(mouvements, optPosition.get(), piece, plateau, false);
         }
+        // piece mange
         optPosition = PositionTools.getPosition(piece.getPosition(), decalage, -1);
         if (optPosition.isPresent()) {
             ajoutePositionPions(mouvements, optPosition.get(), piece, plateau, true);
@@ -332,6 +334,7 @@ public class CalculMouvementBaseService {
         if (optPosition.isPresent()) {
             ajoutePositionPions(mouvements, optPosition.get(), piece, plateau, true);
         }
+        // piece avant de 2 cases
         if (decalage2 != 0) {
             PieceCouleur caseIntermediaire = null;
             if (decalage2 > 0) {
@@ -353,7 +356,38 @@ public class CalculMouvementBaseService {
             }
         }
 
+        // en passant
+        var derniercoupOpt=historiqueCoups.getDernierCoup();
+        if(derniercoupOpt.isPresent()){
+            var dernierCoup=derniercoupOpt.get();
+            var pieceAdverse=dernierCoup.getPieceCouleur();
+            if(pieceAdverse.getCouleur()!=piece.getCouleur()&&pieceAdverse.getPiece()==Piece.PION){
+                if (piece.getCouleur() == Couleur.Blanc) {
+                    if(piece.getPosition().getRangee()==RangeeEnum.RANGEE5 &&dernierCoup.getiMouvement() instanceof MouvementSimple){
+                        var mvt=(MouvementSimple)dernierCoup.getiMouvement();
+                        if(mvt.getPositionSource().getColonne()==mvt.getPositionDestination().getColonne() &&
+                                mvt.getPositionSource().getRangee()==RangeeEnum.RANGEE7&&
+                                mvt.getPositionSource().getRangee()==RangeeEnum.RANGEE5) {
+                            var decalage3 = declageColonne(mvt.getPositionDestination().getColonne(),
+                                    piece.getPosition().getColonne());
+                            var pos=PositionTools.getPosition(piece.getPosition(),1,decalage3);
+                            if(pos.isPresent()){
+                                var mouvement = new MouvementEnPassant(piece.getPosition(), pos.get(), mvt.getPositionDestination());
+                                mouvements.add(mouvement);
+                            }
+                        }
+                    }
+                } else {
+
+                }
+            }
+        }
+
         return mouvements;
+    }
+
+    private int declageColonne(ColonneEnum colonneDepart,ColonneEnum colonneArrivee){
+        return colonneArrivee.getNo()-colonneDepart.getNo();
     }
 
     private void ajoutePositionPions(List<IMouvement> mouvements, Position position,
@@ -366,12 +400,12 @@ public class CalculMouvementBaseService {
         PieceCouleur caseCible = plateau.getCase(position);
         if (mangePiece) {
             if (caseCible != null && caseCible.getCouleur() != piece.getCouleur()) {
-                var mouvement = new MouvementSimple(position, true);
+                var mouvement = new MouvementSimple(piece.getPosition(), position, true);
                 mouvements.add(mouvement);
             }
         } else {
             if (caseCible == null) {
-                var mouvement = new MouvementSimple(position, false);
+                var mouvement = new MouvementSimple(piece.getPosition(), position, false);
                 mouvements.add(mouvement);
             }
         }

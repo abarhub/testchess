@@ -5,16 +5,22 @@ import java.util.StringJoiner;
 
 public class MouvementSimple implements IMouvement {
 
-    private final Position position;
+    private final Position positionSource;
+    private final Position positionDestination;
     private final boolean attaque;
 
-    public MouvementSimple(Position position, boolean attaque) {
-        this.position = position;
+    public MouvementSimple(Position positionSource, Position positionDestination, boolean attaque) {
+        this.positionSource = positionSource;
+        this.positionDestination = positionDestination;
         this.attaque = attaque;
     }
 
-    public Position getPosition() {
-        return position;
+    public Position getPositionSource() {
+        return positionSource;
+    }
+
+    public Position getPositionDestination() {
+        return positionDestination;
     }
 
     public boolean isAttaque() {
@@ -27,18 +33,20 @@ public class MouvementSimple implements IMouvement {
         if (o == null || getClass() != o.getClass()) return false;
         MouvementSimple that = (MouvementSimple) o;
         return attaque == that.attaque &&
-                Objects.equals(position, that.position);
+                Objects.equals(positionSource, that.positionSource) &&
+                Objects.equals(positionDestination, that.positionDestination);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, attaque);
+        return Objects.hash(positionSource, positionDestination, attaque);
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", MouvementSimple.class.getSimpleName() + "[", "]")
-                .add("position=" + position)
+                .add("positionSource=" + positionSource)
+                .add("positionDestination=" + positionDestination)
                 .add("attaque=" + attaque)
                 .toString();
     }

@@ -5,21 +5,23 @@ import java.util.StringJoiner;
 
 public class MouvementRoque implements IMouvement {
 
-    private final Position position;
+    private final Position positionSource;
+    private final Position positionDestination;
     private final boolean roqueCoteRoi;
     private final Position positionTourSrc;
     private final Position positionTourDest;
 
-    public MouvementRoque(Position position, boolean roqueCoteRoi, Position positionTourSrc, Position positionTourDest) {
-        this.position = position;
+    public MouvementRoque(Position positionSource, Position positionDestination, boolean roqueCoteRoi, Position positionTourSrc, Position positionTourDest) {
+        this.positionSource = positionSource;
+        this.positionDestination = positionDestination;
         this.roqueCoteRoi = roqueCoteRoi;
         this.positionTourSrc = positionTourSrc;
         this.positionTourDest = positionTourDest;
     }
 
     @Override
-    public Position getPosition() {
-        return position;
+    public Position getPositionDestination() {
+        return positionDestination;
     }
 
     @Override
@@ -45,20 +47,22 @@ public class MouvementRoque implements IMouvement {
         if (o == null || getClass() != o.getClass()) return false;
         MouvementRoque that = (MouvementRoque) o;
         return roqueCoteRoi == that.roqueCoteRoi &&
-                Objects.equals(position, that.position) &&
+                Objects.equals(positionSource, that.positionSource) &&
+                Objects.equals(positionDestination, that.positionDestination) &&
                 Objects.equals(positionTourSrc, that.positionTourSrc) &&
                 Objects.equals(positionTourDest, that.positionTourDest);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, roqueCoteRoi, positionTourSrc, positionTourDest);
+        return Objects.hash(positionSource, positionDestination, roqueCoteRoi, positionTourSrc, positionTourDest);
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", MouvementRoque.class.getSimpleName() + "[", "]")
-                .add("position=" + position)
+                .add("positionSource=" + positionSource)
+                .add("positionDestination=" + positionDestination)
                 .add("roqueCoteRoi=" + roqueCoteRoi)
                 .add("positionTourSrc=" + positionTourSrc)
                 .add("positionTourDest=" + positionTourDest)

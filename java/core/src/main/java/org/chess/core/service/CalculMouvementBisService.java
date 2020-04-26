@@ -129,7 +129,7 @@ public class CalculMouvementBisService implements CalculMouvementService {
 //                                plateauApresModification.undo();
 //                            } else {
                                 IPlateau plateauApresModification = new Plateau((Plateau) plateau);
-                                plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
+                                plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
 
                                 if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
                                     iter.remove();
@@ -174,7 +174,7 @@ public class CalculMouvementBisService implements CalculMouvementService {
 //                                    plateauApresModification.undo();
 //                                } else {
                                     IPlateau plateauApresModification = new Plateau((Plateau) plateau);
-                                    plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
+                                    plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
 
                                     if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
                                         iter.remove();
@@ -197,7 +197,7 @@ public class CalculMouvementBisService implements CalculMouvementService {
         Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
         while (iter.hasNext()) {
             var mouvement = iter.next();
-            if (this.caseAttaquee(plateau, mouvement.getPosition(),
+            if (this.caseAttaquee(plateau, mouvement.getPositionDestination(),
                     joueurAdversaire(joueurCourant), true)) {
                 iter.remove();
             }
