@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import * as $ from 'jquery';
 
 declare var ChessBoard: any;
@@ -27,6 +27,8 @@ export class AppComponent implements OnInit {
 
   whiteSquareGrey = '#a9a9a9';
   blackSquareGrey = '#696969';
+
+  // @ViewChild('monElementHTML') monElement:ElementRef;
 
   ngOnInit(): void {
     this.board=ChessBoard('board1', {
@@ -66,11 +68,11 @@ export class AppComponent implements OnInit {
   //
 
   removeGreySquares ():void {
-    $('#myBoard .square-55d63').css('background', '');
+    $('#board3 .square-55d63').css('background', '');
   }
 
   greySquare (square):void {
-    let square2 = $('#myBoard .square-' + square);
+    let square2 = $('#board3 .square-' + square);
 
     let background = this.whiteSquareGrey;
     if (square2.hasClass('black-3c85d')) {
@@ -134,6 +136,13 @@ export class AppComponent implements OnInit {
 
   onSnapEnd ():void {
     this.board3.position(this.chessEngine.fen());
+  }
+
+  copieBord():void {
+    let fen=this.board2.fen();
+    console.log("fen=",fen);
+    this.board3.position(fen);
+    this.chessEngine.load(fen+' w - - 0 1');
   }
 
 }
