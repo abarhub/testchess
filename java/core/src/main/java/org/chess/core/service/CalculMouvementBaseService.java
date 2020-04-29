@@ -12,6 +12,9 @@ import java.util.Optional;
 
 public class CalculMouvementBaseService {
 
+    public List<IMouvement> getMouvements(IPlateau plateau, PieceCouleurPosition piece) {
+        return getMouvements(plateau, piece, new HistoriqueCoups());
+    }
 
     public List<IMouvement> getMouvements(IPlateau plateau, PieceCouleurPosition piece, HistoriqueCoups historiqueCoups) {
         List<IMouvement> list;
