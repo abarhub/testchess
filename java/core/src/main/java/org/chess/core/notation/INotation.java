@@ -5,8 +5,8 @@ import org.chess.core.domain.Partie;
 
 public interface INotation {
 
-	Partie createPlateau(String str);
+    Partie createPlateau(String str);
 
-	String serialize(Partie partie);
+    String serialize(Partie partie);
 
 }

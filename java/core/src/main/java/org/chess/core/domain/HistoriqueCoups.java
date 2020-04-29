@@ -6,13 +6,13 @@ import java.util.Optional;
 
 public class HistoriqueCoups {
 
-    private List<Coup> listeCoups=new ArrayList<>();
+    private List<Coup> listeCoups = new ArrayList<>();
 
-    public Optional<Coup> getDernierCoup(){
-        if(listeCoups.isEmpty()){
+    public Optional<Coup> getDernierCoup() {
+        if (listeCoups.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of(listeCoups.get(listeCoups.size()-1));
+            return Optional.of(listeCoups.get(listeCoups.size() - 1));
         }
     }
 }

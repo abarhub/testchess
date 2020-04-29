@@ -6,7 +6,7 @@ public class Coup {
     private final IMouvement iMouvement;
 
     public Coup(PieceCouleur pieceCouleur, IMouvement iMouvement) {
-        this.pieceCouleur=pieceCouleur;
+        this.pieceCouleur = pieceCouleur;
         this.iMouvement = iMouvement;
     }
 

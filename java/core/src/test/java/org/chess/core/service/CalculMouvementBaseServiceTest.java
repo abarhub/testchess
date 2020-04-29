@@ -23,109 +23,109 @@ class CalculMouvementBaseServiceTest {
 
     @BeforeEach
     void setUp() {
-        calculMouvementBaseService=new CalculMouvementBaseService();
+        calculMouvementBaseService = new CalculMouvementBaseService();
     }
 
     @Test
     void getMouvementsRoiMillieux() {
 
-        String plateau="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        Partie partie=notationFEN.createPlateau(plateau);
+        String plateau = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        Partie partie = notationFEN.createPlateau(plateau);
 
-        var roi=getPosition(Piece.ROI,RangeeEnum.RANGEE4, ColonneEnum.COLONNEE, Couleur.Blanc);
+        var roi = getPosition(Piece.ROI, RangeeEnum.RANGEE4, ColonneEnum.COLONNEE, Couleur.Blanc);
 
         // methode testée
-        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(),roi);
+        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(), roi);
 
         // vérifications
         LOGGER.info("res={}", res);
-        long nbCoups=res.size();
+        long nbCoups = res.size();
         LOGGER.info("nbCoups={}", nbCoups);
         assertEquals(8, nbCoups);
 
 
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE5,ColonneEnum.COLONNED,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE5,ColonneEnum.COLONNEE,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE5,ColonneEnum.COLONNEF,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE4,ColonneEnum.COLONNED,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE4,ColonneEnum.COLONNEF,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE3,ColonneEnum.COLONNED,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE3,ColonneEnum.COLONNEE,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE3,ColonneEnum.COLONNEF,false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE5, ColonneEnum.COLONNED, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE5, ColonneEnum.COLONNEE, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE5, ColonneEnum.COLONNEF, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNED, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNEF, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNED, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEE, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEF, false)));
     }
 
     @Test
     void getMouvementsRoiMillieuxTour() {
 
-        String plateau="8/8/8/3PPP2/4K3/8/8/8 w - - 0 1";
-        Partie partie=notationFEN.createPlateau(plateau);
+        String plateau = "8/8/8/3PPP2/4K3/8/8/8 w - - 0 1";
+        Partie partie = notationFEN.createPlateau(plateau);
 
-        var roi=getPosition(Piece.ROI,RangeeEnum.RANGEE4, ColonneEnum.COLONNEE, Couleur.Blanc);
+        var roi = getPosition(Piece.ROI, RangeeEnum.RANGEE4, ColonneEnum.COLONNEE, Couleur.Blanc);
 
         // methode testée
-        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(),roi);
+        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(), roi);
 
         // vérifications
         LOGGER.info("res={}", res);
-        long nbCoups=res.size();
+        long nbCoups = res.size();
         LOGGER.info("nbCoups={}", nbCoups);
         assertEquals(5, nbCoups);
 
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE4,ColonneEnum.COLONNED,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE4,ColonneEnum.COLONNEF,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE3,ColonneEnum.COLONNED,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE3,ColonneEnum.COLONNEE,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(),RangeeEnum.RANGEE3,ColonneEnum.COLONNEF,false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNED, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNEF, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNED, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEE, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEF, false)));
     }
 
     @Test
     void getMouvementsRoiRoqueBlanc() {
 
-        String plateau="8/8/8/8/8/8/3PPP2/R3K2R w KQ - 0 1";
-        Partie partie=notationFEN.createPlateau(plateau);
+        String plateau = "8/8/8/8/8/8/3PPP2/R3K2R w KQ - 0 1";
+        Partie partie = notationFEN.createPlateau(plateau);
 
-        var roi=getPosition(Piece.ROI,RangeeEnum.RANGEE1, ColonneEnum.COLONNEE, Couleur.Blanc);
+        var roi = getPosition(Piece.ROI, RangeeEnum.RANGEE1, ColonneEnum.COLONNEE, Couleur.Blanc);
 
         // methode testée
-        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(),roi);
+        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(), roi);
 
         // vérifications
         LOGGER.info("res={}", res);
-        long nbCoups=res.size();
+        long nbCoups = res.size();
         LOGGER.info("nbCoups={}", nbCoups);
         assertEquals(4, nbCoups);
 
-        assertTrue(contient(res,getMouvement(roi.getPosition(), RangeeEnum.RANGEE1,ColonneEnum.COLONNED,false)));
-        assertTrue(contient(res,getMouvement(roi.getPosition(), RangeeEnum.RANGEE1,ColonneEnum.COLONNEF,false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNED, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNEF, false)));
 
-        assertTrue(contient(res,getMouvementRoque(roi.getPosition(), RangeeEnum.RANGEE1,ColonneEnum.COLONNEG,
-                true, ColonneEnum.COLONNEH, ColonneEnum.COLONNEF)), () -> "res="+res);
+        assertTrue(contient(res, getMouvementRoque(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNEG,
+                true, ColonneEnum.COLONNEH, ColonneEnum.COLONNEF)), () -> "res=" + res);
 
-        assertTrue(contient(res,getMouvementRoque(roi.getPosition(), RangeeEnum.RANGEE1,ColonneEnum.COLONNEC,
-                false, ColonneEnum.COLONNEA, ColonneEnum.COLONNED)), () -> "res="+res);
+        assertTrue(contient(res, getMouvementRoque(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNEC,
+                false, ColonneEnum.COLONNEA, ColonneEnum.COLONNED)), () -> "res=" + res);
     }
 
     // methodes utilitaires
 
-    private PieceCouleurPosition getPosition(Piece piece, RangeeEnum rangeeEnum, ColonneEnum colonneEnum, Couleur couleur){
+    private PieceCouleurPosition getPosition(Piece piece, RangeeEnum rangeeEnum, ColonneEnum colonneEnum, Couleur couleur) {
         return new PieceCouleurPosition(piece, couleur,
                 new Position(rangeeEnum, colonneEnum));
     }
 
-    private boolean contient(List<IMouvement> listeMouvement, IMouvement mouvement){
-        return TestFixture.contient(listeMouvement,mouvement);
+    private boolean contient(List<IMouvement> listeMouvement, IMouvement mouvement) {
+        return TestFixture.contient(listeMouvement, mouvement);
     }
 
-    private Position getPosition(RangeeEnum rangeeEnum, ColonneEnum colonneEnum){
-        return TestFixture.getPosition(rangeeEnum,colonneEnum);
+    private Position getPosition(RangeeEnum rangeeEnum, ColonneEnum colonneEnum) {
+        return TestFixture.getPosition(rangeeEnum, colonneEnum);
     }
 
-    private MouvementSimple getMouvement(Position positionSrc, RangeeEnum rangeeEnum, ColonneEnum colonneEnum, boolean attaque){
-        return TestFixture.getMouvement(positionSrc,rangeeEnum,colonneEnum,attaque);
+    private MouvementSimple getMouvement(Position positionSrc, RangeeEnum rangeeEnum, ColonneEnum colonneEnum, boolean attaque) {
+        return TestFixture.getMouvement(positionSrc, rangeeEnum, colonneEnum, attaque);
     }
 
     private MouvementRoque getMouvementRoque(Position positionSrc, RangeeEnum rangeeEnum, ColonneEnum colonneRoi, boolean roqueCoteeRoi,
-                                             ColonneEnum colonneTourSrc, ColonneEnum colonneTourDest){
-        return TestFixture.getMouvementRoque(positionSrc, rangeeEnum,colonneRoi,roqueCoteeRoi, colonneTourSrc, colonneTourDest);
+                                             ColonneEnum colonneTourSrc, ColonneEnum colonneTourDest) {
+        return TestFixture.getMouvementRoque(positionSrc, rangeeEnum, colonneRoi, roqueCoteeRoi, colonneTourSrc, colonneTourDest);
     }
 }

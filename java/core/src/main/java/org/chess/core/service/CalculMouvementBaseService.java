@@ -69,61 +69,61 @@ public class CalculMouvementBaseService {
 
     private void ajoutRoqueRoi(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements) {
         final RangeeEnum rangeRoi;
-        final Couleur couleurRoi=piece.getCouleur();
+        final Couleur couleurRoi = piece.getCouleur();
 
-        if(couleurRoi==Couleur.Blanc){
-            rangeRoi=RangeeEnum.RANGEE1;
+        if (couleurRoi == Couleur.Blanc) {
+            rangeRoi = RangeeEnum.RANGEE1;
         } else {
-            rangeRoi=RangeeEnum.RANGEE8;
+            rangeRoi = RangeeEnum.RANGEE8;
         }
 
-        if(isPosition(piece,rangeRoi,ColonneEnum.COLONNEE,couleurRoi)){
+        if (isPosition(piece, rangeRoi, ColonneEnum.COLONNEE, couleurRoi)) {
             // roque coté roi
-            Position posTour=new Position(rangeRoi, ColonneEnum.COLONNEH);
-            PieceCouleur tour=plateau.getCase(posTour);
-            if(tour!=null && tour.getPiece()==Piece.TOUR &&tour.getCouleur()==couleurRoi){
-                boolean caseNonVide=false;
-                for(int i=1;i<3;i++){
-                    ColonneEnum colonneEnum=ColonneEnum.get(ColonneEnum.COLONNEE.getNo()+i);
-                    PieceCouleur tmp=plateau.getCase(new Position(rangeRoi, colonneEnum));
-                    if(tmp!=null){
-                        caseNonVide=true;
+            Position posTour = new Position(rangeRoi, ColonneEnum.COLONNEH);
+            PieceCouleur tour = plateau.getCase(posTour);
+            if (tour != null && tour.getPiece() == Piece.TOUR && tour.getCouleur() == couleurRoi) {
+                boolean caseNonVide = false;
+                for (int i = 1; i < 3; i++) {
+                    ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEE.getNo() + i);
+                    PieceCouleur tmp = plateau.getCase(new Position(rangeRoi, colonneEnum));
+                    if (tmp != null) {
+                        caseNonVide = true;
                         break;
                     }
                 }
-                if(!caseNonVide){
-                    MouvementRoque mouvementRoque=new MouvementRoque(piece.getPosition(), new Position(rangeRoi,ColonneEnum.COLONNEG),
-                            true,posTour,new Position(rangeRoi, ColonneEnum.COLONNEF));
+                if (!caseNonVide) {
+                    MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEG),
+                            true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF));
                     mouvements.add(mouvementRoque);
                 }
             }
 
             // roque cote reine
-            Position posTour2=new Position(rangeRoi, ColonneEnum.COLONNEA);
-            PieceCouleur tour2=plateau.getCase(posTour2);
-            if(tour2!=null && tour2.getPiece()==Piece.TOUR &&tour2.getCouleur()==couleurRoi){
-                boolean caseNonVide=false;
-                for(int i=1;i<4;i++){
-                    ColonneEnum colonneEnum=ColonneEnum.get(ColonneEnum.COLONNEA.getNo()+i);
-                    PieceCouleur tmp=plateau.getCase(new Position(rangeRoi, colonneEnum));
-                    if(tmp!=null){
-                        caseNonVide=true;
+            Position posTour2 = new Position(rangeRoi, ColonneEnum.COLONNEA);
+            PieceCouleur tour2 = plateau.getCase(posTour2);
+            if (tour2 != null && tour2.getPiece() == Piece.TOUR && tour2.getCouleur() == couleurRoi) {
+                boolean caseNonVide = false;
+                for (int i = 1; i < 4; i++) {
+                    ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEA.getNo() + i);
+                    PieceCouleur tmp = plateau.getCase(new Position(rangeRoi, colonneEnum));
+                    if (tmp != null) {
+                        caseNonVide = true;
                         break;
                     }
                 }
-                if(!caseNonVide){
-                    MouvementRoque mouvementRoque=new MouvementRoque(piece.getPosition(), new Position(rangeRoi,ColonneEnum.COLONNEC),
-                            false,posTour2,new Position(rangeRoi, ColonneEnum.COLONNED));
+                if (!caseNonVide) {
+                    MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEC),
+                            false, posTour2, new Position(rangeRoi, ColonneEnum.COLONNED));
                     mouvements.add(mouvementRoque);
                 }
             }
         }
     }
 
-    private boolean isPosition(PieceCouleurPosition piece, RangeeEnum rangeeEnum, ColonneEnum colonneEnum,Couleur couleur){
-        return piece.getPosition().getRangee()==rangeeEnum &&
-                piece.getPosition().getColonne()==colonneEnum &&
-                piece.getCouleur()==couleur;
+    private boolean isPosition(PieceCouleurPosition piece, RangeeEnum rangeeEnum, ColonneEnum colonneEnum, Couleur couleur) {
+        return piece.getPosition().getRangee() == rangeeEnum &&
+                piece.getPosition().getColonne() == colonneEnum &&
+                piece.getCouleur() == couleur;
     }
 
     private List<IMouvement> calculReine(PieceCouleurPosition piece, IPlateau plateau) {
@@ -357,21 +357,21 @@ public class CalculMouvementBaseService {
         }
 
         // en passant
-        var derniercoupOpt=historiqueCoups.getDernierCoup();
-        if(derniercoupOpt.isPresent()){
-            var dernierCoup=derniercoupOpt.get();
-            var pieceAdverse=dernierCoup.getPieceCouleur();
-            if(pieceAdverse.getCouleur()!=piece.getCouleur()&&pieceAdverse.getPiece()==Piece.PION){
+        var derniercoupOpt = historiqueCoups.getDernierCoup();
+        if (derniercoupOpt.isPresent()) {
+            var dernierCoup = derniercoupOpt.get();
+            var pieceAdverse = dernierCoup.getPieceCouleur();
+            if (pieceAdverse.getCouleur() != piece.getCouleur() && pieceAdverse.getPiece() == Piece.PION) {
                 if (piece.getCouleur() == Couleur.Blanc) {
-                    if(piece.getPosition().getRangee()==RangeeEnum.RANGEE5 &&dernierCoup.getiMouvement() instanceof MouvementSimple){
-                        var mvt=(MouvementSimple)dernierCoup.getiMouvement();
-                        if(mvt.getPositionSource().getColonne()==mvt.getPositionDestination().getColonne() &&
-                                mvt.getPositionSource().getRangee()==RangeeEnum.RANGEE7&&
-                                mvt.getPositionSource().getRangee()==RangeeEnum.RANGEE5) {
+                    if (piece.getPosition().getRangee() == RangeeEnum.RANGEE5 && dernierCoup.getiMouvement() instanceof MouvementSimple) {
+                        var mvt = (MouvementSimple) dernierCoup.getiMouvement();
+                        if (mvt.getPositionSource().getColonne() == mvt.getPositionDestination().getColonne() &&
+                                mvt.getPositionSource().getRangee() == RangeeEnum.RANGEE7 &&
+                                mvt.getPositionSource().getRangee() == RangeeEnum.RANGEE5) {
                             var decalage3 = declageColonne(mvt.getPositionDestination().getColonne(),
                                     piece.getPosition().getColonne());
-                            var pos=PositionTools.getPosition(piece.getPosition(),1,decalage3);
-                            if(pos.isPresent()){
+                            var pos = PositionTools.getPosition(piece.getPosition(), 1, decalage3);
+                            if (pos.isPresent()) {
                                 var mouvement = new MouvementEnPassant(piece.getPosition(), pos.get(), mvt.getPositionDestination());
                                 mouvements.add(mouvement);
                             }
@@ -386,8 +386,8 @@ public class CalculMouvementBaseService {
         return mouvements;
     }
 
-    private int declageColonne(ColonneEnum colonneDepart,ColonneEnum colonneArrivee){
-        return colonneArrivee.getNo()-colonneDepart.getNo();
+    private int declageColonne(ColonneEnum colonneDepart, ColonneEnum colonneArrivee) {
+        return colonneArrivee.getNo() - colonneDepart.getNo();
     }
 
     private void ajoutePositionPions(List<IMouvement> mouvements, Position position,
