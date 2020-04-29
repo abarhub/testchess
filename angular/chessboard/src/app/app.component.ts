@@ -1,5 +1,8 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import * as $ from 'jquery';
+import {HttpClient} from "@angular/common/http";
+import {ChessbordService} from "./chessbord-service";
+import {ListemvtService} from "./listemvt.service";
 
 declare var ChessBoard: any;
 
@@ -29,6 +32,8 @@ export class AppComponent implements OnInit {
   blackSquareGrey = '#696969';
 
   // @ViewChild('monElementHTML') monElement:ElementRef;
+
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this.board=ChessBoard('board1', {
@@ -109,12 +114,26 @@ export class AppComponent implements OnInit {
   }
 
   onMouseoverSquare (square, piece):void {
+    let choix=true;
+    choix=false;
+    if(choix){
+      this.onMouseoverSquare1(square,piece);
+    } else {
+      this.onMouseoverSquare2(square,piece);
+    }
+  }
+
+  onMouseoverSquare1 (square, piece):void {
+    console.log("onMouseoverSquare1:",square);
     console.log("chessEngine:",this.chessEngine);
+    console.log("square:",square);
     // get list of possible moves for this square
     let moves = this.chessEngine.moves({
       square: square,
       verbose: true
     })
+
+    this.getListeMouve(square);
 
     console.log("move:",moves);
 
@@ -128,6 +147,81 @@ export class AppComponent implements OnInit {
     for (let i = 0; i < moves.length; i++) {
       this.greySquare(moves[i].to);
     }
+  }
+
+  onMouseoverSquare2 (square, piece):void {
+    console.log("onMouseoverSquare2:",square);
+    console.log("chessEngine:",this.chessEngine);
+    console.log("square:",square);
+
+    let chess=new ChessbordService();
+    chess.mouvement=square;
+    chess.fen=this.chessEngine.fen();
+    console.info("getListeMouve square=", square);
+    this.http.post<ListemvtService>("api/mvt",chess)
+      .subscribe(listeMvt => {
+        console.log("listeMvt",listeMvt);
+
+        let liste=[];
+        if(listeMvt && listeMvt.deplacements){
+          liste=listeMvt.deplacements;
+        }
+
+        let moves = this.chessEngine.moves({
+          square: square,
+          verbose: true
+        });
+
+        let liste2=[];
+        if(moves &&moves.length>0){
+          for (let i = 0; i < moves.length; i++) {
+            liste2.push(moves[i].to);
+          }
+        }
+
+        console.log("liste=",liste, "liste2=",liste2);
+
+        let listePlus=this.diff(liste,liste2);
+        let listeMoins=this.diff(liste2,liste);
+
+        if(listePlus.size==0&&listeMoins.size==0){
+          console.log("pas de difference");
+        } else {
+          console.error("listePlus=",listePlus, "listeMoins=",listeMoins);
+          this.board3message+="listePlus="+this.affiche(listePlus)+
+            "listeMoins="+this.affiche(listeMoins)+".\n";
+        }
+
+        if(liste.length>0){
+          this.greySquare(square);
+
+          // highlight the possible squares for this piece
+          for (let i = 0; i < liste.length; i++) {
+            this.greySquare(liste[i]);
+          }
+        }
+      });
+
+    // // get list of possible moves for this square
+    // let moves = this.chessEngine.moves({
+    //   square: square,
+    //   verbose: true
+    // })
+    //
+    // this.getListeMouve(square);
+    //
+    // console.log("move:",moves);
+    //
+    // // exit if there are no moves available for this square
+    // if (moves.length === 0) return
+    //
+    // // highlight the square they moused over
+    // this.greySquare(square);
+    //
+    // // highlight the possible squares for this piece
+    // for (let i = 0; i < moves.length; i++) {
+    //   this.greySquare(moves[i].to);
+    // }
   }
 
   onMouseoutSquare (square, piece):void {
@@ -145,4 +239,46 @@ export class AppComponent implements OnInit {
     this.chessEngine.load(fen+' w - - 0 1');
   }
 
+  test1():void {
+    this.http.get("api/greeting", {responseType: 'text'})
+      .subscribe((data: string) => console.log("res",data));
+    // this.http.get("api/greeting")
+    //   .subscribe((data: string) => console.log("res",data));
+  }
+
+  test2():void {
+    this.http.get("api/mvt")
+      .subscribe((data: string) => console.log("res",data));
+  }
+
+  private getListeMouve(square: string) {
+    let chess=new ChessbordService();
+    chess.mouvement=square;
+    chess.fen=this.chessEngine.fen();
+    console.info("getListeMouve square=", square);
+    this.http.post<ListemvtService>("api/mvt",chess)
+      .subscribe(listeMvt => console.log("listeMvt",listeMvt));
+  }
+
+  private diff(liste:string[],liste2:string[]):Set<string> {
+    let listePlus=new Set<string>();
+    for(let i=0;i<liste.length;i++){
+      listePlus.add(liste[i]);
+    }
+    for(let i=0;i<liste2.length;i++){
+      listePlus.delete(liste2[i]);
+    }
+    return listePlus;
+  }
+
+  private affiche(set:Set<string>):string {
+    let res='';
+    for (let s of set) {
+      if(res.length>0){
+        res+=',';
+      }
+      res+=s;
+    }
+    return '['+res+']';
+  }
 }
