@@ -408,7 +408,9 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         return plateau.getStreamPosition()
                 .filter(x -> x.getCouleur() == couleurAttaquant)
                 .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos))
-                .anyMatch(x -> x.contains(position));
+                .flatMap(x -> x.stream())
+                .map(x -> x.getPositionDestination())
+                .anyMatch(x -> x.equals(position));
     }
 
     private void start(StopWatch stopWatch) {
