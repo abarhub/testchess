@@ -2,6 +2,8 @@ package org.chess.core.domain;
 
 import com.google.common.base.Preconditions;
 
+import java.util.Optional;
+
 public class ConfigurationPartie {
 
     private boolean roqueBlancRoi;
@@ -11,6 +13,7 @@ public class ConfigurationPartie {
     private Couleur joueurTrait;
     private int nbDemiCoupSansCapture;
     private int nbCoup;
+    private Optional<Position> priseEnPassant;
 
     public ConfigurationPartie(Couleur joueurTrait) {
         Preconditions.checkNotNull(joueurTrait);
@@ -28,6 +31,7 @@ public class ConfigurationPartie {
         joueurTrait = configurationPartie.joueurTrait;
         nbDemiCoupSansCapture = configurationPartie.getNbDemiCoupSansCapture();
         nbCoup = configurationPartie.nbCoup;
+        priseEnPassant=configurationPartie.priseEnPassant;
     }
 
     public boolean isRoqueBlancRoi() {
@@ -84,5 +88,13 @@ public class ConfigurationPartie {
 
     public void setNbCoup(int nbCoup) {
         this.nbCoup = nbCoup;
+    }
+
+    public Optional<Position> getPriseEnPassant() {
+        return priseEnPassant;
+    }
+
+    public void setPriseEnPassant(Optional<Position> priseEnPassant) {
+        this.priseEnPassant = priseEnPassant;
     }
 }

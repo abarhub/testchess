@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 
 import static org.chess.core.domain.Plateau.NB_COLONNES;
 import static org.chess.core.domain.Plateau.NB_LIGNES;
@@ -68,7 +69,7 @@ public class NotationFEN implements INotation {
         boolean roqueNoirRoi = false;
         boolean roqueBlancDame = false;
         boolean roqueBlancRoi = false;
-        boolean priseEnPassant = false;
+        Optional<Position> priseEnPassant=Optional.empty();
         int nbDemiCoup = 0;
         int nbCoup = 1;
 
@@ -127,9 +128,22 @@ public class NotationFEN implements INotation {
                         if (c == ' ') {
                             c = getChar(iterator);
                             if (c == '-') {
-                                priseEnPassant = false;
+                                priseEnPassant = Optional.empty();
                             } else {
-                                throw new IllegalArgumentException("Caractere '" + c + "' invalide à la position : " + iterator.previousIndex() + " (caractere non gere='" + c + "')");
+                                var colonne=c;
+                                if(colonne>='a'&&colonne<='h'){
+                                    var ligne = getChar(iterator);
+                                    if(ligne>='1'&&ligne<='8'){
+                                        var noColonne=colonne-'a'+1;
+                                        var noLigne=ligne-'1'+1;
+                                        Position p=new Position(RangeeEnum.get(noLigne),ColonneEnum.get(noColonne));
+                                        priseEnPassant=Optional.of(p);
+                                    } else {
+                                        throw new IllegalArgumentException("Caractere '" + c + "' invalide à la position : " + iterator.previousIndex() + " (caractere non gere='" + c + "')");
+                                    }
+                                } else {
+                                    throw new IllegalArgumentException("Caractere '" + c + "' invalide à la position : " + iterator.previousIndex() + " (caractere non gere='" + c + "')");
+                                }
                             }
                         } else {
                             throw new IllegalArgumentException("Caractere '" + c + "' invalide à la position : " + iterator.previousIndex() + " (caractere attendu= )");
@@ -164,6 +178,7 @@ public class NotationFEN implements INotation {
             roqueBlancDame = true;
             nbDemiCoup = 0;
             nbCoup = 1;
+            priseEnPassant=Optional.empty();
         }
 
         ConfigurationPartie configurationPartie = new ConfigurationPartie(joueurCourant);
@@ -173,6 +188,7 @@ public class NotationFEN implements INotation {
         configurationPartie.setRoqueNoirDame(roqueNoirDame);
         configurationPartie.setNbDemiCoupSansCapture(nbDemiCoup);
         configurationPartie.setNbCoup(nbCoup);
+        configurationPartie.setPriseEnPassant(priseEnPassant);
 
         Plateau plateau = new Plateau(listePieces);
         return new Partie(plateau, joueurCourant, createInformationPartie(), configurationPartie);
@@ -303,7 +319,11 @@ public class NotationFEN implements INotation {
         }
 
         str.append(' ');
-        str.append('-');
+        if(config.getPriseEnPassant().isEmpty()) {
+            str.append('-');
+        } else {
+            str.append(config.getPriseEnPassant().get().toString());
+        }
 
         str.append(' ');
         str.append(config.getNbDemiCoupSansCapture());

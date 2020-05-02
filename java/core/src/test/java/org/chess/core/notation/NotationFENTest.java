@@ -1,9 +1,6 @@
 package org.chess.core.notation;
 
-import org.chess.core.domain.ConfigurationPartie;
-import org.chess.core.domain.Couleur;
-import org.chess.core.domain.Partie;
-import org.chess.core.domain.Plateau;
+import org.chess.core.domain.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -11,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,8 +34,10 @@ public class NotationFENTest {
 
         LOGGER.info("fenFormat={}", fenFormat);
 
+        // methode testée
         Partie partie = notationFEN.createPlateau(fenFormat);
 
+        // vérifications
         assertNotNull(partie);
 
         Plateau plateau = partie.getPlateau();
@@ -58,8 +58,10 @@ public class NotationFENTest {
 
         String fenFormat = "rnb2b1r/pp1qp1pp/P4k1n/3pP3/1P1P1p1P/R1p2NP1/2PNKP2/2BQ1B1R w KQkq - 0 1";
 
+        // methode testée
         Partie partie = notationFEN.createPlateau(fenFormat);
 
+        // vérifications
         assertNotNull(partie);
 
         assertNotNull(partie.getConfigurationPartie());
@@ -88,8 +90,10 @@ public class NotationFENTest {
 
         String fenFormat = "rnb2b1r/pp1qp1pp/P4k1n/3pP3/1P1P1p1P/R1p2NP1/2PNKP2/2BQ1B1R b Kq - 15 34";
 
+        // methode testée
         Partie partie = notationFEN.createPlateau(fenFormat);
 
+        // vérifications
         assertNotNull(partie);
 
         assertNotNull(partie.getConfigurationPartie());
@@ -118,8 +122,10 @@ public class NotationFENTest {
 
         String fenFormat = "rnb2b1r/pp1qp1pp/P4k1n/3pP3/1P1P1p1P/R1p2NP1/2PNKP2/2BQ1B1R";
 
+        // methode testée
         Partie partie = notationFEN.createPlateau(fenFormat);
 
+        // vérifications
         assertNotNull(partie);
 
         assertNotNull(partie.getConfigurationPartie());
@@ -142,7 +148,72 @@ public class NotationFENTest {
         assertEquals(fenFormat + " w KQkq - 0 1", res);
     }
 
-    @Test
-    public void serialize() {
+    public static Stream<Arguments> provideCreatePlateauTestEnPassant() {
+        return Stream.of(
+                Arguments.of("rnb2b1r/pp1qp1pp/P4k1n/3pP3/1P1P1p1P/R1p2NP1/2PNKP2/2BQ1B1R w KQkq - 0 1", Optional.empty()),
+                Arguments.of("r1b1kb1r/pp1pp1pp/nqp2p2/5P2/8/PP5N/R4KnP/2B4R w KQkq - 0 1", Optional.empty()),
+                Arguments.of("r1b1kb1r/pp1pp1pp/nqp2p2/5P2/8/PP5N/R5nP/2B3KR w KQkq - 0 1", Optional.empty()),
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", Optional.empty()),
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e3 0 1", Optional.of(Position.getPosition("e3"))),
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 1", Optional.of(Position.getPosition("c6")))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCreatePlateauTestEnPassant")
+    public void createPlateauTestEnPassant(String fenFormat, Optional<Position> enPassant) {
+
+        // methode testée
+        Partie partie = notationFEN.createPlateau(fenFormat);
+
+        // vérifications
+        assertNotNull(partie);
+
+        assertNotNull(partie.getConfigurationPartie());
+
+        assertEquals(Couleur.Blanc, partie.getJoueurCourant());
+
+        ConfigurationPartie config = partie.getConfigurationPartie();
+
+        assertEquals(true, config.isRoqueBlancRoi());
+        assertEquals(true, config.isRoqueBlancDame());
+        assertEquals(true, config.isRoqueNoirRoi());
+        assertEquals(true, config.isRoqueNoirDame());
+
+        assertEquals(0, config.getNbDemiCoupSansCapture());
+
+        assertEquals(1, config.getNbCoup());
+
+        assertEquals(enPassant,config.getPriseEnPassant());
+
+        String res = notationFEN.serialize(partie);
+
+        assertEquals(fenFormat, res);
+    }
+
+
+
+    public static Stream<Arguments> provideSerialize() {
+        return Stream.of(
+                Arguments.of("rnb2b1r/pp1qp1pp/P4k1n/3pP3/1P1P1p1P/R1p2NP1/2PNKP2/2BQ1B1R w KQkq - 0 1"),
+                Arguments.of("r1b1kb1r/pp1pp1pp/nqp2p2/5P2/8/PP5N/R4KnP/2B4R w KQkq - 0 1"),
+                Arguments.of("r1b1kb1r/pp1pp1pp/nqp2p2/5P2/8/PP5N/R5nP/2B3KR w KQkq - 0 1"),
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"),
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e3 0 1"),
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 1")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideSerialize")
+    public void serialize(String fenFormat) {
+
+        Partie partie = notationFEN.createPlateau(fenFormat);
+
+        // methode testée
+        String res = notationFEN.serialize(partie);
+
+        // vérifications
+        assertEquals(fenFormat, res);
     }
 }
