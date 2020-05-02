@@ -18,14 +18,15 @@ public class TestFixture {
         return new Position(rangeeEnum, colonneEnum);
     }
 
-    public static MouvementSimple getMouvement(Position positionSource, RangeeEnum rangeeEnum, ColonneEnum colonneEnum, boolean attaque) {
-        return new MouvementSimple(positionSource, getPosition(rangeeEnum, colonneEnum), attaque);
+    public static MouvementSimple getMouvement(Position positionSource, RangeeEnum rangeeEnum, ColonneEnum colonneEnum, boolean attaque,
+                                               Piece piece, Couleur joueur) {
+        return new MouvementSimple(positionSource, getPosition(rangeeEnum, colonneEnum), attaque, piece, joueur);
     }
 
     public static MouvementRoque getMouvementRoque(Position positionSource, RangeeEnum rangeeEnum, ColonneEnum colonneRoi,
                                                    boolean roqueCoteRoi, ColonneEnum colonneTourSrc,
-                                                   ColonneEnum colonneTourDest) {
+                                                   ColonneEnum colonneTourDest, Couleur joueur) {
         return new MouvementRoque(positionSource, getPosition(rangeeEnum, colonneRoi), roqueCoteRoi,
-                getPosition(rangeeEnum, colonneTourSrc), getPosition(rangeeEnum, colonneTourDest));
+                getPosition(rangeeEnum, colonneTourSrc), getPosition(rangeeEnum, colonneTourDest), joueur);
     }
 }

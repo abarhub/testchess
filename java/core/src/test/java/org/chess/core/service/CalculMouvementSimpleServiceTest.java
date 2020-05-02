@@ -5,6 +5,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.chess.core.domain.*;
 import org.chess.core.notation.NotationFEN;
+import org.chess.core.utils.PlateauTools;
 import org.chess.core.utils.PositionTools;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -65,8 +66,8 @@ class CalculMouvementSimpleServiceTest {
                 //Arguments.of("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ", 14),
                 //Arguments.of("n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - - 0 1", 24)
                 Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 1, 5),
-                Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 1, 39),
-                Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 1, 237),
+                Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 2, 39),
+                Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 3, 237),
                 Arguments.of("r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -", 1, 17),
                 Arguments.of("r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -", 2, 341),
                 Arguments.of("r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -", 3, 6666),
@@ -75,13 +76,14 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -", 3, 795),
                 Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 1, 29),
                 Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 2, 953),
-                Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 3, 27990)
+                Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 3, 27990),
+                Arguments.of("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1", 1, 4)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideCalculPerf")
-    @Disabled
+    //@Disabled
     void calculPerf(String plateau, int depth, long perfRef) {
 
         Partie partie = notationFEN.createPlateau(plateau);
@@ -115,6 +117,7 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("8/7p/8/8/8/3K1k2/8/8 w - - 0 1", "d3", liste("d2", "c2", "c3", "c4", "d4")),
                 Arguments.of("8/7p/8/8/8/3K1k2/8/8 w - - 0 1", "d3", liste("d2", "c2", "d4", "c3", "c4")),
                 Arguments.of("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1", "e1", liste("d2", "e2", "f2", "g1", "c1", "f1", "d1")), // roque blanc
+                Arguments.of("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1", "e5", liste("d4", "d5", "d6", "e6")), // roi attaque
 
                 // déplacement pion
                 Arguments.of("1k6/8/8/8/8/8/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4")),
@@ -188,7 +191,7 @@ class CalculMouvementSimpleServiceTest {
         if (depth <= 0) {
             resultat = 1;
         } else {
-            var res = calculMouvementSimpleService.calcul(plateau, joueurCourant);
+            var res = calculMouvementSimpleService.calcul(plateau, joueurCourant, configurationPartie);
 
             var map = res.getMapMouvements();
             assertNotNull(map);
@@ -209,7 +212,8 @@ class CalculMouvementSimpleServiceTest {
                             //assertEquals(joueurCourant, partie2.getJoueurCourant());
                             //plateau2.move(tmp.getKey().getPosition(), tmp2.getPosition());
                             plateau2.move(tmp.getKey().getPosition(), tmp2);
-                            ConfigurationPartie configurationPartie2 = updateConfiguration(configurationPartie, tmp, tmp2);
+                            PlateauTools plateauTools=new PlateauTools();
+                            ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(configurationPartie, tmp.getKey(), tmp2);
                             //partie2.setMove(tmp.getKey().getPosition(), tmp2.getPosition());
                             //assertEquals(calculMouvementBisService.joueurAdversaire(joueurCourant), partie2.getJoueurCourant());
                             resultat += calculPerf(plateau2, calculMouvementSimpleService.joueurAdversaire(joueurCourant), depth - 1, configurationPartie2);
@@ -220,34 +224,6 @@ class CalculMouvementSimpleServiceTest {
             }
         }
         return resultat;
-    }
-
-    private ConfigurationPartie updateConfiguration(ConfigurationPartie configurationPartie, Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp, IMouvement tmp2) {
-        ConfigurationPartie configurationPartie2=new ConfigurationPartie(configurationPartie);
-        configurationPartie2.setPriseEnPassant(Optional.empty());
-        if(tmp2 instanceof MouvementRoque){
-            if(tmp.getKey().getCouleur()== Couleur.Blanc) {
-                configurationPartie2.setRoqueNoirRoi(false);
-                configurationPartie2.setRoqueBlancDame(false);
-            } else {
-                configurationPartie2.setRoqueNoirRoi(false);
-                configurationPartie2.setRoqueNoirDame(false);
-            }
-        } else if(tmp2 instanceof MouvementSimple){
-            if(tmp.getKey().getPiece()==Piece.ROI){
-                configurationPartie2.setRoqueNoirRoi(false);
-                configurationPartie2.setRoqueNoirDame(false);
-            }
-        } else if(tmp2 instanceof MouvementEnPassant){
-            Optional<Position> position;
-            if(tmp.getKey().getCouleur()== Couleur.Blanc) {
-                position= PositionTools.getPosition(tmp2.getPositionDestination(),-1,0);
-            } else {
-                position= PositionTools.getPosition(tmp2.getPositionDestination(),1,0);
-            }
-            configurationPartie2.setPriseEnPassant(position);
-        }
-        return configurationPartie2;
     }
 
     private static List<String> liste(String... liste) {

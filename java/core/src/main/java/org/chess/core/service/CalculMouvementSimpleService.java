@@ -419,6 +419,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
                 .filter(x -> x.getCouleur() == couleurAttaquant)
                 .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos, etatPartie))
                 .flatMap(x -> x.stream())
+                .filter(x -> x.getPiece()!=Piece.PION || x.isAttaque())
                 .map(x -> x.getPositionDestination())
                 .anyMatch(x -> x.equals(position));
     }

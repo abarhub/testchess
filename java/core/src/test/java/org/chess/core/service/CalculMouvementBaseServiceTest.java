@@ -35,7 +35,7 @@ class CalculMouvementBaseServiceTest {
         var roi = getPosition(Piece.ROI, RangeeEnum.RANGEE4, ColonneEnum.COLONNEE, Couleur.Blanc);
 
         // methode testée
-        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(), roi);
+        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(), roi, partie.getConfigurationPartie());
 
         // vérifications
         LOGGER.info("res={}", res);
@@ -44,14 +44,14 @@ class CalculMouvementBaseServiceTest {
         assertEquals(8, nbCoups);
 
 
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE5, ColonneEnum.COLONNED, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE5, ColonneEnum.COLONNEE, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE5, ColonneEnum.COLONNEF, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNED, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNEF, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNED, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEE, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEF, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE5, ColonneEnum.COLONNED, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE5, ColonneEnum.COLONNEE, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE5, ColonneEnum.COLONNEF, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNED, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNEF, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNED, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEE, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEF, false, Piece.ROI, Couleur.Blanc)));
     }
 
     @Test
@@ -63,7 +63,7 @@ class CalculMouvementBaseServiceTest {
         var roi = getPosition(Piece.ROI, RangeeEnum.RANGEE4, ColonneEnum.COLONNEE, Couleur.Blanc);
 
         // methode testée
-        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(), roi);
+        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(), roi, partie.getConfigurationPartie());
 
         // vérifications
         LOGGER.info("res={}", res);
@@ -71,11 +71,11 @@ class CalculMouvementBaseServiceTest {
         LOGGER.info("nbCoups={}", nbCoups);
         assertEquals(5, nbCoups);
 
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNED, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNEF, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNED, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEE, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEF, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNED, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE4, ColonneEnum.COLONNEF, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNED, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEE, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE3, ColonneEnum.COLONNEF, false, Piece.ROI, Couleur.Blanc)));
     }
 
     @Test
@@ -87,7 +87,7 @@ class CalculMouvementBaseServiceTest {
         var roi = getPosition(Piece.ROI, RangeeEnum.RANGEE1, ColonneEnum.COLONNEE, Couleur.Blanc);
 
         // methode testée
-        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(), roi);
+        var res = calculMouvementBaseService.getMouvements(partie.getPlateau(), roi, partie.getConfigurationPartie());
 
         // vérifications
         LOGGER.info("res={}", res);
@@ -95,14 +95,14 @@ class CalculMouvementBaseServiceTest {
         LOGGER.info("nbCoups={}", nbCoups);
         assertEquals(4, nbCoups);
 
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNED, false)));
-        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNEF, false)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNED, false, Piece.ROI, Couleur.Blanc)));
+        assertTrue(contient(res, getMouvement(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNEF, false, Piece.ROI, Couleur.Blanc)));
 
         assertTrue(contient(res, getMouvementRoque(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNEG,
-                true, ColonneEnum.COLONNEH, ColonneEnum.COLONNEF)), () -> "res=" + res);
+                true, ColonneEnum.COLONNEH, ColonneEnum.COLONNEF, Couleur.Blanc)), () -> "res=" + res);
 
         assertTrue(contient(res, getMouvementRoque(roi.getPosition(), RangeeEnum.RANGEE1, ColonneEnum.COLONNEC,
-                false, ColonneEnum.COLONNEA, ColonneEnum.COLONNED)), () -> "res=" + res);
+                false, ColonneEnum.COLONNEA, ColonneEnum.COLONNED, Couleur.Blanc)), () -> "res=" + res);
     }
 
     // methodes utilitaires
@@ -120,12 +120,13 @@ class CalculMouvementBaseServiceTest {
         return TestFixture.getPosition(rangeeEnum, colonneEnum);
     }
 
-    private MouvementSimple getMouvement(Position positionSrc, RangeeEnum rangeeEnum, ColonneEnum colonneEnum, boolean attaque) {
-        return TestFixture.getMouvement(positionSrc, rangeeEnum, colonneEnum, attaque);
+    private MouvementSimple getMouvement(Position positionSrc, RangeeEnum rangeeEnum, ColonneEnum colonneEnum,
+                                         boolean attaque, Piece piece, Couleur joueur) {
+        return TestFixture.getMouvement(positionSrc, rangeeEnum, colonneEnum, attaque, piece, joueur);
     }
 
     private MouvementRoque getMouvementRoque(Position positionSrc, RangeeEnum rangeeEnum, ColonneEnum colonneRoi, boolean roqueCoteeRoi,
-                                             ColonneEnum colonneTourSrc, ColonneEnum colonneTourDest) {
-        return TestFixture.getMouvementRoque(positionSrc, rangeeEnum, colonneRoi, roqueCoteeRoi, colonneTourSrc, colonneTourDest);
+                                             ColonneEnum colonneTourSrc, ColonneEnum colonneTourDest, Couleur joueur) {
+        return TestFixture.getMouvementRoque(positionSrc, rangeeEnum, colonneRoi, roqueCoteeRoi, colonneTourSrc, colonneTourDest, joueur);
     }
 }

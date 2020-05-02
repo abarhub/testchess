@@ -81,7 +81,7 @@ public class CalculMouvementBaseService {
         }
 
         if (isPosition(piece, rangeRoi, ColonneEnum.COLONNEE, couleurRoi)) {
-            if(etatPartie.roquePossible(couleurRoi, true)) {
+            if (etatPartie.roquePossible(couleurRoi, true)) {
                 // roque coté roi
                 Position posTour = new Position(rangeRoi, ColonneEnum.COLONNEH);
                 PieceCouleur tour = plateau.getCase(posTour);
@@ -97,13 +97,13 @@ public class CalculMouvementBaseService {
                     }
                     if (!caseNonVide) {
                         MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEG),
-                                true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF));
+                                true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF), couleurRoi);
                         mouvements.add(mouvementRoque);
                     }
                 }
             }
 
-            if(etatPartie.roquePossible(couleurRoi, false)) {
+            if (etatPartie.roquePossible(couleurRoi, false)) {
                 // roque cote reine
                 Position posTour2 = new Position(rangeRoi, ColonneEnum.COLONNEA);
                 PieceCouleur tour2 = plateau.getCase(posTour2);
@@ -119,7 +119,7 @@ public class CalculMouvementBaseService {
                     }
                     if (!caseNonVide) {
                         MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEC),
-                                false, posTour2, new Position(rangeRoi, ColonneEnum.COLONNED));
+                                false, posTour2, new Position(rangeRoi, ColonneEnum.COLONNED), couleurRoi);
                         mouvements.add(mouvementRoque);
                     }
                 }
@@ -297,11 +297,11 @@ public class CalculMouvementBaseService {
 
         PieceCouleur caseCible = plateau.getCase(position);
         if (caseCible == null) {
-            var mouvement = new MouvementSimple(piece.getPosition(), position, false);
+            var mouvement = new MouvementSimple(piece.getPosition(), position, false, piece.getPiece(), piece.getCouleur());
             mouvements.add(mouvement);
             return true;
         } else if (caseCible.getCouleur() != piece.getCouleur()) {
-            var mouvement = new MouvementSimple(piece.getPosition(), position, true);
+            var mouvement = new MouvementSimple(piece.getPosition(), position, true, piece.getPiece(), piece.getCouleur());
             mouvements.add(mouvement);
             return false;
         }
@@ -367,36 +367,36 @@ public class CalculMouvementBaseService {
         var derniercoupOpt = etatPartie.attaqueEnPassant(piece.getCouleur());
         if (derniercoupOpt.isPresent()) {
             var positionAttaque = derniercoupOpt.get();
-                if (piece.getCouleur() == Couleur.Blanc) {
-                    if (piece.getPosition().getRangee() == RangeeEnum.RANGEE5 &&positionAttaque.getRangee()==RangeeEnum.RANGEE6) {
-                        ajouteAttaqueEnPassant(piece, plateau, mouvements, positionAttaque);
-                    }
-                } else {
-                    if (piece.getPosition().getRangee() == RangeeEnum.RANGEE4 &&positionAttaque.getRangee()==RangeeEnum.RANGEE3) {
-                        ajouteAttaqueEnPassant(piece, plateau, mouvements, positionAttaque);
-                    }
+            if (piece.getCouleur() == Couleur.Blanc) {
+                if (piece.getPosition().getRangee() == RangeeEnum.RANGEE5 && positionAttaque.getRangee() == RangeeEnum.RANGEE6) {
+                    ajouteAttaqueEnPassant(piece, plateau, mouvements, positionAttaque);
                 }
+            } else {
+                if (piece.getPosition().getRangee() == RangeeEnum.RANGEE4 && positionAttaque.getRangee() == RangeeEnum.RANGEE3) {
+                    ajouteAttaqueEnPassant(piece, plateau, mouvements, positionAttaque);
+                }
+            }
         }
 
         return mouvements;
     }
 
     private void ajouteAttaqueEnPassant(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, Position positionAttaque) {
-        var decalage3 = declageColonne(piece.getPosition().getColonne(),positionAttaque.getColonne());
-        Verify.verify(decalage3==1||decalage3==-1);
-        var pieceAttaqueOpt= PositionTools.getPosition(piece.getPosition(), 0, decalage3);
+        var decalage3 = declageColonne(piece.getPosition().getColonne(), positionAttaque.getColonne());
+        Verify.verify(decalage3 == 1 || decalage3 == -1);
+        var pieceAttaqueOpt = PositionTools.getPosition(piece.getPosition(), 0, decalage3);
         Verify.verify(pieceAttaqueOpt.isPresent());
-        var pieceAttaque=pieceAttaqueOpt.get();
-        var p=plateau.getCase(pieceAttaque);
+        var pieceAttaque = pieceAttaqueOpt.get();
+        var p = plateau.getCase(pieceAttaque);
         Verify.verifyNotNull(p);
-        Verify.verify(p.getCouleur()!=piece.getCouleur());
-        Verify.verify(p.getPiece()== Piece.PION);
-        var p2=plateau.getCase(positionAttaque);
-        Verify.verify(p2==null);
-        var pos = PositionTools.getPosition(piece.getPosition(), (piece.getCouleur()==Couleur.Blanc)?1:-1, decalage3);
+        Verify.verify(p.getCouleur() != piece.getCouleur());
+        Verify.verify(p.getPiece() == Piece.PION);
+        var p2 = plateau.getCase(positionAttaque);
+        Verify.verify(p2 == null);
+        var pos = PositionTools.getPosition(piece.getPosition(), (piece.getCouleur() == Couleur.Blanc) ? 1 : -1, decalage3);
         if (pos.isPresent()) {
             Verify.verify(pos.get().equals(positionAttaque));
-            var mouvement = new MouvementEnPassant(piece.getPosition(), pos.get(), pieceAttaque);
+            var mouvement = new MouvementEnPassant(piece.getPosition(), pos.get(), pieceAttaque, piece.getCouleur());
             mouvements.add(mouvement);
         }
     }
@@ -415,12 +415,12 @@ public class CalculMouvementBaseService {
         PieceCouleur caseCible = plateau.getCase(position);
         if (mangePiece) {
             if (caseCible != null && caseCible.getCouleur() != piece.getCouleur()) {
-                var mouvement = new MouvementSimple(piece.getPosition(), position, true);
+                var mouvement = new MouvementSimple(piece.getPosition(), position, true, piece.getPiece(), piece.getCouleur());
                 mouvements.add(mouvement);
             }
         } else {
             if (caseCible == null) {
-                var mouvement = new MouvementSimple(piece.getPosition(), position, false);
+                var mouvement = new MouvementSimple(piece.getPosition(), position, false, piece.getPiece(), piece.getCouleur());
                 mouvements.add(mouvement);
             }
         }

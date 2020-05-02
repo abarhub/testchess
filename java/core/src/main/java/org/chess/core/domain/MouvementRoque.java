@@ -1,5 +1,7 @@
 package org.chess.core.domain;
 
+import com.google.common.base.Preconditions;
+
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -10,13 +12,26 @@ public class MouvementRoque implements IMouvement {
     private final boolean roqueCoteRoi;
     private final Position positionTourSrc;
     private final Position positionTourDest;
+    private final Couleur joueur;
 
-    public MouvementRoque(Position positionSource, Position positionDestination, boolean roqueCoteRoi, Position positionTourSrc, Position positionTourDest) {
+    public MouvementRoque(Position positionSource, Position positionDestination, boolean roqueCoteRoi,
+                          Position positionTourSrc, Position positionTourDest, Couleur joueur) {
+        Preconditions.checkNotNull(positionSource);
+        Preconditions.checkNotNull(positionDestination);
+        Preconditions.checkNotNull(positionTourSrc);
+        Preconditions.checkNotNull(positionTourDest);
+        Preconditions.checkNotNull(joueur);
         this.positionSource = positionSource;
         this.positionDestination = positionDestination;
         this.roqueCoteRoi = roqueCoteRoi;
         this.positionTourSrc = positionTourSrc;
         this.positionTourDest = positionTourDest;
+        this.joueur = joueur;
+    }
+
+    @Override
+    public Position getPositionSource() {
+        return positionSource;
     }
 
     @Override
@@ -27,6 +42,16 @@ public class MouvementRoque implements IMouvement {
     @Override
     public boolean isAttaque() {
         return false;
+    }
+
+    @Override
+    public Piece getPiece() {
+        return Piece.ROI;
+    }
+
+    @Override
+    public Couleur getJoueur() {
+        return joueur;
     }
 
     public boolean isRoqueCoteRoi() {
@@ -50,12 +75,13 @@ public class MouvementRoque implements IMouvement {
                 Objects.equals(positionSource, that.positionSource) &&
                 Objects.equals(positionDestination, that.positionDestination) &&
                 Objects.equals(positionTourSrc, that.positionTourSrc) &&
-                Objects.equals(positionTourDest, that.positionTourDest);
+                Objects.equals(positionTourDest, that.positionTourDest) &&
+                joueur == that.joueur;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(positionSource, positionDestination, roqueCoteRoi, positionTourSrc, positionTourDest);
+        return Objects.hash(positionSource, positionDestination, roqueCoteRoi, positionTourSrc, positionTourDest, joueur);
     }
 
     @Override
@@ -66,6 +92,7 @@ public class MouvementRoque implements IMouvement {
                 .add("roqueCoteRoi=" + roqueCoteRoi)
                 .add("positionTourSrc=" + positionTourSrc)
                 .add("positionTourDest=" + positionTourDest)
+                .add("joueur=" + joueur)
                 .toString();
     }
 }
