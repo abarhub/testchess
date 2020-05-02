@@ -16,12 +16,12 @@ public class CalculMouvementBaseService {
         return getMouvements(plateau, piece, new HistoriqueCoups());
     }
 
-    public List<IMouvement> getMouvements(IPlateau plateau, PieceCouleurPosition piece, HistoriqueCoups historiqueCoups) {
+    public List<IMouvement> getMouvements(IPlateau plateau, PieceCouleurPosition piece, EtatPartie etatPartie) {
         List<IMouvement> list;
         list = null;
         switch (piece.getPiece()) {
             case PION:
-                list = calculPion(piece, plateau, historiqueCoups);
+                list = calculPion(piece, plateau, etatPartie);
                 break;
             case CAVALIER:
                 list = calculCavalier(piece, plateau);
@@ -305,7 +305,7 @@ public class CalculMouvementBaseService {
         return false;
     }
 
-    private List<IMouvement> calculPion(PieceCouleurPosition piece, IPlateau plateau, HistoriqueCoups historiqueCoups) {
+    private List<IMouvement> calculPion(PieceCouleurPosition piece, IPlateau plateau, EtatPartie etatPartie) {
         Preconditions.checkNotNull(piece);
         Preconditions.checkState(piece.getPiece() == Piece.PION);
 
@@ -360,33 +360,41 @@ public class CalculMouvementBaseService {
         }
 
         // en passant
-        var derniercoupOpt = historiqueCoups.getDernierCoup();
+        var derniercoupOpt = etatPartie.attaqueEnPassant(piece.getCouleur());
         if (derniercoupOpt.isPresent()) {
-            var dernierCoup = derniercoupOpt.get();
-            var pieceAdverse = dernierCoup.getPieceCouleur();
-            if (pieceAdverse.getCouleur() != piece.getCouleur() && pieceAdverse.getPiece() == Piece.PION) {
+            var positionAttaque = derniercoupOpt.get();
                 if (piece.getCouleur() == Couleur.Blanc) {
-                    if (piece.getPosition().getRangee() == RangeeEnum.RANGEE5 && dernierCoup.getiMouvement() instanceof MouvementSimple) {
-                        var mvt = (MouvementSimple) dernierCoup.getiMouvement();
-                        if (mvt.getPositionSource().getColonne() == mvt.getPositionDestination().getColonne() &&
-                                mvt.getPositionSource().getRangee() == RangeeEnum.RANGEE7 &&
-                                mvt.getPositionSource().getRangee() == RangeeEnum.RANGEE5) {
-                            var decalage3 = declageColonne(mvt.getPositionDestination().getColonne(),
-                                    piece.getPosition().getColonne());
-                            var pos = PositionTools.getPosition(piece.getPosition(), 1, decalage3);
-                            if (pos.isPresent()) {
-                                var mouvement = new MouvementEnPassant(piece.getPosition(), pos.get(), mvt.getPositionDestination());
-                                mouvements.add(mouvement);
-                            }
-                        }
+                    if (piece.getPosition().getRangee() == RangeeEnum.RANGEE5 &&positionAttaque.getRangee()==RangeeEnum.RANGEE6) {
+                        ajouteAttaqueEnPassant(piece, plateau, mouvements, positionAttaque);
                     }
                 } else {
-
+                    if (piece.getPosition().getRangee() == RangeeEnum.RANGEE4 &&positionAttaque.getRangee()==RangeeEnum.RANGEE3) {
+                        ajouteAttaqueEnPassant(piece, plateau, mouvements, positionAttaque);
+                    }
                 }
-            }
         }
 
         return mouvements;
+    }
+
+    private void ajouteAttaqueEnPassant(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, Position positionAttaque) {
+        var decalage3 = declageColonne(piece.getPosition().getColonne(),positionAttaque.getColonne());
+        Verify.verify(decalage3==1||decalage3==-1);
+        var pieceAttaqueOpt= PositionTools.getPosition(piece.getPosition(), 0, decalage3);
+        Verify.verify(pieceAttaqueOpt.isPresent());
+        var pieceAttaque=pieceAttaqueOpt.get();
+        var p=plateau.getCase(pieceAttaque);
+        Verify.verifyNotNull(p);
+        Verify.verify(p.getCouleur()!=piece.getCouleur());
+        Verify.verify(p.getPiece()== Piece.PION);
+        var p2=plateau.getCase(positionAttaque);
+        Verify.verify(p2==null);
+        var pos = PositionTools.getPosition(piece.getPosition(), (piece.getCouleur()==Couleur.Blanc)?1:-1, decalage3);
+        if (pos.isPresent()) {
+            Verify.verify(pos.get().equals(positionAttaque));
+            var mouvement = new MouvementEnPassant(piece.getPosition(), pos.get(), pieceAttaque);
+            mouvements.add(mouvement);
+        }
     }
 
     private int declageColonne(ColonneEnum colonneDepart, ColonneEnum colonneArrivee) {

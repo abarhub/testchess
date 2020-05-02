@@ -1,10 +1,12 @@
 package org.chess.core.domain;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
+import org.chess.core.exception.NotImplementedException;
 
 import java.util.Optional;
 
-public class ConfigurationPartie {
+public class ConfigurationPartie implements EtatPartie {
 
     private boolean roqueBlancRoi;
     private boolean roqueBlancDame;
@@ -96,5 +98,31 @@ public class ConfigurationPartie {
 
     public void setPriseEnPassant(Optional<Position> priseEnPassant) {
         this.priseEnPassant = priseEnPassant;
+    }
+
+    @Override
+    public Optional<Position> attaqueEnPassant(Couleur joueur) {
+        Verify.verifyNotNull(priseEnPassant);
+        return priseEnPassant;
+    }
+
+    @Override
+    public boolean roquePossible(Couleur joueur, boolean coteRoi) {
+        Preconditions.checkNotNull(joueur);
+        if(joueur==Couleur.Blanc){
+            if(coteRoi){
+                return roqueBlancRoi;
+            } else {
+                return roqueBlancDame;
+            }
+        } else if(joueur==Couleur.Noir){
+            if(coteRoi){
+                return roqueNoirRoi;
+            } else {
+                return roqueNoirDame;
+            }
+        } else {
+            throw new NotImplementedException("joueur invalide:"+joueur);
+        }
     }
 }

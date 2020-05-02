@@ -118,10 +118,16 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("1k6/8/8/8/8/8/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4")),
                 Arguments.of("1k6/8/8/8/8/5p2/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4","f3")),
                 Arguments.of("1k6/8/8/8/8/3p4/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4","d3")),
-                //Arguments.of("1k6/8/8/8/8/8/4Pp2/1K6 w - - 0 1", "e2", liste("e3", "e4","f3")), // en passant
-                //Arguments.of("1k6/8/8/8/8/8/3pP3/1K6 w - - 0 1", "e2", liste("e3", "e4","d3")) // en passant
+                Arguments.of("k7/8/8/3Pp3/8/8/8/K7 w - e6 0 1", "d5", liste("d6", "e6")), // en passant blanc
+                Arguments.of("k7/8/8/2pP4/8/8/8/K7 w - c6 0 1", "d5", liste("d6", "c6")), // en passant blanc
+                Arguments.of("k7/8/8/3Pp3/8/8/8/K7 w - - 0 1", "d5", liste("d6")), // en passant blanc
+                Arguments.of("k7/8/8/3Pp3/8/8/8/K7 w - e6 0 1", "d5", liste("d6", "e6")), // en passant blanc
+                Arguments.of("k7/8/3P4/4p3/8/8/8/K7 w - e6 0 1", "d6", liste("d7")), // en passant blanc (pion pas à la bonne place)
+                Arguments.of("k5b1/8/8/3Pp3/8/8/K7/8 w - e6 0 1", "d5", liste("e6")), // en passant blanc avec roi attaque
                 Arguments.of("1k6/8/8/1b6/8/8/4P3/5K2 b - - 0 1", "e2", liste()),// roi attaqué
-                Arguments.of("1k6/8/8/7b/8/8/4P3/3K4 w - - 0 1", "e2", liste())// roi attaqué
+                Arguments.of("1k6/8/8/7b/8/8/4P3/3K4 w - - 0 1", "e2", liste()),// roi attaqué
+                Arguments.of("k7/8/8/8/3Pp3/8/8/K7 b - d3 0 1", "e4", liste("e3", "d3")), // en passant noir
+                Arguments.of("k7/8/8/8/4pP2/8/8/K7 b - f3 0 1", "e4", liste("e3", "f3")) // en passant noir
         );
     }
 
@@ -137,10 +143,13 @@ class CalculMouvementSimpleServiceTest {
         final Position positionPieceTeste = Position.getPosition(position);
         assertNotNull(positionPieceTeste);
 
+        var p=partie.getPlateau().getCase(positionPieceTeste);
+        assertNotNull(p);
+
         final List<Position> listeDeplacementPossible = getListePosition(deplacementsPossible);
 
         // methode testée
-        final var res = calculMouvementSimpleService.calcul(partie.getPlateau(), partie.getJoueurCourant());
+        final var res = calculMouvementSimpleService.calcul(partie.getPlateau(), partie.getJoueurCourant(), partie.getConfigurationPartie());
 
         // vérifications
         LOGGER.info("res={}", res);
