@@ -150,7 +150,8 @@ class CalculMouvementSimpleServiceTest {
         var liste = getListeMouvements(positionPieceTeste, map);
 
         var plus = diff(liste, listeDeplacementPossible);
-        assertTrue(plus.isEmpty(), () -> "plus=" + plus);
+        assertTrue(plus.isEmpty(), () -> "plus=" + plus+" ("+positionPieceTeste+"):\n"+
+                (partie.getPlateau().getRepresentation2().replaceAll(" ","_")));
 
         var moins = diff(listeDeplacementPossible, liste);
         assertTrue(moins.isEmpty(), () -> "moins=" + moins);
