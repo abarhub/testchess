@@ -5,6 +5,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.chess.core.domain.*;
 import org.chess.core.notation.NotationFEN;
+import org.chess.core.utils.PositionTools;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -90,7 +91,7 @@ class CalculMouvementSimpleServiceTest {
 
         // vérifications
         LOGGER.info("res={}", res);
-        assertEquals(perfRef, res);
+        assertEquals(perfRef, res, "fen="+plateau+"\n"+ getPlateau(partie));
     }
 
     private static Stream<Arguments> provideTestDeplacementPiece() {
@@ -113,6 +114,7 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("3k4/8/8/8/4q3/8/8/3K4 w - - 0 1", "d1", liste("c1", "d2")),
                 Arguments.of("8/7p/8/8/8/3K1k2/8/8 w - - 0 1", "d3", liste("d2", "c2", "c3", "c4", "d4")),
                 Arguments.of("8/7p/8/8/8/3K1k2/8/8 w - - 0 1", "d3", liste("d2", "c2", "d4", "c3", "c4")),
+                Arguments.of("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1", "e1", liste("d2", "e2", "f2", "g1", "c1", "f1", "d1")), // roque blanc
 
                 // déplacement pion
                 Arguments.of("1k6/8/8/8/8/8/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4")),
@@ -159,11 +161,10 @@ class CalculMouvementSimpleServiceTest {
         var liste = getListeMouvements(positionPieceTeste, map);
 
         var plus = diff(liste, listeDeplacementPossible);
-        assertTrue(plus.isEmpty(), () -> "plus=" + plus+" ("+positionPieceTeste+"):\n"+
-                (partie.getPlateau().getRepresentation2().replaceAll(" ","_")));
+        assertTrue(plus.isEmpty(), () -> "plus=" + plus+" ("+positionPieceTeste+"):\n"+ getPlateau(partie));
 
         var moins = diff(listeDeplacementPossible, liste);
-        assertTrue(moins.isEmpty(), () -> "moins=" + moins);
+        assertTrue(moins.isEmpty(), () -> "moins=" + moins+" ("+positionPieceTeste+"):\n"+ getPlateau(partie));
     }
 
     // methodes utilitaires
@@ -178,10 +179,10 @@ class CalculMouvementSimpleServiceTest {
 
     private long calculPerf(Partie partie, int depth) {
 
-        return calculPerf(partie.getPlateau(), partie.getJoueurCourant(), depth);
+        return calculPerf(partie.getPlateau(), partie.getJoueurCourant(), depth, partie.getConfigurationPartie());
     }
 
-    private long calculPerf(Plateau plateau, Couleur joueurCourant, int depth) {
+    private long calculPerf(Plateau plateau, Couleur joueurCourant, int depth, ConfigurationPartie configurationPartie) {
         long resultat = 0;
 
         if (depth <= 0) {
@@ -208,9 +209,10 @@ class CalculMouvementSimpleServiceTest {
                             //assertEquals(joueurCourant, partie2.getJoueurCourant());
                             //plateau2.move(tmp.getKey().getPosition(), tmp2.getPosition());
                             plateau2.move(tmp.getKey().getPosition(), tmp2);
+                            ConfigurationPartie configurationPartie2 = updateConfiguration(configurationPartie, tmp, tmp2);
                             //partie2.setMove(tmp.getKey().getPosition(), tmp2.getPosition());
                             //assertEquals(calculMouvementBisService.joueurAdversaire(joueurCourant), partie2.getJoueurCourant());
-                            resultat += calculPerf(plateau2, calculMouvementSimpleService.joueurAdversaire(joueurCourant), depth - 1);
+                            resultat += calculPerf(plateau2, calculMouvementSimpleService.joueurAdversaire(joueurCourant), depth - 1, configurationPartie2);
 //                            }
                         }
                     }
@@ -218,6 +220,34 @@ class CalculMouvementSimpleServiceTest {
             }
         }
         return resultat;
+    }
+
+    private ConfigurationPartie updateConfiguration(ConfigurationPartie configurationPartie, Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp, IMouvement tmp2) {
+        ConfigurationPartie configurationPartie2=new ConfigurationPartie(configurationPartie);
+        configurationPartie2.setPriseEnPassant(Optional.empty());
+        if(tmp2 instanceof MouvementRoque){
+            if(tmp.getKey().getCouleur()== Couleur.Blanc) {
+                configurationPartie2.setRoqueNoirRoi(false);
+                configurationPartie2.setRoqueBlancDame(false);
+            } else {
+                configurationPartie2.setRoqueNoirRoi(false);
+                configurationPartie2.setRoqueNoirDame(false);
+            }
+        } else if(tmp2 instanceof MouvementSimple){
+            if(tmp.getKey().getPiece()==Piece.ROI){
+                configurationPartie2.setRoqueNoirRoi(false);
+                configurationPartie2.setRoqueNoirDame(false);
+            }
+        } else if(tmp2 instanceof MouvementEnPassant){
+            Optional<Position> position;
+            if(tmp.getKey().getCouleur()== Couleur.Blanc) {
+                position= PositionTools.getPosition(tmp2.getPositionDestination(),-1,0);
+            } else {
+                position= PositionTools.getPosition(tmp2.getPositionDestination(),1,0);
+            }
+            configurationPartie2.setPriseEnPassant(position);
+        }
+        return configurationPartie2;
     }
 
     private static List<String> liste(String... liste) {
@@ -255,5 +285,13 @@ class CalculMouvementSimpleServiceTest {
             }
         }
         return listeDeplacementPossible;
+    }
+
+    private String getPlateau(Partie partie){
+        return getPlateau(partie.getPlateau());
+    }
+
+    private String getPlateau(Plateau plateau){
+        return plateau.getRepresentation2().replaceAll(" ","_");
     }
 }

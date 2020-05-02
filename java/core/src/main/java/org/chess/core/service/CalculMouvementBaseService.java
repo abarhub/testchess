@@ -36,13 +36,13 @@ public class CalculMouvementBaseService {
                 list = calculReine(piece, plateau);
                 break;
             case ROI:
-                list = calculRoi(piece, plateau);
+                list = calculRoi(piece, plateau, etatPartie);
                 break;
         }
         return list;
     }
 
-    private List<IMouvement> calculRoi(PieceCouleurPosition piece, IPlateau plateau) {
+    private List<IMouvement> calculRoi(PieceCouleurPosition piece, IPlateau plateau, EtatPartie etatPartie) {
 
         Verify.verifyNotNull(piece);
         Verify.verify(piece.getPiece() == Piece.ROI);
@@ -65,12 +65,12 @@ public class CalculMouvementBaseService {
             }
         }
 
-        ajoutRoqueRoi(piece, plateau, mouvements);
+        ajoutRoqueRoi(piece, plateau, mouvements, etatPartie);
 
         return mouvements;
     }
 
-    private void ajoutRoqueRoi(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements) {
+    private void ajoutRoqueRoi(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, EtatPartie etatPartie) {
         final RangeeEnum rangeRoi;
         final Couleur couleurRoi = piece.getCouleur();
 
@@ -81,43 +81,47 @@ public class CalculMouvementBaseService {
         }
 
         if (isPosition(piece, rangeRoi, ColonneEnum.COLONNEE, couleurRoi)) {
-            // roque coté roi
-            Position posTour = new Position(rangeRoi, ColonneEnum.COLONNEH);
-            PieceCouleur tour = plateau.getCase(posTour);
-            if (tour != null && tour.getPiece() == Piece.TOUR && tour.getCouleur() == couleurRoi) {
-                boolean caseNonVide = false;
-                for (int i = 1; i < 3; i++) {
-                    ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEE.getNo() + i);
-                    PieceCouleur tmp = plateau.getCase(new Position(rangeRoi, colonneEnum));
-                    if (tmp != null) {
-                        caseNonVide = true;
-                        break;
+            if(etatPartie.roquePossible(couleurRoi, true)) {
+                // roque coté roi
+                Position posTour = new Position(rangeRoi, ColonneEnum.COLONNEH);
+                PieceCouleur tour = plateau.getCase(posTour);
+                if (tour != null && tour.getPiece() == Piece.TOUR && tour.getCouleur() == couleurRoi) {
+                    boolean caseNonVide = false;
+                    for (int i = 1; i < 3; i++) {
+                        ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEE.getNo() + i);
+                        PieceCouleur tmp = plateau.getCase(new Position(rangeRoi, colonneEnum));
+                        if (tmp != null) {
+                            caseNonVide = true;
+                            break;
+                        }
                     }
-                }
-                if (!caseNonVide) {
-                    MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEG),
-                            true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF));
-                    mouvements.add(mouvementRoque);
+                    if (!caseNonVide) {
+                        MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEG),
+                                true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF));
+                        mouvements.add(mouvementRoque);
+                    }
                 }
             }
 
-            // roque cote reine
-            Position posTour2 = new Position(rangeRoi, ColonneEnum.COLONNEA);
-            PieceCouleur tour2 = plateau.getCase(posTour2);
-            if (tour2 != null && tour2.getPiece() == Piece.TOUR && tour2.getCouleur() == couleurRoi) {
-                boolean caseNonVide = false;
-                for (int i = 1; i < 4; i++) {
-                    ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEA.getNo() + i);
-                    PieceCouleur tmp = plateau.getCase(new Position(rangeRoi, colonneEnum));
-                    if (tmp != null) {
-                        caseNonVide = true;
-                        break;
+            if(etatPartie.roquePossible(couleurRoi, false)) {
+                // roque cote reine
+                Position posTour2 = new Position(rangeRoi, ColonneEnum.COLONNEA);
+                PieceCouleur tour2 = plateau.getCase(posTour2);
+                if (tour2 != null && tour2.getPiece() == Piece.TOUR && tour2.getCouleur() == couleurRoi) {
+                    boolean caseNonVide = false;
+                    for (int i = 1; i < 4; i++) {
+                        ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEA.getNo() + i);
+                        PieceCouleur tmp = plateau.getCase(new Position(rangeRoi, colonneEnum));
+                        if (tmp != null) {
+                            caseNonVide = true;
+                            break;
+                        }
                     }
-                }
-                if (!caseNonVide) {
-                    MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEC),
-                            false, posTour2, new Position(rangeRoi, ColonneEnum.COLONNED));
-                    mouvements.add(mouvementRoque);
+                    if (!caseNonVide) {
+                        MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEC),
+                                false, posTour2, new Position(rangeRoi, ColonneEnum.COLONNED));
+                        mouvements.add(mouvementRoque);
+                    }
                 }
             }
         }

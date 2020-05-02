@@ -46,21 +46,19 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Position positionRoi = rechercheRoi(plateau, joueurCourant);
 
         // vérification si le roi est en echec
-        boolean roiEnEchec = roiEnEchecs(plateau, positionRoi, joueurAdversaire(joueurCourant));
+        boolean roiEnEchec = roiEnEchecs(plateau, positionRoi, joueurAdversaire(joueurCourant), etatPartie);
 
         if (roiEnEchec) {
             // si echec, recherche des coup pour stoper echec
 
-            var listeMouvement = rechercheMouvementStoperEchecRoi(plateau, joueurCourant, positionRoi, etatPartie);
-
-            resultat = listeMouvement;
+            resultat = rechercheMouvementStoperEchecRoi(plateau, joueurCourant, positionRoi, etatPartie);
         } else {
             // si pas echec, recherche des coups possibles
             var listeMouvement = getPieceJoueur(plateau, joueurCourant, etatPartie);
 
             // pour chaque coup possible, verification si cela met le roi en echecs
             // la mise en echec, ne peut être fait que par tour (ligne, colonne), dame (ligne, colonne diagonale), fou (diagonale)
-            suppressionMouvementMiseEnEchecsRoi(plateau, listeMouvement, positionRoi, joueurCourant);
+            suppressionMouvementMiseEnEchecsRoi(plateau, listeMouvement, positionRoi, joueurCourant, etatPartie);
 
             resultat = listeMouvement;
         }
@@ -76,13 +74,13 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
     private ListeMouvements2 rechercheMouvementStoperEchecRoi(IPlateau plateau, Couleur joueurCourant, Position positionRoi, EtatPartie etatPartie) {
         var listeMouvement = getPieceJoueur(plateau, joueurCourant, etatPartie);
 
-        suppressionMouvementMiseEnEchecsRoi(plateau, listeMouvement, positionRoi, joueurCourant);
+        suppressionMouvementMiseEnEchecsRoi(plateau, listeMouvement, positionRoi, joueurCourant, etatPartie);
 
         return listeMouvement;
     }
 
     private void suppressionMouvementMiseEnEchecsRoi(IPlateau plateau, ListeMouvements2 listeMouvement,
-                                                     Position positionRoi, Couleur joueurCourant) {
+                                                     Position positionRoi, Couleur joueurCourant, EtatPartie etatPartie) {
         Preconditions.checkNotNull(plateau);
         Preconditions.checkNotNull(listeMouvement);
         Preconditions.checkNotNull(positionRoi);
@@ -97,7 +95,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
             while (iter2.hasNext()) {
                 var tmp = iter2.next();
                 if (tmp.getKey().getPiece() == Piece.ROI) {
-                    supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp);
+                    supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp, etatPartie);
                 } else {
                     //if (tmp.getKey().getPiece() != Piece.ROI) {
                     if (mvtAVerifier(tmp.getKey().getPosition(), positionRoi, plateau)) {
@@ -119,7 +117,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
                             IPlateau plateauApresModification = new Plateau((Plateau) plateau);
                             plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
 
-                            if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
+                            if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
                                 iter.remove();
                             }
 //                            }
@@ -142,7 +140,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
                     var tmp = iter2.next();
                     // TODO: gérer le roi : supprimer les case du roi si sont attaquées. A faire aussi au dessus
                     if (tmp.getKey().getPiece() == Piece.ROI) {
-                        supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp);
+                        supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp, etatPartie);
                     } else {
                         if (mvtAVerifier2(tmp.getKey().getPosition(), positionRoi, plateau, casesATester)) {
                             var iter = tmp.getValue().iterator();
@@ -164,7 +162,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
                                 IPlateau plateauApresModification = new Plateau((Plateau) plateau);
                                 plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
 
-                                if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
+                                if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
                                     iter.remove();
                                 }
 //                                }
@@ -180,13 +178,15 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         stop(stopWatchSupprEchecs);
     }
 
-    private void supprimeDeplacementRoitAttaque(IPlateau plateau, Couleur joueurCourant, Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp) {
+    private void supprimeDeplacementRoitAttaque(IPlateau plateau, Couleur joueurCourant,
+                                                Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp,
+                                                EtatPartie etatPartie) {
         var iter = tmp.getValue().iterator();
         Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
         while (iter.hasNext()) {
             var mouvement = iter.next();
             if (this.caseAttaquee(plateau, mouvement.getPositionDestination(),
-                    joueurAdversaire(joueurCourant), true)) {
+                    joueurAdversaire(joueurCourant), etatPartie)) {
                 iter.remove();
             }
         }
@@ -333,9 +333,9 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         }
     }
 
-    private boolean roiAttaqueApresDeplacement(IPlateau plateau, Position positionRoi, Couleur couleurAttaquant) {
+    private boolean roiAttaqueApresDeplacement(IPlateau plateau, Position positionRoi, Couleur couleurAttaquant, EtatPartie etatPartie) {
         if (false) {
-            return caseAttaquee(plateau, positionRoi, couleurAttaquant, false);
+            return caseAttaquee(plateau, positionRoi, couleurAttaquant, etatPartie);
         } else {
             //Couleur couleurAttaquant=joueurAdversaire(joueurCourant);
             return plateau.getStreamPosition()
@@ -357,9 +357,9 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         return liste.get(0);
     }
 
-    private boolean roiEnEchecs(IPlateau plateau, Position positionRoi, Couleur joueurCourant) {
+    private boolean roiEnEchecs(IPlateau plateau, Position positionRoi, Couleur joueurCourant, EtatPartie etatPartie) {
         if (true) {
-            return caseAttaquee(plateau, positionRoi, joueurAdversaire(joueurCourant), true);
+            return caseAttaquee(plateau, positionRoi, joueurAdversaire(joueurCourant), etatPartie);
         } else {
             Couleur couleurAttaquant = joueurAdversaire(joueurCourant);
             return plateau.getStreamPosition()
@@ -409,14 +409,15 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         return liste;
     }
 
-    public boolean caseAttaquee(IPlateau plateau, Position position, Couleur couleurAttaquant, boolean testAttaqueEnPassant) {
+    public boolean caseAttaquee(IPlateau plateau, Position position, Couleur couleurAttaquant,
+                                EtatPartie etatPartie) {
         Preconditions.checkNotNull(plateau);
         Preconditions.checkNotNull(position);
         Preconditions.checkNotNull(couleurAttaquant);
 
         return plateau.getStreamPosition()
                 .filter(x -> x.getCouleur() == couleurAttaquant)
-                .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos))
+                .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos, etatPartie))
                 .flatMap(x -> x.stream())
                 .map(x -> x.getPositionDestination())
                 .anyMatch(x -> x.equals(position));
