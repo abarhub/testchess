@@ -40,8 +40,6 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         }
         ListeMouvements2 resultat;
 
-        //PlateauBis plateau=new PlateauBis(plateau2);
-
         // recherche du roi du joueur courant
         Position positionRoi = rechercheRoi(plateau, joueurCourant);
 
@@ -86,95 +84,36 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Preconditions.checkNotNull(positionRoi);
         Preconditions.checkNotNull(joueurCourant);
 
-//        Instant debut= Instant.now();
         start(stopWatchSupprEchecs);
 
-        if (true) {
-            Map<PieceCouleurPosition, List<IMouvement>> map = listeMouvement.getMapMouvements();
-            var iter2 = map.entrySet().iterator();
-            while (iter2.hasNext()) {
-                var tmp = iter2.next();
-                if (tmp.getKey().getPiece() == Piece.ROI) {
-                    supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp, etatPartie);
-                } else {
-                    //if (tmp.getKey().getPiece() != Piece.ROI) {
-                    if (mvtAVerifier(tmp.getKey().getPosition(), positionRoi, plateau)) {
-                        var iter = tmp.getValue().iterator();
-                        Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
-                        while (iter.hasNext()) {
-                            var mouvement = iter.next();
+        Map<PieceCouleurPosition, List<IMouvement>> map = listeMouvement.getMapMouvements();
+        var iter2 = map.entrySet().iterator();
+        while (iter2.hasNext()) {
+            var tmp = iter2.next();
+            if (tmp.getKey().getPiece() == Piece.ROI) {
+                supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp, etatPartie);
+            } else {
+                if (mvtAVerifier(tmp.getKey().getPosition(), positionRoi, plateau)) {
+                    var iter = tmp.getValue().iterator();
+                    Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
+                    while (iter.hasNext()) {
+                        var mouvement = iter.next();
 
-//                            if (plateau instanceof PlateauBis) {
-//                                PlateauBis plateauApresModification = (PlateauBis) plateau;
-//                                plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
-//
-//                                if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
-//                                    iter.remove();
-//                                }
-//
-//                                plateauApresModification.undo();
-//                            } else {
-                            IPlateau plateauApresModification = new Plateau((Plateau) plateau);
-                            plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
+                        Plateau plateauApresModification = new Plateau((Plateau) plateau);
+                        //plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
+                        plateauApresModification.move(tmp.getKey().getPosition(), mouvement);
 
-                            if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
-                                iter.remove();
-                            }
-//                            }
-
+                        if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
+                            iter.remove();
                         }
                     }
-                }
-                if (tmp.getValue().isEmpty()) {
-                    iter2.remove();
                 }
             }
-        } else {
-            boolean tab[][] = new boolean[3][3];
-            CasesATester casesATester;
-            casesATester = analyseCases(plateau, positionRoi, joueurCourant, tab);
-            if (casesATester != null) {
-                Map<PieceCouleurPosition, List<IMouvement>> map = listeMouvement.getMapMouvements();
-                var iter2 = map.entrySet().iterator();
-                while (iter2.hasNext()) {
-                    var tmp = iter2.next();
-                    // TODO: gérer le roi : supprimer les case du roi si sont attaquées. A faire aussi au dessus
-                    if (tmp.getKey().getPiece() == Piece.ROI) {
-                        supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp, etatPartie);
-                    } else {
-                        if (mvtAVerifier2(tmp.getKey().getPosition(), positionRoi, plateau, casesATester)) {
-                            var iter = tmp.getValue().iterator();
-
-                            Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
-                            while (iter.hasNext()) {
-                                var mouvement = iter.next();
-
-//                                if (plateau instanceof PlateauBis) {
-//                                    PlateauBis plateauApresModification = (PlateauBis) plateau;
-//                                    plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPosition());
-//
-//                                    if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant))) {
-//                                        iter.remove();
-//                                    }
-//
-//                                    plateauApresModification.undo();
-//                                } else {
-                                IPlateau plateauApresModification = new Plateau((Plateau) plateau);
-                                plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
-
-                                if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
-                                    iter.remove();
-                                }
-//                                }
-
-                            }
-                        }
-                    }
-                }
+            if (tmp.getValue().isEmpty()) {
+                iter2.remove();
             }
         }
 
-        //dureeSuppressionEchecs.add(Duration.between(debut, Instant.now()));
         stop(stopWatchSupprEchecs);
     }
 
@@ -189,51 +128,6 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
                     joueurAdversaire(joueurCourant), etatPartie)) {
                 iter.remove();
             }
-        }
-    }
-
-    private CasesATester analyseCases(IPlateau plateau, Position positionRoi, Couleur joueurCourant,
-                                      boolean[][] tab) {
-        CasesATester casesATester = new CasesATester();
-        casesATester.tab = tab;
-        boolean trouve = false;
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                if (i != 0 && j != 0) {
-                    RangeeEnum r = RangeeEnum.get(positionRoi.getRangee().getNo() + i);
-                    ColonneEnum c = ColonneEnum.get(positionRoi.getColonne().getNo() + j);
-                    if (r != null && c != null) {
-                        Position p = new Position(r, c);
-                        PieceCouleur p2 = plateau.getCase(p);
-                        if (p2 == null || p2.getCouleur() == joueurCourant) {
-                            tab[i + 1][j + 1] = true;
-                            trouve = true;
-                            if (i == -1 && j == -1) {
-                                casesATester.gaucheBas = true;
-                            } else if (i == 0 && j == -1) {
-                                casesATester.centreBas = true;
-                            } else if (i == 1 && j == -1) {
-                                casesATester.droiteBas = true;
-                            } else if (i == -1 && j == 0) {
-                                casesATester.gaucheMillieux = true;
-                            } else if (i == 1 && j == 0) {
-                                casesATester.droiteMillieux = true;
-                            } else if (i == -1 && j == 1) {
-                                casesATester.gaucheHaut = true;
-                            } else if (i == 0 && j == 1) {
-                                casesATester.centreHaut = true;
-                            } else if (i == 1 && j == 1) {
-                                casesATester.droiteHaute = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (trouve) {
-            return casesATester;
-        } else {
-            return null;
         }
     }
 
@@ -282,70 +176,15 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         }
     }
 
-    private boolean mvtAVerifier2(Position positionSrc, Position positionRoi, IPlateau plateau, CasesATester tab) {
-        int x, y;
-//        if(positionSrc.getRangee()==positionRoi.getRangee()){
-//            // ils sont sur la même ligne
-//            int min=Math.min(positionSrc.getColonne().getNo(), positionRoi.getColonne().getNo());
-//            int max=Math.max(positionSrc.getColonne().getNo(), positionRoi.getColonne().getNo());
-//            if(min+1==max){
-//                return true;
-//            } else {
-//                for (int i = min+1; i < max; i++) {
-//                    PieceCouleur tmp = plateau.getCase(new Position(positionRoi.getRangee(), ColonneEnum.get(i)));
-//                    if(tmp!=null){
-//                        return false;
-//                    }
-//                }
-//                // il n'y a pas de piece entre les deux
-//                return true;
-//            }
-//        } else if(positionSrc.getColonne()==positionRoi.getColonne()){
-//            // ils sont sur la même colonne
-//            int min=Math.min(positionSrc.getRangee().getNo(), positionRoi.getRangee().getNo());
-//            int max=Math.max(positionSrc.getRangee().getNo(), positionRoi.getRangee().getNo());
-//            if(min+1==max){
-//                return true;
-//            } else {
-//                for (int i = min+1; i < max; i++) {
-//                    PieceCouleur tmp = plateau.getCase(new Position(RangeeEnum.get(i), positionRoi.getColonne()));
-//                    if(tmp!=null){
-//                        return false;
-//                    }
-//                }
-//                // il n'y a pas de piece entre les deux
-//                return true;
-//            }
-//        }
-        x = positionRoi.getRangee().getNo() - positionSrc.getRangee().getNo();
-        y = positionRoi.getColonne().getNo() - positionSrc.getColonne().getNo();
-        if (x == 0) {
-            // ils sont sur la même ligne
-            return tab.gaucheMillieux || tab.droiteMillieux;
-        } else if (y == 0) {
-            // ils sont sur la même colonne
-            return tab.centreHaut || tab.centreBas;
-        } else if (Math.abs(x) == Math.abs(y)) {
-            // ils sont sur la même diagonale
-            return tab.gaucheHaut || tab.gaucheBas || tab.droiteHaute || tab.droiteBas;
-        } else {
-            return false;
-        }
-    }
 
     private boolean roiAttaqueApresDeplacement(IPlateau plateau, Position positionRoi, Couleur couleurAttaquant, EtatPartie etatPartie) {
-        if (false) {
-            return caseAttaquee(plateau, positionRoi, couleurAttaquant, etatPartie);
-        } else {
-            //Couleur couleurAttaquant=joueurAdversaire(joueurCourant);
-            return plateau.getStreamPosition()
-                    .filter(x -> x.getCouleur() == couleurAttaquant)
-                    .filter(x -> x.getPiece() == Piece.FOU || x.getPiece() == Piece.TOUR || x.getPiece() == Piece.REINE)
-                    .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos))
-                    .flatMap(x -> x.stream())
-                    .map(x -> x.getPositionDestination())
-                    .anyMatch(x -> x.equals(positionRoi));
-        }
+        return plateau.getStreamPosition()
+                .filter(x -> x.getCouleur() == couleurAttaquant)
+                //.filter(x -> x.getPiece() == Piece.FOU || x.getPiece() == Piece.TOUR || x.getPiece() == Piece.REINE ||)
+                .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos))
+                .flatMap(x -> x.stream())
+                .map(x -> x.getPositionDestination())
+                .anyMatch(x -> x.equals(positionRoi));
     }
 
     private Position rechercheRoi(IPlateau plateau, Couleur joueurCourant) {
@@ -353,21 +192,12 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Preconditions.checkNotNull(joueurCourant);
         List<Position> liste = getPositionsPieces(plateau, joueurCourant, Piece.ROI);
         Verify.verifyNotNull(liste);
-        Verify.verify(liste.size() == 1);
+        Verify.verify(liste.size() == 1, "liste: size=%d, %s",liste.size(),liste);
         return liste.get(0);
     }
 
-    private boolean roiEnEchecs(IPlateau plateau, Position positionRoi, Couleur joueurCourant, EtatPartie etatPartie) {
-        if (true) {
-            return caseAttaquee(plateau, positionRoi, joueurAdversaire(joueurCourant), etatPartie);
-        } else {
-            Couleur couleurAttaquant = joueurAdversaire(joueurCourant);
-            return plateau.getStreamPosition()
-                    .filter(x -> x.getCouleur() == couleurAttaquant)
-                    .filter(x -> x.getPiece() == Piece.FOU || x.getPiece() == Piece.TOUR || x.getPiece() == Piece.REINE)
-                    .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos))
-                    .anyMatch(x -> x.contains(positionRoi));
-        }
+    private boolean roiEnEchecs(IPlateau plateau, Position positionRoi, Couleur joueurAdversaire, EtatPartie etatPartie) {
+        return caseAttaquee(plateau, positionRoi, joueurAdversaire, etatPartie);
     }
 
     public ListeMouvements2 getPieceJoueur(IPlateau plateau, Couleur joueur, EtatPartie etatPartie) {
@@ -400,11 +230,9 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Preconditions.checkNotNull(pos);
         Preconditions.checkNotNull(etatPartie);
 
-        //Instant debut= Instant.now();
         start(stopWatchGenereDeplacement);
         List<IMouvement> liste = calculMouvementBaseService.getMouvements(plateau, pos, etatPartie);
 
-        //dureeListeMouvement2.add(Duration.between(debut, Instant.now()));
         stop(stopWatchGenereDeplacement);
         return liste;
     }
@@ -436,10 +264,4 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         stopWatch.suspend();
     }
 
-    class CasesATester {
-        boolean gaucheHaut, gaucheMillieux, gaucheBas, centreHaut, centreBas,
-                droiteHaute, droiteMillieux, droiteBas;
-        boolean tab[][];
-
-    }
 }

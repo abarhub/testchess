@@ -127,7 +127,8 @@ public class Plateau implements IPlateau {
 
     public void move(Position positionSrc, IMouvement mouvement) {
         Preconditions.checkNotNull(mouvement);
-        Verify.verifyNotNull(positionSrc);
+        Preconditions.checkNotNull(positionSrc);
+        Preconditions.checkState(positionSrc.equals(mouvement.getPositionSource()));
         if (mouvement instanceof MouvementSimple) {
             Position positionDest = mouvement.getPositionDestination();
             Verify.verifyNotNull(positionDest);
@@ -172,8 +173,26 @@ public class Plateau implements IPlateau {
 
             setCase(posTourSrc, null);
             setCase(posTourDest, pTour);
+        } else if(mouvement instanceof MouvementEnPassant) {
+            MouvementEnPassant mouvementEnPassant= (MouvementEnPassant) mouvement;
+            Position positionDest = mouvement.getPositionDestination();
+            final var pieceSource = getCase(positionSrc);
+            Verify.verifyNotNull(pieceSource);
+            Verify.verify(pieceSource.getPiece()==Piece.PION);
+            final var pieceAttaque = getCase(mouvementEnPassant.getPieceAttaquee());
+            Verify.verifyNotNull(pieceAttaque);
+            Verify.verify(pieceAttaque.getPiece()==Piece.PION);
+            Verify.verify(pieceAttaque.getCouleur()!=pieceSource.getCouleur());
+            Verify.verify(mouvementEnPassant.getPieceAttaquee().getRangee()==positionSrc.getRangee());
+            Verify.verify(Math.abs(mouvementEnPassant.getPieceAttaquee().getColonne().getNo()-positionSrc.getColonne().getNo())==1);
+            Verify.verify(mouvementEnPassant.getPieceAttaquee().getColonne()==positionDest.getColonne());
+            Verify.verify(Math.abs(mouvementEnPassant.getPieceAttaquee().getRangee().getNo()-positionDest.getRangee().getNo())==1);
+            var p=new PieceCouleur(mouvementEnPassant.getPiece(),mouvementEnPassant.getJoueur());
+            setCase(positionSrc, null);
+            setCase(positionDest, p);
+            setCase(mouvementEnPassant.getPieceAttaquee(), null);
         } else {
-            throw new NotImplementedException();
+            throw new NotImplementedException("type de mouvement non géré:"+mouvement.getClass());
         }
     }
 

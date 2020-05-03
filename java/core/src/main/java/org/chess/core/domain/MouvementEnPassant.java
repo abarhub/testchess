@@ -44,4 +44,8 @@ public class MouvementEnPassant implements IMouvement {
     public Couleur getJoueur() {
         return joueur;
     }
+
+    public Position getPieceAttaquee() {
+        return pieceAttaquee;
+    }
 }

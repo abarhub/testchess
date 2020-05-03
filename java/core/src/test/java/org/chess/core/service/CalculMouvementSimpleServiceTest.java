@@ -1,10 +1,13 @@
 package org.chess.core.service;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.chess.core.domain.*;
 import org.chess.core.notation.NotationFEN;
+import org.chess.core.utils.Perf;
 import org.chess.core.utils.PlateauTools;
 import org.chess.core.utils.PositionTools;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +19,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -95,7 +101,6 @@ class CalculMouvementSimpleServiceTest {
         assertEquals(perfRef, res, "fen="+plateau+"\n"+ getPlateau(partie));
     }
 
-
     private static Stream<Arguments> provideCalculPerfBug() {
         return Stream.of(
                 Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 1, 20),
@@ -127,7 +132,7 @@ class CalculMouvementSimpleServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideCalculPerfBug")
-    @Disabled
+    //@Disabled
     public void calculPerfBug(String plateau, int depth, long perfRef) {
 
         Partie partie = notationFEN.createPlateau(plateau);
@@ -212,6 +217,39 @@ class CalculMouvementSimpleServiceTest {
 
         var moins = diff(listeDeplacementPossible, liste);
         assertTrue(moins.isEmpty(), () -> "moins=" + moins+" ("+positionPieceTeste+"):\n"+ getPlateau(partie));
+    }
+
+    private static Stream<Arguments> provideCalculPerfJson() throws IOException {
+        String contenu=null;
+        try(InputStream inputStream = CalculMouvementSimpleServiceTest.class
+                .getClassLoader().getResourceAsStream("perf_test1.json")){
+                contenu=IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        }
+        assertNotNull(contenu);
+        Gson gson = new Gson();
+        Perf[] tab=gson.fromJson(contenu, Perf[].class);
+        assertNotNull(tab);
+        assertTrue(tab.length>0);
+        Stream.Builder<Arguments> buf=Stream.builder();
+        for(Perf perf:tab){
+            buf.add(Arguments.of(perf.getFen(), perf.getDepth(), perf.getNodes()));
+        }
+        return buf.build();
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCalculPerfJson")
+    //@Disabled
+    public void calculPerfJson(String plateau, int depth, long perfRef) {
+
+        Partie partie = notationFEN.createPlateau(plateau);
+
+        // methode testée
+        long res = calculPerf(partie, depth);
+
+        // vérifications
+        LOGGER.info("res={}", res);
+        assertEquals(perfRef, res, "fen="+plateau+"\n"+ getPlateau(partie));
     }
 
     // methodes utilitaires
