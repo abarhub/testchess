@@ -25,11 +25,11 @@ public class Plateau implements IPlateau {
         // constructeur vide
     }
 
-    public Plateau(Plateau plateau) {
+    public Plateau(IPlateau plateau) {
         tableau = new PieceCouleur[NB_LIGNES][NB_COLONNES];
         for (Position position : getIterablePlateau()) {
             setTableau(position.getRangee(), position.getColonne(),
-                    plateau.getTableau(position.getRangee(), position.getColonne()));
+                    plateau.getCase(position));
         }
     }
 

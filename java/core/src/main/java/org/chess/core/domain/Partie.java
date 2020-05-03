@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
 import org.chess.core.exception.NotImplementedException;
+import org.chess.core.utils.PlateauTools;
 
 
 import java.util.ArrayList;
@@ -178,6 +179,21 @@ public class Partie {
         Verify.verify(pieceSource.getCouleur() == joueurCourant,
                 "la piece source n'est pas de la couleur du joueur " +
                         "qui doit jouer (" + pieceSource + "<>" + joueurCourant + ")");
+    }
+
+    public void mouvement(IMouvement mouvement){
+        plateau.move(mouvement.getPositionSource(),mouvement);
+
+        PlateauTools plateauTools=new PlateauTools();
+        PieceCouleurPosition pieceCouleurPosition =new PieceCouleurPosition(mouvement.getPiece(),
+                mouvement.getJoueur(),mouvement.getPositionSource());
+        plateauTools.updateConfiguration(configurationPartie,pieceCouleurPosition,mouvement);
+
+        if (joueurCourant == Couleur.Blanc) {
+            joueurCourant = Couleur.Noir;
+        } else {
+            joueurCourant = Couleur.Blanc;
+        }
     }
 
     public InformationPartie getInformationPartie() {

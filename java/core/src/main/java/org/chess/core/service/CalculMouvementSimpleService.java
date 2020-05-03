@@ -5,6 +5,7 @@ import com.google.common.base.Verify;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.chess.core.domain.*;
+import org.chess.core.utils.PlateauTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +125,9 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
         while (iter.hasNext()) {
             var mouvement = iter.next();
-            if (this.caseAttaquee(plateau, mouvement.getPositionDestination(),
+            Plateau plateau2=new Plateau(plateau);
+            plateau2.move(tmp.getKey().getPosition(),mouvement);
+            if (this.caseAttaquee(plateau2, mouvement.getPositionDestination(),
                     joueurAdversaire(joueurCourant), etatPartie)) {
                 iter.remove();
             }
@@ -192,7 +195,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Preconditions.checkNotNull(joueurCourant);
         List<Position> liste = getPositionsPieces(plateau, joueurCourant, Piece.ROI);
         Verify.verifyNotNull(liste);
-        Verify.verify(liste.size() == 1, "liste: size=%d, %s",liste.size(),liste);
+        Verify.verify(liste.size() == 1, "liste: size=%s, %s",liste.size(),liste);
         return liste.get(0);
     }
 

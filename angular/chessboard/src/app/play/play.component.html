@@ -1,0 +1,15 @@
+
+<div>
+<div id="board01" style="width: 400px"></div>
+<button (click)="init()">Init</button>
+<button (click)="next()">Next</button>
+  <p>{{joueur}}</p>
+  <br/>
+  <select name="joueurBlancAlgorithme" [(ngModel)]="algorithmeBlanc">
+    <option *ngFor="let algorithme of listeAlgorithme" [value]="algorithme">{{algorithme}}</option>
+  </select>
+  <br/>
+  <select name="joueurNoirAlgorithme" [(ngModel)]="algorithmeNoir">
+    <option *ngFor="let algorithme of listeAlgorithme" [value]="algorithme">{{algorithme}}</option>
+  </select>
+</div>

@@ -167,6 +167,7 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("8/7p/8/8/8/3K1k2/8/8 w - - 0 1", "d3", liste("d2", "c2", "d4", "c3", "c4")),
                 Arguments.of("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1", "e1", liste("d2", "e2", "f2", "g1", "c1", "f1", "d1")), // roque blanc
                 Arguments.of("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1", "e5", liste("d4", "d5", "d6", "e6")), // roi attaque
+                Arguments.of("r3k1r1/p2n1p1p/7p/4p2n/pPP5/b3pp2/8/R4K1q w KQkq - 0 1", "f1", liste()), // roi attaque echecs et mat
 
                 // déplacement pion
                 Arguments.of("1k6/8/8/8/8/8/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4")),
