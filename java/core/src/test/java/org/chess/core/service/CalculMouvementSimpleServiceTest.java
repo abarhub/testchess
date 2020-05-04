@@ -182,7 +182,9 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("1k6/8/8/1b6/8/8/4P3/5K2 b - - 0 1", "e2", liste()),// roi attaqué
                 Arguments.of("1k6/8/8/7b/8/8/4P3/3K4 w - - 0 1", "e2", liste()),// roi attaqué
                 Arguments.of("k7/8/8/8/3Pp3/8/8/K7 b - d3 0 1", "e4", liste("e3", "d3")), // en passant noir
-                Arguments.of("k7/8/8/8/4pP2/8/8/K7 b - f3 0 1", "e4", liste("e3", "f3")) // en passant noir
+                Arguments.of("k7/8/8/8/4pP2/8/8/K7 b - f3 0 1", "e4", liste("e3", "f3")), // en passant noir
+                Arguments.of("r3k1r1/p2n1p1p/7p/4p2n/pPP5/b3pp2/8/R4K1q w KQkq - 0 1", "b4", liste()), // roi attaque echecs et mat
+                Arguments.of("r3k1r1/p2n1p1p/7p/4p2n/pPP5/b3pp2/8/R4K1q w KQkq - 0 1", "c4", liste()) // roi attaque echecs et mat
         );
     }
 

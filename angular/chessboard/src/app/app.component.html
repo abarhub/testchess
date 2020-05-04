@@ -32,7 +32,9 @@ FEN: <span>{{board2Fen}}</span>
 <!--    <button id="clearBtn3" (click)="clear()">Clear Board</button>-->
     <button (click)="showFen()">Show FEN</button>
     <button (click)="test1()">Test1</button>
-    <button (click)="test2()">Test2</button>
+    <button (click)="test2()">Test2</button><br/>
+    <button (click)="calculPerft()">Calcul Peft</button>
+    depth:<input name="depthPerft" [value]="perftDepth"/>
 
     <div>
       board3message: <span>{{board3message}}</span>

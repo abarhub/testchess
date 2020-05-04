@@ -31,6 +31,8 @@ export class AppComponent implements OnInit {
   whiteSquareGrey = '#a9a9a9';
   blackSquareGrey = '#696969';
 
+  perftDepth: number=4;
+
   // @ViewChild('monElementHTML') monElement:ElementRef;
 
   constructor(private http: HttpClient) { }
@@ -70,7 +72,6 @@ export class AppComponent implements OnInit {
     this.board2Fen=this.board2.fen();
   }
 
-  //
 
   removeGreySquares ():void {
     $('#board3 .square-55d63').css('background', '');
@@ -280,5 +281,35 @@ export class AppComponent implements OnInit {
       res+=s;
     }
     return '['+res+']';
+  }
+
+  calculPerft() {
+    const depth=this.perftDepth;
+    console.log("perft("+depth+") ...");
+    let localchessEngine=new Chess();
+    let fen=this.board2.fen();
+    console.log("fen=",fen);
+    localchessEngine.load(fen+' w - - 0 1');
+    const debut=new Date().getTime();
+    let res=this.calculPerftValue(localchessEngine,depth);
+    const fin=new Date().getTime();
+    console.log("perft("+depth+")",res, " (duree:",fin-debut,")");
+    this.board3message="perft("+depth+") : "+res+" (duree:"+(fin-debut)+")";
+  }
+
+  private calculPerftValue(localChessEngine: any, depth: number):number {
+    let count=0;
+
+    if (depth <= 0) return 1;
+
+    let moves = localChessEngine.moves()
+    for (let i = 0; i < moves.length; i++) {
+      //console.log("calcul depth:", depth, "i=", i);
+      const move = moves[i];
+      localChessEngine.move(move);
+      count += this.calculPerftValue(localChessEngine, depth - 1);
+      localChessEngine.undo();
+    }
+    return count;
   }
 }

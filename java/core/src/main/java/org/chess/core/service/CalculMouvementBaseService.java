@@ -2,7 +2,9 @@ package org.chess.core.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
+import com.google.common.collect.Lists;
 import org.chess.core.domain.*;
+import org.chess.core.utils.PlateauTools;
 import org.chess.core.utils.PositionTools;
 
 
@@ -71,6 +73,14 @@ public class CalculMouvementBaseService {
     }
 
     private void ajoutRoqueRoi(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, EtatPartie etatPartie) {
+        if (false) {
+            ajoutRoqueRoiSansTestAttaque(piece, plateau, mouvements, etatPartie);
+        } else {
+            ajoutRoqueRoiTestAttaque(piece, plateau, mouvements, etatPartie);
+        }
+    }
+
+    private void ajoutRoqueRoiSansTestAttaque(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, EtatPartie etatPartie) {
         final RangeeEnum rangeRoi;
         final Couleur couleurRoi = piece.getCouleur();
 
@@ -81,20 +91,24 @@ public class CalculMouvementBaseService {
         }
 
         if (isPosition(piece, rangeRoi, ColonneEnum.COLONNEE, couleurRoi)) {
+            var positionRoi = new Position(rangeRoi, ColonneEnum.COLONNEE);
             if (etatPartie.roquePossible(couleurRoi, true)) {
                 // roque coté roi
                 Position posTour = new Position(rangeRoi, ColonneEnum.COLONNEH);
                 PieceCouleur tour = plateau.getCase(posTour);
                 if (tour != null && tour.getPiece() == Piece.TOUR && tour.getCouleur() == couleurRoi) {
                     boolean caseNonVide = false;
+
                     for (int i = 1; i < 3; i++) {
                         ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEE.getNo() + i);
-                        PieceCouleur tmp = plateau.getCase(new Position(rangeRoi, colonneEnum));
+                        final Position position = new Position(rangeRoi, colonneEnum);
+                        PieceCouleur tmp = plateau.getCase(position);
                         if (tmp != null) {
                             caseNonVide = true;
                             break;
                         }
                     }
+
                     if (!caseNonVide) {
                         MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEG),
                                 true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF), couleurRoi);
@@ -104,6 +118,7 @@ public class CalculMouvementBaseService {
             }
 
             if (etatPartie.roquePossible(couleurRoi, false)) {
+
                 // roque cote reine
                 Position posTour2 = new Position(rangeRoi, ColonneEnum.COLONNEA);
                 PieceCouleur tour2 = plateau.getCase(posTour2);
@@ -111,7 +126,8 @@ public class CalculMouvementBaseService {
                     boolean caseNonVide = false;
                     for (int i = 1; i < 4; i++) {
                         ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEA.getNo() + i);
-                        PieceCouleur tmp = plateau.getCase(new Position(rangeRoi, colonneEnum));
+                        final Position position = new Position(rangeRoi, colonneEnum);
+                        PieceCouleur tmp = plateau.getCase(position);
                         if (tmp != null) {
                             caseNonVide = true;
                             break;
@@ -124,6 +140,360 @@ public class CalculMouvementBaseService {
                     }
                 }
             }
+        }
+    }
+
+    private void ajoutRoqueRoiTestAttaque(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, EtatPartie etatPartie) {
+        final RangeeEnum rangeRoi;
+        final Couleur couleurRoi = piece.getCouleur();
+
+        if (couleurRoi == Couleur.Blanc) {
+            rangeRoi = RangeeEnum.RANGEE1;
+        } else {
+            rangeRoi = RangeeEnum.RANGEE8;
+        }
+
+        if (isPosition(piece, rangeRoi, ColonneEnum.COLONNEE, couleurRoi)) {
+            var positionRoi = new Position(rangeRoi, ColonneEnum.COLONNEE);
+            if (etatPartie.roquePossible(couleurRoi, true)) {
+                EtatPartie etatPartie2 = etatPartie;
+                if (etatPartie instanceof ConfigurationPartie) {
+                    ConfigurationPartie etatPartie3 = new ConfigurationPartie((ConfigurationPartie) etatPartie);
+                    etatPartie3.setRoqueNoirRoi(false);
+                    etatPartie3.setRoqueNoirDame(false);
+                    etatPartie3.setRoqueBlancRoi(false);
+                    etatPartie3.setRoqueBlancDame(false);
+                    etatPartie2 = etatPartie3;
+                }
+                if (caseAttaquee(plateau, positionRoi, joueurAdversaire(couleurRoi), etatPartie2)) {
+                    // le roi est attaqué => roque impossible
+                } else {
+                    // roque coté roi
+                    Position posTour = new Position(rangeRoi, ColonneEnum.COLONNEH);
+                    PieceCouleur tour = plateau.getCase(posTour);
+                    if (tour != null && tour.getPiece() == Piece.TOUR && tour.getCouleur() == couleurRoi) {
+                        boolean caseNonVide = false;
+                        boolean caseAttaque = false;
+                        if (caseAttaquee(plateau, posTour, joueurAdversaire(couleurRoi), etatPartie)) {
+                            caseAttaque = true;
+                        } else {
+                            for (int i = 1; i < 3; i++) {
+                                ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEE.getNo() + i);
+                                final Position position = new Position(rangeRoi, colonneEnum);
+                                PieceCouleur tmp = plateau.getCase(position);
+                                if (tmp != null) {
+                                    caseNonVide = true;
+                                    break;
+                                } else if (caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
+                                    caseAttaque = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!caseNonVide && !caseAttaque) {
+                            MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEG),
+                                    true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF), couleurRoi);
+                            mouvements.add(mouvementRoque);
+                        }
+                    }
+                }
+            }
+
+            if (etatPartie.roquePossible(couleurRoi, false)) {
+                EtatPartie etatPartie2 = etatPartie;
+                if (etatPartie instanceof ConfigurationPartie) {
+                    ConfigurationPartie etatPartie3 = new ConfigurationPartie((ConfigurationPartie) etatPartie);
+                    etatPartie3.setRoqueNoirRoi(false);
+                    etatPartie3.setRoqueNoirDame(false);
+                    etatPartie3.setRoqueBlancRoi(false);
+                    etatPartie3.setRoqueBlancDame(false);
+                    etatPartie2 = etatPartie3;
+                }
+                if (caseAttaquee(plateau, positionRoi, joueurAdversaire(couleurRoi), etatPartie2)) {
+                    // le roi est attaqué => roque impossible
+                } else {
+                    // roque cote reine
+                    Position posTour2 = new Position(rangeRoi, ColonneEnum.COLONNEA);
+                    PieceCouleur tour2 = plateau.getCase(posTour2);
+                    if (tour2 != null && tour2.getPiece() == Piece.TOUR && tour2.getCouleur() == couleurRoi) {
+                        boolean caseNonVide = false;
+                        boolean caseAttaque = false;
+                        for (int i = 1; i < 4; i++) {
+                            ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEA.getNo() + i);
+                            final Position position = new Position(rangeRoi, colonneEnum);
+                            PieceCouleur tmp = plateau.getCase(position);
+                            if (tmp != null) {
+                                caseNonVide = true;
+                                break;
+                            } else if (caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
+                                caseAttaque = true;
+                                break;
+                            }
+                        }
+                        if (!caseNonVide && !caseAttaque) {
+                            MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEC),
+                                    false, posTour2, new Position(rangeRoi, ColonneEnum.COLONNED), couleurRoi);
+                            mouvements.add(mouvementRoque);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean caseAttaquee(IPlateau plateau, Position position, Couleur couleurAttaquant,
+                                 EtatPartie etatPartie) {
+        if(true) {
+            return caseAttaquee3(plateau,position,couleurAttaquant,etatPartie);
+        } else {
+            return caseAttaquee2(plateau,position,couleurAttaquant,etatPartie);
+        }
+    }
+
+    private boolean caseAttaquee3(IPlateau plateau, Position positionTestee, Couleur couleurAttaquant, EtatPartie etatPartie) {
+
+        Position position;
+        Optional<Position> positionOpt;
+        PieceCouleur piece;
+
+        // test cavalier
+
+        for(var range: Lists.newArrayList(-2,2)) {
+            for(var colonne:Lists.newArrayList(-1,1)) {
+                if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, range, colonne, Piece.CAVALIER)) {
+                    return true;
+                }
+            }
+        }
+
+        for(var range: Lists.newArrayList(-1,1)) {
+            for(var colonne:Lists.newArrayList(-2,2)) {
+                if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, range, colonne, Piece.CAVALIER)) {
+                    return true;
+                }
+            }
+        }
+
+        // test pion
+        int decalage;
+        if(couleurAttaquant==Couleur.Blanc){
+            decalage=1;
+        } else {
+            decalage=-1;
+        }
+        if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, decalage, 1, Piece.PION)) {
+            return true;
+        }
+        if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, decalage, -1, Piece.PION)) {
+            return true;
+        }
+
+        // test du roi
+        for(var range=-1;range<=1;range++){
+            for(var colonne=-1;colonne<=1;colonne++){
+                if(range!=0&&colonne!=0){
+                    if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, range, colonne, Piece.ROI)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // test des colonnes
+        for(var colonne=1;colonne<=8;colonne++){
+            positionOpt = PositionTools.getPosition(positionTestee, 0, colonne);
+            if (positionOpt.isPresent()) {
+                piece = plateau.getCase(positionOpt.get());
+                if(piece==null) {
+                    // case vide => on continue
+                } else {
+                    if(piece.getCouleur()!=couleurAttaquant){
+                        // même couleur => on arrete la boucle
+                        break;
+                    } else if(piece.getCouleur()==couleurAttaquant) {
+                        if (piece.getPiece() == Piece.TOUR ||piece.getPiece() == Piece.REINE) {
+                            // la case est attaquee
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        for(var colonne=1;colonne<=8;colonne++){
+            positionOpt = PositionTools.getPosition(positionTestee, 0, -colonne);
+            if (positionOpt.isPresent()) {
+                piece = plateau.getCase(positionOpt.get());
+                if(piece==null) {
+                    // case vide => on continue
+                } else {
+                    if(piece.getCouleur()!=couleurAttaquant){
+                        // même couleur => on arrete la boucle
+                        break;
+                    } else if(piece.getCouleur()==couleurAttaquant) {
+                        if (piece.getPiece() == Piece.TOUR ||piece.getPiece() == Piece.REINE) {
+                            // la case est attaquee
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // test des lignes
+        for(var rangee=1;rangee<=8;rangee++){
+            positionOpt = PositionTools.getPosition(positionTestee, rangee, 0);
+            if (positionOpt.isPresent()) {
+                piece = plateau.getCase(positionOpt.get());
+                if(piece==null) {
+                    // case vide => on continue
+                } else {
+                    if(piece.getCouleur()!=couleurAttaquant){
+                        // même couleur => on arrete la boucle
+                        break;
+                    } else if(piece.getCouleur()==couleurAttaquant) {
+                        if (piece.getPiece() == Piece.TOUR ||piece.getPiece() == Piece.REINE) {
+                            // la case est attaquee
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        for(var rangee=1;rangee<=8;rangee++){
+            positionOpt = PositionTools.getPosition(positionTestee, -rangee, 0);
+            if (positionOpt.isPresent()) {
+                piece = plateau.getCase(positionOpt.get());
+                if(piece==null) {
+                    // case vide => on continue
+                } else {
+                    if(piece.getCouleur()!=couleurAttaquant){
+                        // même couleur => on arrete la boucle
+                        break;
+                    } else if(piece.getCouleur()==couleurAttaquant) {
+                        if (piece.getPiece() == Piece.TOUR ||piece.getPiece() == Piece.REINE) {
+                            // la case est attaquee
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // test des diagonales
+        for(var rangee=1;rangee<=8;rangee++){
+            positionOpt = PositionTools.getPosition(positionTestee, rangee, rangee);
+            if (positionOpt.isPresent()) {
+                piece = plateau.getCase(positionOpt.get());
+                if(piece==null) {
+                    // case vide => on continue
+                } else {
+                    if(piece.getCouleur()!=couleurAttaquant){
+                        // même couleur => on arrete la boucle
+                        break;
+                    } else if(piece.getCouleur()==couleurAttaquant) {
+                        if (piece.getPiece() == Piece.FOU ||piece.getPiece() == Piece.REINE) {
+                            // la case est attaquee
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        for(var rangee=1;rangee<=8;rangee++){
+            positionOpt = PositionTools.getPosition(positionTestee, rangee, -rangee);
+            if (positionOpt.isPresent()) {
+                piece = plateau.getCase(positionOpt.get());
+                if(piece==null) {
+                    // case vide => on continue
+                } else {
+                    if(piece.getCouleur()!=couleurAttaquant){
+                        // même couleur => on arrete la boucle
+                        break;
+                    } else if(piece.getCouleur()==couleurAttaquant) {
+                        if (piece.getPiece() == Piece.FOU ||piece.getPiece() == Piece.REINE) {
+                            // la case est attaquee
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        for(var rangee=1;rangee<=8;rangee++){
+            positionOpt = PositionTools.getPosition(positionTestee, -rangee, -rangee);
+            if (positionOpt.isPresent()) {
+                piece = plateau.getCase(positionOpt.get());
+                if(piece==null) {
+                    // case vide => on continue
+                } else {
+                    if(piece.getCouleur()!=couleurAttaquant){
+                        // même couleur => on arrete la boucle
+                        break;
+                    } else if(piece.getCouleur()==couleurAttaquant) {
+                        if (piece.getPiece() == Piece.FOU ||piece.getPiece() == Piece.REINE) {
+                            // la case est attaquee
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        for(var rangee=1;rangee<=8;rangee++){
+            positionOpt = PositionTools.getPosition(positionTestee, -rangee, rangee);
+            if (positionOpt.isPresent()) {
+                piece = plateau.getCase(positionOpt.get());
+                if(piece==null) {
+                    // case vide => on continue
+                } else {
+                    if(piece.getCouleur()!=couleurAttaquant){
+                        // même couleur => on arrete la boucle
+                        break;
+                    } else if(piece.getCouleur()==couleurAttaquant) {
+                        if (piece.getPiece() == Piece.FOU ||piece.getPiece() == Piece.REINE) {
+                            // la case est attaquee
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean verifieCaseAttaquee(IPlateau plateau, Position positionTestee, Couleur couleurAttaquant, int range, int colonne, Piece roi) {
+        Optional<Position> positionOpt;
+        PieceCouleur piece;
+        positionOpt = PositionTools.getPosition(positionTestee, range, colonne);
+        if (positionOpt.isPresent()) {
+            piece = plateau.getCase(positionOpt.get());
+            if (piece != null && piece.getCouleur() == couleurAttaquant && piece.getPiece() == roi) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean caseAttaquee2(IPlateau plateau, Position position, Couleur couleurAttaquant,
+                                 EtatPartie etatPartie) {
+        Preconditions.checkNotNull(plateau);
+        Preconditions.checkNotNull(position);
+        Preconditions.checkNotNull(couleurAttaquant);
+
+        return plateau.getStreamPosition()
+                .filter(x -> x.getCouleur() == couleurAttaquant)
+                .map(pos -> getMouvements(plateau, pos, etatPartie))
+                .flatMap(x -> x.stream())
+                .map(x -> x.getPositionDestination())
+                .anyMatch(x -> x.equals(position));
+    }
+
+    public Couleur joueurAdversaire(Couleur couleur) {
+        Preconditions.checkNotNull(couleur);
+        if (couleur == Couleur.Blanc) {
+            return Couleur.Noir;
+        } else {
+            return Couleur.Blanc;
         }
     }
 
@@ -411,17 +781,39 @@ public class CalculMouvementBaseService {
         Preconditions.checkNotNull(piece);
         Preconditions.checkNotNull(plateau);
         Preconditions.checkNotNull(position);
+        Preconditions.checkState(piece.getPiece() == Piece.PION);
 
-        PieceCouleur caseCible = plateau.getCase(position);
-        if (mangePiece) {
-            if (caseCible != null && caseCible.getCouleur() != piece.getCouleur()) {
-                var mouvement = new MouvementSimple(piece.getPosition(), position, true, piece.getPiece(), piece.getCouleur());
-                mouvements.add(mouvement);
+        if ((piece.getCouleur() == Couleur.Blanc && position.getRangee() == RangeeEnum.RANGEE8) ||
+                (piece.getCouleur() == Couleur.Noir && position.getRangee() == RangeeEnum.RANGEE1)) {
+            // promotion du pion
+            for (Piece p : Piece.values()) {
+                if (p != Piece.PION) {
+                    PieceCouleur caseCible = plateau.getCase(position);
+                    if (mangePiece) {
+                        if (caseCible != null && caseCible.getCouleur() != piece.getCouleur()) {
+                            var mouvement = new MouvementSimple(piece.getPosition(), position, true, piece.getPiece(), piece.getCouleur(), p);
+                            mouvements.add(mouvement);
+                        }
+                    } else {
+                        if (caseCible == null) {
+                            var mouvement = new MouvementSimple(piece.getPosition(), position, false, piece.getPiece(), piece.getCouleur(), p);
+                            mouvements.add(mouvement);
+                        }
+                    }
+                }
             }
         } else {
-            if (caseCible == null) {
-                var mouvement = new MouvementSimple(piece.getPosition(), position, false, piece.getPiece(), piece.getCouleur());
-                mouvements.add(mouvement);
+            PieceCouleur caseCible = plateau.getCase(position);
+            if (mangePiece) {
+                if (caseCible != null && caseCible.getCouleur() != piece.getCouleur()) {
+                    var mouvement = new MouvementSimple(piece.getPosition(), position, true, piece.getPiece(), piece.getCouleur());
+                    mouvements.add(mouvement);
+                }
+            } else {
+                if (caseCible == null) {
+                    var mouvement = new MouvementSimple(piece.getPosition(), position, false, piece.getPiece(), piece.getCouleur());
+                    mouvements.add(mouvement);
+                }
             }
         }
     }

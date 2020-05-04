@@ -1,6 +1,7 @@
 package org.chess.core.utils;
 
 
+import com.google.common.collect.Lists;
 import org.chess.core.domain.ColonneEnum;
 import org.chess.core.domain.Position;
 import org.chess.core.domain.RangeeEnum;
@@ -12,22 +13,26 @@ import java.util.List;
 
 public class IteratorPlateau {
 
+    private static final List<RangeeEnum> LISTE_RANGEE=Arrays.asList(RangeeEnum.values());
+
+    private static final List<ColonneEnum> LISTE_COLONNES=Arrays.asList(ColonneEnum.values());
+
     public static Iterable<RangeeEnum> getIterableRangee() {
-        return Arrays.asList(RangeeEnum.values());
+        return Lists.newArrayList(LISTE_RANGEE);
     }
 
     public static Iterable<RangeeEnum> getIterableRangeeInverse() {
-        List<RangeeEnum> liste = Arrays.asList(RangeeEnum.values());
+        List<RangeeEnum> liste = Lists.newArrayList(LISTE_RANGEE);
         Collections.reverse(liste);
         return liste;
     }
 
     public static Iterable<ColonneEnum> getIterableColonne() {
-        return Arrays.asList(ColonneEnum.values());
+        return Lists.newArrayList(LISTE_COLONNES);
     }
 
     public static Iterable<ColonneEnum> getIterableColonneInverse() {
-        List<ColonneEnum> liste = Arrays.asList(ColonneEnum.values());
+        List<ColonneEnum> liste = Lists.newArrayList(LISTE_COLONNES);
         Collections.reverse(liste);
         return liste;
     }

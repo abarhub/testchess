@@ -3,6 +3,7 @@ package org.chess.core.domain;
 import com.google.common.base.Preconditions;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 public class MouvementSimple implements IMouvement {
@@ -12,8 +13,10 @@ public class MouvementSimple implements IMouvement {
     private final boolean attaque;
     private final Piece piece;
     private final Couleur joueur;
+    private final Optional<Piece> promotion;
 
-    public MouvementSimple(Position positionSource, Position positionDestination, boolean attaque, Piece piece, Couleur joueur) {
+    public MouvementSimple(Position positionSource, Position positionDestination, boolean attaque,
+                           Piece piece, Couleur joueur) {
         Preconditions.checkNotNull(positionSource);
         Preconditions.checkNotNull(positionDestination);
         Preconditions.checkNotNull(piece);
@@ -23,6 +26,22 @@ public class MouvementSimple implements IMouvement {
         this.attaque = attaque;
         this.piece = piece;
         this.joueur = joueur;
+        this.promotion=Optional.empty();
+    }
+
+    public MouvementSimple(Position positionSource, Position positionDestination, boolean attaque,
+                           Piece piece, Couleur joueur, Piece promotion) {
+        Preconditions.checkNotNull(positionSource);
+        Preconditions.checkNotNull(positionDestination);
+        Preconditions.checkNotNull(piece);
+        Preconditions.checkNotNull(joueur);
+        Preconditions.checkNotNull(promotion);
+        this.positionSource = positionSource;
+        this.positionDestination = positionDestination;
+        this.attaque = attaque;
+        this.piece = piece;
+        this.joueur = joueur;
+        this.promotion=Optional.of(promotion);
     }
 
     public Position getPositionSource() {
@@ -47,6 +66,10 @@ public class MouvementSimple implements IMouvement {
         return joueur;
     }
 
+    public Optional<Piece> getPromotion() {
+        return promotion;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,12 +79,13 @@ public class MouvementSimple implements IMouvement {
                 Objects.equals(positionSource, that.positionSource) &&
                 Objects.equals(positionDestination, that.positionDestination) &&
                 piece == that.piece &&
-                joueur == that.joueur;
+                joueur == that.joueur &&
+                Objects.equals(promotion, that.promotion);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(positionSource, positionDestination, attaque, piece, joueur);
+        return Objects.hash(positionSource, positionDestination, attaque, piece, joueur, promotion);
     }
 
     @Override
@@ -72,6 +96,7 @@ public class MouvementSimple implements IMouvement {
                 .add("attaque=" + attaque)
                 .add("piece=" + piece)
                 .add("joueur=" + joueur)
+                .add("promotion=" + promotion)
                 .toString();
     }
 }

@@ -44,7 +44,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         // recherche du roi du joueur courant
         Position positionRoi = rechercheRoi(plateau, joueurCourant);
 
-        // vérification si le roi est en echec
+        // vérification si le roi du joueur courant est en echec
         boolean roiEnEchec = roiEnEchecs(plateau, positionRoi, joueurAdversaire(joueurCourant), etatPartie);
 
         if (roiEnEchec) {
@@ -57,7 +57,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
 
             // pour chaque coup possible, verification si cela met le roi en echecs
             // la mise en echec, ne peut être fait que par tour (ligne, colonne), dame (ligne, colonne diagonale), fou (diagonale)
-            suppressionMouvementMiseEnEchecsRoi(plateau, listeMouvement, positionRoi, joueurCourant, etatPartie);
+            suppressionMouvementMiseEnEchecsRoi(plateau, listeMouvement, positionRoi, joueurCourant, etatPartie, false);
 
             resultat = listeMouvement;
         }
@@ -73,13 +73,14 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
     private ListeMouvements2 rechercheMouvementStoperEchecRoi(IPlateau plateau, Couleur joueurCourant, Position positionRoi, EtatPartie etatPartie) {
         var listeMouvement = getPieceJoueur(plateau, joueurCourant, etatPartie);
 
-        suppressionMouvementMiseEnEchecsRoi(plateau, listeMouvement, positionRoi, joueurCourant, etatPartie);
+        suppressionMouvementMiseEnEchecsRoi(plateau, listeMouvement, positionRoi, joueurCourant, etatPartie, true);
 
         return listeMouvement;
     }
 
     private void suppressionMouvementMiseEnEchecsRoi(IPlateau plateau, ListeMouvements2 listeMouvement,
-                                                     Position positionRoi, Couleur joueurCourant, EtatPartie etatPartie) {
+                                                     Position positionRoi, Couleur joueurCourant, EtatPartie etatPartie,
+                                                     boolean enleveAutresMouvements) {
         Preconditions.checkNotNull(plateau);
         Preconditions.checkNotNull(listeMouvement);
         Preconditions.checkNotNull(positionRoi);
@@ -94,7 +95,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
             if (tmp.getKey().getPiece() == Piece.ROI) {
                 supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp, etatPartie);
             } else {
-                if (mvtAVerifier(tmp.getKey().getPosition(), positionRoi, plateau)) {
+                if(enleveAutresMouvements) {
                     var iter = tmp.getValue().iterator();
                     Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
                     while (iter.hasNext()) {
@@ -106,6 +107,27 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
 
                         if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
                             iter.remove();
+                        }
+                    }
+                } else {
+                    if (mvtAVerifier(tmp.getKey().getPosition(), positionRoi, plateau)) {
+                        var iter = tmp.getValue().iterator();
+                        Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
+                        while (iter.hasNext()) {
+                            var mouvement = iter.next();
+
+                            Plateau plateauApresModification = new Plateau((Plateau) plateau);
+                            //plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
+                            plateauApresModification.move(tmp.getKey().getPosition(), mouvement);
+
+                            if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
+                                iter.remove();
+                            }
+                        }
+                    } else {
+                        // le mouvement ne peut pas bloquer l'attaque => on enleve les deplacements
+                        if (enleveAutresMouvements) {
+                            tmp.getValue().clear();
                         }
                     }
                 }

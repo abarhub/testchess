@@ -130,14 +130,21 @@ public class Plateau implements IPlateau {
         Preconditions.checkNotNull(positionSrc);
         Preconditions.checkState(positionSrc.equals(mouvement.getPositionSource()));
         if (mouvement instanceof MouvementSimple) {
-            Position positionDest = mouvement.getPositionDestination();
+            MouvementSimple mouvementSimple= (MouvementSimple) mouvement;
+            Position positionDest = mouvementSimple.getPositionDestination();
             Verify.verifyNotNull(positionDest);
             Verify.verify(!positionSrc.equals(positionDest));
 
             PieceCouleur p = getCase(positionSrc);
             Verify.verifyNotNull(p, "La case source est vide");
-            setCase(positionSrc, null);
-            setCase(positionDest, p);
+            if(mouvementSimple.getPromotion().isPresent()){
+                PieceCouleur p2=new PieceCouleur(mouvementSimple.getPiece(),p.getCouleur());
+                setCase(positionSrc, null);
+                setCase(positionDest, p2);
+            } else {
+                setCase(positionSrc, null);
+                setCase(positionDest, p);
+            }
         } else if (mouvement instanceof MouvementRoque) {
             MouvementRoque mouvementRoque = (MouvementRoque) mouvement;
             Position positionDest = mouvement.getPositionDestination();
