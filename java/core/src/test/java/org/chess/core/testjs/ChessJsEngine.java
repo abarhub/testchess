@@ -1,5 +1,6 @@
 package org.chess.core.testjs;
 
+import com.google.common.base.Verify;
 import com.google.gson.*;
 import org.chess.core.domain.Couleur;
 import org.chess.core.domain.Partie;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
@@ -180,7 +182,8 @@ public class ChessJsEngine {
                 if(tmp.has("piece")){
                     String piece=tmp.get("piece").getAsString();
                     if(piece!=null&&!piece.trim().isEmpty()&&piece.length()==1) {
-                        Piece p=Piece.getValue(piece.toUpperCase().charAt(0));
+                        Piece p=Piece.getValueAnglais(piece.toUpperCase().charAt(0));
+                        Verify.verifyNotNull(p, "p="+piece);
                         jsonReponse.setPiece(p);
                     }
                 }
@@ -194,4 +197,47 @@ public class ChessJsEngine {
         return liste;
     }
 
+    public long calculPerft(Partie partie, int depth) throws IOException, InterruptedException {
+
+        NotationFEN notationFEN = new NotationFEN();
+
+        JsonRequest jsonRequest=new JsonRequest();
+
+        String fen=notationFEN.serialize(partie);
+
+        jsonRequest.setFen(fen);
+
+        jsonRequest.setNb(depth);
+
+        HttpClient httpClient = HttpClient.newBuilder().build();
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        String json=gson.toJson(jsonRequest);
+
+        LOGGER.info("json={}",json);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .uri(URI.create("http://localhost:8000/chess3"))
+                .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
+                .setHeader("Content-Type", "application/json")
+                .build();
+
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        // print response headers
+        //HttpHeaders headers = response.headers();
+        //headers.map().forEach((k, v) -> LOGGER.info(k + ":" + v));
+
+        // print status code
+        LOGGER.info("{}",response.statusCode());
+
+        // print response body
+        LOGGER.info("{}",response.body());
+
+        BigInteger bigInteger = JsonParser.parseString(response.body()).getAsBigInteger();
+
+        return bigInteger.longValueExact();
+    }
 }

@@ -124,7 +124,7 @@ public class CalculMouvementBaseService {
                 PieceCouleur tour2 = plateau.getCase(posTour2);
                 if (tour2 != null && tour2.getPiece() == Piece.TOUR && tour2.getCouleur() == couleurRoi) {
                     boolean caseNonVide = false;
-                    for (int i = 1; i < 4; i++) {
+                    for (int i = 1; i < 3; i++) {
                         ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEA.getNo() + i);
                         final Position position = new Position(rangeRoi, colonneEnum);
                         PieceCouleur tmp = plateau.getCase(position);
@@ -174,9 +174,9 @@ public class CalculMouvementBaseService {
                     if (tour != null && tour.getPiece() == Piece.TOUR && tour.getCouleur() == couleurRoi) {
                         boolean caseNonVide = false;
                         boolean caseAttaque = false;
-                        if (caseAttaquee(plateau, posTour, joueurAdversaire(couleurRoi), etatPartie)) {
-                            caseAttaque = true;
-                        } else {
+//                        if (caseAttaquee(plateau, posTour, joueurAdversaire(couleurRoi), etatPartie)) {
+//                            caseAttaque = true;
+//                        } else {
                             for (int i = 1; i < 3; i++) {
                                 ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEE.getNo() + i);
                                 final Position position = new Position(rangeRoi, colonneEnum);
@@ -189,7 +189,7 @@ public class CalculMouvementBaseService {
                                     break;
                                 }
                             }
-                        }
+//                        }
                         if (!caseNonVide && !caseAttaque) {
                             MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEG),
                                     true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF), couleurRoi);
@@ -225,7 +225,7 @@ public class CalculMouvementBaseService {
                             if (tmp != null) {
                                 caseNonVide = true;
                                 break;
-                            } else if (caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
+                            } else if (i<3&&caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
                                 caseAttaque = true;
                                 break;
                             }

@@ -2,7 +2,7 @@ const express = require('express')
 const app = express();
 
 const { Chess } = require('chess.js')
-const chess = new Chess()
+const chess = new Chess();
 
 // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded());
@@ -49,6 +49,50 @@ app.post('/chess2', function(req, res) {
     const moves = chess.moves({ verbose: true });
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(moves, null, 4));
+});
+
+function calculPerft(myChess, depth){
+
+    let nodes=0;
+
+    if(depth<=0){
+        return 1;
+    }
+
+    const moves = myChess.moves();
+    for(let i=0;i<moves.length;i++){
+        myChess.move(moves[i]);
+        nodes+=calculPerft(myChess, depth-1);
+        myChess.undo();
+    }
+
+    return nodes;
+}
+
+app.post('/chess3', function(req, res) {
+    console.log('body', req.body);
+
+    let mychess= new Chess();
+
+    let depth=1;
+
+    if(req.body &&req.body.fen){
+        if(req.body.fen){
+            mychess.load(req.body.fen);
+        }
+        if(req.body.nb && req.body.nb>0){
+            depth=req.body.nb;
+        }
+    }
+
+    console.log("calcul Perft:", depth);
+
+    const nodes = calculPerft(mychess,depth);
+
+    console.log("depth:", depth, "Perft", nodes);
+
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(nodes, null, 4));
 });
 
 app.listen(8000, () => {

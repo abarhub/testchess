@@ -28,6 +28,15 @@ public enum Piece {
         return null;
     }
 
+    public static Piece getValueAnglais(char c) {
+        for (Piece piece : Piece.values()) {
+            if (piece.nomCourtAnglais == c) {
+                return piece;
+            }
+        }
+        return null;
+    }
+
     public char getNomCourt() {
         return nomCourt;
     }
