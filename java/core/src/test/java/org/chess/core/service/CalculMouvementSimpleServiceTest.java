@@ -177,6 +177,7 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("r3k2r/8/8/8/8/2R5/8/4K3 b kq - 0 1", "e8", liste("d8", "d7", "e7", "f7", "f8", "g8")), // roque noir
                 Arguments.of("r3k2r/8/8/8/8/1R6/8/4K3 b kq - 0 1", "e8", liste("d8", "d7", "e7", "f7", "f8", "g8", "c8")), // roque noir
                 Arguments.of("r3k2r/8/8/8/8/R7/8/4K3 b kq - 0 1", "e8", liste("d8", "d7", "e7", "f7", "f8", "g8", "c8")), // roque noir
+                Arguments.of("rnb2k1r/pp1Pbppp/2p5/2q5/2B5/2P5/PP1QNnPP/RNB1K2R w KQ - 3 9", "e1", liste("f1", "g1")), // roque blanc
 
 
                 // déplacement pion
@@ -208,10 +209,10 @@ class CalculMouvementSimpleServiceTest {
         final Partie partie = notationFEN.createPlateau(plateau);
 
         final Position positionPieceTeste = Position.getPosition(position);
-        assertNotNull(positionPieceTeste);
+        assertNotNull(positionPieceTeste,()-> "piece teste="+position);
 
         var p=partie.getPlateau().getCase(positionPieceTeste);
-        assertNotNull(p);
+        assertNotNull(p,()-> "piece teste="+positionPieceTeste);
 
         final List<Position> listeDeplacementPossible = getListePosition(deplacementsPossible);
 

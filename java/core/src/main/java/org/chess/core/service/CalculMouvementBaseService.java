@@ -314,6 +314,9 @@ public class CalculMouvementBaseService {
                         if (piece.getPiece() == Piece.TOUR ||piece.getPiece() == Piece.REINE) {
                             // la case est attaquee
                             return true;
+                        } else {
+                            // c'est une piece qui ne peut pas attaquer => on arrete la boucle
+                            break;
                         }
                     }
                 }
@@ -334,6 +337,9 @@ public class CalculMouvementBaseService {
                         if (piece.getPiece() == Piece.TOUR ||piece.getPiece() == Piece.REINE) {
                             // la case est attaquee
                             return true;
+                        } else {
+                            // c'est une piece qui ne peut pas attaquer => on arrete la boucle
+                            break;
                         }
                     }
                 }
@@ -355,6 +361,9 @@ public class CalculMouvementBaseService {
                         if (piece.getPiece() == Piece.TOUR ||piece.getPiece() == Piece.REINE) {
                             // la case est attaquee
                             return true;
+                        } else {
+                            // c'est une piece qui ne peut pas attaquer => on arrete la boucle
+                            break;
                         }
                     }
                 }
@@ -374,6 +383,9 @@ public class CalculMouvementBaseService {
                         if (piece.getPiece() == Piece.TOUR ||piece.getPiece() == Piece.REINE) {
                             // la case est attaquee
                             return true;
+                        } else {
+                            // c'est une piece qui ne peut pas attaquer => on arrete la boucle
+                            break;
                         }
                     }
                 }
@@ -395,6 +407,9 @@ public class CalculMouvementBaseService {
                         if (piece.getPiece() == Piece.FOU ||piece.getPiece() == Piece.REINE) {
                             // la case est attaquee
                             return true;
+                        } else {
+                            // c'est une piece qui ne peut pas attaquer => on arrete la boucle
+                            break;
                         }
                     }
                 }
@@ -414,6 +429,9 @@ public class CalculMouvementBaseService {
                         if (piece.getPiece() == Piece.FOU ||piece.getPiece() == Piece.REINE) {
                             // la case est attaquee
                             return true;
+                        } else {
+                            // c'est une piece qui ne peut pas attaquer => on arrete la boucle
+                            break;
                         }
                     }
                 }
@@ -433,6 +451,9 @@ public class CalculMouvementBaseService {
                         if (piece.getPiece() == Piece.FOU ||piece.getPiece() == Piece.REINE) {
                             // la case est attaquee
                             return true;
+                        } else {
+                            // c'est une piece qui ne peut pas attaquer => on arrete la boucle
+                            break;
                         }
                     }
                 }
@@ -452,6 +473,9 @@ public class CalculMouvementBaseService {
                         if (piece.getPiece() == Piece.FOU ||piece.getPiece() == Piece.REINE) {
                             // la case est attaquee
                             return true;
+                        } else {
+                            // c'est une piece qui ne peut pas attaquer => on arrete la boucle
+                            break;
                         }
                     }
                 }

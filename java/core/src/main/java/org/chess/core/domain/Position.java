@@ -47,8 +47,8 @@ public class Position {
     }
 
     public static Position getPosition(String pos){
-        Preconditions.checkState(StringUtils.isNotBlank(pos));
-        Preconditions.checkState(StringUtils.length(pos)==2);
+        Preconditions.checkState(StringUtils.isNotBlank(pos), "pos=%s", pos);
+        Preconditions.checkState(StringUtils.length(pos)==2, "pos=%s", pos);
         char c=pos.charAt(0);
         char c2=pos.charAt(1);
         Preconditions.checkState((c>='a'&&c<='h')||(c>='A'&&c<='H'));

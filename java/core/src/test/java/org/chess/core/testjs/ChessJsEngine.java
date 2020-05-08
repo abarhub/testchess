@@ -119,7 +119,7 @@ public class ChessJsEngine {
 
         String json=gson.toJson(jsonRequest);
 
-        LOGGER.info("json={}",json);
+        //LOGGER.info("json={}",json);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -135,15 +135,15 @@ public class ChessJsEngine {
         //headers.map().forEach((k, v) -> LOGGER.info(k + ":" + v));
 
         // print status code
-        LOGGER.info("{}",response.statusCode());
+        //LOGGER.info("{}",response.statusCode());
 
         // print response body
-        LOGGER.trace("{}",response.body());
+//        LOGGER.trace("{}",response.body());
 
         JsonArray objet = JsonParser.parseString(response.body()).getAsJsonArray();
 
-        LOGGER.info("{}",objet);
-
+//        LOGGER.info("{}",objet);
+        
         List<JsonReponse> liste=new ArrayList<>();
 
         if(objet!=null&&!objet.isJsonNull()&&objet.size()>0){
