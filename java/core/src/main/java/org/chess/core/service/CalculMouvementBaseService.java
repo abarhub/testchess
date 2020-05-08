@@ -225,7 +225,7 @@ public class CalculMouvementBaseService {
                             if (tmp != null) {
                                 caseNonVide = true;
                                 break;
-                            } else if (i<3&&caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
+                            } else if (i>1&&caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
                                 caseAttaque = true;
                                 break;
                             }

@@ -136,11 +136,17 @@ public class Test1 {
         int no;
 
         no=1;
+        no=2;
 
         if(no==1) {
             plateau = "rnb2k1r/pp1Pbppp/2p5/q7/2B5/8/PPPQNnPP/RNB1K2R w QK - 3 9";
             depth = 1;
             perftRef = 39;
+        } else if(no==2){
+            //
+            plateau = "r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq - 0 1";
+            depth = 1;
+            perftRef = 29;
         }
 
         Partie partie = notationFEN.createPlateau(plateau);
@@ -241,7 +247,7 @@ public class Test1 {
             if(!resAbsent.isEmpty()){
                 LOGGER.info("mvt en trop dans java : {}",resAbsent);
             }
-            if(resNonTraite.isEmpty()){
+            if(!resNonTraite.isEmpty()){
                 LOGGER.info("mvt absent du java : {}",resNonTraite);
             }
 
