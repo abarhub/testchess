@@ -16,8 +16,7 @@ import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Test1 {
 
@@ -185,6 +184,8 @@ public class Test1 {
             EtatPartie configurationPartie=partie3.getConfigurationPartie();
             var res2=calculMouvementSimpleService.calcul(plateau2, joueurCourant, configurationPartie);
 
+            LOGGER.info("mvt java: {}", res2);
+
             LOGGER.info("nb mvt js: {}", res.size());
 
             LOGGER.info("nb mvt java: {}", res2.getMapMouvements().size());
@@ -201,47 +202,59 @@ public class Test1 {
         Map<PieceCouleurPosition, Set<Position>> mapJs=new HashMap<>();
         Map<PieceCouleurPosition, Set<Position>> mapJava=new HashMap<>();
 
-        if(res!=null){
-            for(JsonReponse rep:res){
-                var joueur=rep.getColor();
-                var posSrc=rep.getPositionSource();
-                var posDest=rep.getPositionDestination();
-                var piece=rep.getPiece();
-                assertNotNull(joueur);
-                assertNotNull(posSrc);
-                assertNotNull(posDest);
-                assertNotNull(piece,()-> "rep="+rep);
-
-                var p=new PieceCouleurPosition(piece,joueur,posSrc);
-                if(mapJs.containsKey(p)){
-                    mapJs.get(p).add(posDest);
-                } else {
-                    mapJs.put(p,new HashSet<>());
-                    mapJs.get(p).add(posDest);
-                }
-            }
-        }
-
         if(res2!=null){
-            for(var entry:res2.entrySet()){
-                var p=entry.getKey();
-                var liste=entry.getValue();
 
-                if(!mapJava.containsKey(p)){
-                    mapJava.put(p,new HashSet<>());
-                }
-                for(var m:liste){
-                    mapJava.get(p).add(m.getPositionDestination());
+            var resNonTraite=new ArrayList<>(res);
+
+            List<IMouvement> resAbsent=new ArrayList<>();
+
+            for(var entry:res2.entrySet()) {
+                var p = entry.getKey();
+                var liste = entry.getValue();
+
+                for(var mvt:liste){
+
+                    var iter=resNonTraite.iterator();
+                    var trouve=false;
+                    while(iter.hasNext()){
+                        var tmp=iter.next();
+
+                        if(tmp.getColor()==p.getCouleur() &&tmp.getPiece()==p.getPiece() &&
+                                tmp.getPositionSource().equals(mvt.getPositionSource())&&
+                                tmp.getPositionDestination().equals(mvt.getPositionDestination())){
+                            iter.remove();
+                            trouve=true;
+                            break;
+                        }
+
+                    }
+
+                    if(!trouve){
+                        resAbsent.add(mvt);
+                    }
                 }
             }
+
+            LOGGER.info("nb mvt java non trouve dans json: {}",resAbsent.size());
+            LOGGER.info("nb mvt js non trouve dans java: {}",resNonTraite.size());
+
+            if(!resAbsent.isEmpty()){
+                LOGGER.info("mvt en trop dans java : {}",resAbsent);
+            }
+            if(resNonTraite.isEmpty()){
+                LOGGER.info("mvt absent du java : {}",resNonTraite);
+            }
+
+            assertAll(
+                    ()->assertEquals(0,resAbsent.size(), "en trop dans java"),
+                    ()->assertEquals(0,resNonTraite.size(), "absent du java")
+            );
+
+        } else {
+            assertTrue(CollectionUtils.isEmpty(res));
         }
 
-        long nbJs=mapJs.values().stream().flatMap(x -> x.stream()).count();
-        long nbJava=mapJava.values().stream().flatMap(x -> x.stream()).count();
 
-        LOGGER.info("nbJs={}, nbJava={}", nbJs, nbJava);
-
-        assertEquals(mapJs,mapJava);
     }
 
 

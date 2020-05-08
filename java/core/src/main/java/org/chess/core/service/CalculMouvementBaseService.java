@@ -787,7 +787,7 @@ public class CalculMouvementBaseService {
                 (piece.getCouleur() == Couleur.Noir && position.getRangee() == RangeeEnum.RANGEE1)) {
             // promotion du pion
             for (Piece p : Piece.values()) {
-                if (p != Piece.PION) {
+                if (p != Piece.PION &&p != Piece.ROI) {
                     PieceCouleur caseCible = plateau.getCase(position);
                     if (mangePiece) {
                         if (caseCible != null && caseCible.getCouleur() != piece.getCouleur()) {
