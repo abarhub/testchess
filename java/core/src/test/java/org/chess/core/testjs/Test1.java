@@ -137,6 +137,7 @@ public class Test1 {
 
         no=1;
         no=2;
+        no=3;
 
         if(no==1) {
             plateau = "rnb2k1r/pp1Pbppp/2p5/q7/2B5/8/PPPQNnPP/RNB1K2R w QK - 3 9";
@@ -147,6 +148,11 @@ public class Test1 {
             plateau = "r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq - 0 1";
             depth = 1;
             perftRef = 29;
+        } else if(no==3){
+            //
+            plateau = "8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1";
+            depth = 1;
+            perftRef = 4;
         }
 
         Partie partie = notationFEN.createPlateau(plateau);
@@ -179,7 +185,7 @@ public class Test1 {
 
         if(perftRef==perftJs &&perftRef==perftJava){
             LOGGER.info("tout est bon !!!");
-        } else if(perftRef==perftJs &&perftRef!=perftJava){
+        } else if((perftRef==perftJs &&perftRef!=perftJava)||perftRef!=perftJava){
             LOGGER.info("calcul Perft Java invalide");
 
             Partie partie3=new Partie(partie);

@@ -126,7 +126,7 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 1, 29),
                 Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 2, 953),
                 Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 3, 27990),
-                Arguments.of("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1", 1, 4)
+                Arguments.of("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1", 1, 5)
         );
     }
 
@@ -168,6 +168,16 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1", "e1", liste("d2", "e2", "f2", "g1", "c1", "f1", "d1")), // roque blanc
                 Arguments.of("8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1", "e5", liste("d4", "d5", "d6", "e6")), // roi attaque
                 Arguments.of("r3k1r1/p2n1p1p/7p/4p2n/pPP5/b3pp2/8/R4K1q w KQkq - 0 1", "f1", liste()), // roi attaque echecs et mat
+                Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq - 0 1", "e8", liste("d8", "d7", "e7", "f8", "g8", "c8")), // roque noir
+                Arguments.of("r3k2r/8/8/8/8/4R3/8/4K3 b kq - 0 1", "e8", liste("d8", "d7", "f8", "f7")), // roque noir, roi attaque
+                Arguments.of("r3k2r/8/8/8/8/5R2/8/4K3 b kq - 0 1", "e8", liste("e7", "d7", "d8", "c8")), // roque noir
+                Arguments.of("r3k2r/8/8/8/8/6R1/8/4K3 b kq - 0 1", "e8", liste("f8", "f7", "e7", "d8", "d7", "c8")), // roque noir
+                Arguments.of("r3k2r/8/8/8/8/7R/8/4K3 b kq - 0 1", "e8", liste("f8", "f7", "e7", "d8", "d7", "g8", "c8")), // roque noir
+                Arguments.of("r3k2r/8/8/8/8/3R4/8/4K3 b kq - 0 1", "e8", liste("e7", "f7", "f8", "g8")), // roque noir
+                Arguments.of("r3k2r/8/8/8/8/2R5/8/4K3 b kq - 0 1", "e8", liste("d8", "d7", "e7", "f7", "f8", "g8")), // roque noir
+                Arguments.of("r3k2r/8/8/8/8/1R6/8/4K3 b kq - 0 1", "e8", liste("d8", "d7", "e7", "f7", "f8", "g8", "c8")), // roque noir
+                Arguments.of("r3k2r/8/8/8/8/R7/8/4K3 b kq - 0 1", "e8", liste("d8", "d7", "e7", "f7", "f8", "g8", "c8")), // roque noir
+
 
                 // déplacement pion
                 Arguments.of("1k6/8/8/8/8/8/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4")),
@@ -341,7 +351,7 @@ class CalculMouvementSimpleServiceTest {
             for (var s : deplacementsPossible) {
                 Position p = Position.getPosition(s);
                 assertNotNull(p);
-                assertFalse(listeDeplacementPossible.contains(p));
+                assertFalse(listeDeplacementPossible.contains(p), ()-> "liste="+listeDeplacementPossible+", contient:"+p+", liste2="+deplacementsPossible);
                 listeDeplacementPossible.add(p);
             }
         }

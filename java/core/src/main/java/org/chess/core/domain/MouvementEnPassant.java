@@ -2,6 +2,8 @@ package org.chess.core.domain;
 
 import com.google.common.base.Preconditions;
 
+import java.util.StringJoiner;
+
 public class MouvementEnPassant implements IMouvement {
 
     private final Position positionSource;
@@ -47,5 +49,15 @@ public class MouvementEnPassant implements IMouvement {
 
     public Position getPieceAttaquee() {
         return pieceAttaquee;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", MouvementEnPassant.class.getSimpleName() + "[", "]")
+                .add("positionSource=" + positionSource)
+                .add("positionDestination=" + positionDestination)
+                .add("pieceAttaquee=" + pieceAttaquee)
+                .add("joueur=" + joueur)
+                .toString();
     }
 }
