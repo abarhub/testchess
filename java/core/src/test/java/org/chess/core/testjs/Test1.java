@@ -209,6 +209,120 @@ public class Test1 {
         }
     }
 
+    @Test
+    void test6() throws Exception {
+
+        LOGGER.info("test6");
+
+        ChessJsEngine chessJsEngine = new ChessJsEngine();
+
+        NotationFEN notationFEN = new NotationFEN();
+
+        String plateau = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        int depth=1;
+        long perftRef=0;
+
+        int no;
+
+        no=1;
+        //no=2;
+        //no=3;
+
+        if(no==1) {
+            plateau = "rnb2k1r/pp1Pbppp/2p5/q7/2B5/8/PPPQNnPP/RNB1K2R w QK - 3 9";
+            depth = 2;
+            perftRef = 39;
+        } else if(no==2){
+            //
+            plateau = "r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq - 0 1";
+            depth = 1;
+            perftRef = 29;
+        } else if(no==3){
+            //
+            plateau = "8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1";
+            depth = 1;
+            perftRef = 4;
+        }
+
+        Partie partieInitiale = notationFEN.createPlateau(plateau);
+
+        for(int i=0;i<depth;i++){
+
+            final int noDepth=i+1;
+
+            LOGGER.info("noDepth = {}", noDepth);
+
+            Partie partie =new Partie(partieInitiale);
+
+            long perftJs=chessJsEngine.calculPerft(partie, noDepth);
+
+            Partie partie2=new Partie(partieInitiale);
+
+            long perftJava=calculPerf(partie2, noDepth);
+
+            if(perftJs==perftJava){
+                LOGGER.info("pas de différence pour le depth {} : ", noDepth, perftJs);
+            } else {
+                LOGGER.info("différence pour le depth {}: js={}, java={}", noDepth, perftJs, perftJava);
+                break;
+            }
+
+        }
+
+//        Partie partie = notationFEN.createPlateau(plateau);
+//
+//        LOGGER.info("depth:{}, perftRef:{}",depth, perftRef);
+//
+//        long debut=System.currentTimeMillis();
+//
+//        long perftJs=chessJsEngine.calculPerft(partie, depth);
+//
+//        long fin=System.currentTimeMillis();
+//
+//        LOGGER.info("perftJs:{}",perftJs);
+//
+//        LOGGER.info("duree js: {} ms", fin-debut);
+//
+//        Partie partie2=new Partie(partie);
+//
+//        debut=System.currentTimeMillis();
+//
+//        long perftJava=calculPerf(partie2, depth);
+//
+//        fin=System.currentTimeMillis();
+//
+//        LOGGER.info("perftJava:{}",perftJava);
+//
+//        LOGGER.info("duree java: {} ms", fin-debut);
+//
+//        LOGGER.info("Perft: ref={}, js={}, java={}", perftRef, perftJs, perftJava);
+//
+//        if(perftRef==perftJs &&perftRef==perftJava){
+//            LOGGER.info("tout est bon !!!");
+//        } else if((perftRef==perftJs &&perftRef!=perftJava)||perftRef!=perftJava){
+//            LOGGER.info("calcul Perft Java invalide");
+//
+//            Partie partie3=new Partie(partie);
+//            List<JsonReponse> res = chessJsEngine.getMoves2(partie3);
+//
+//            Plateau plateau2=partie3.getPlateau();
+//            Couleur joueurCourant=partie3.getJoueurCourant();
+//            EtatPartie configurationPartie=partie3.getConfigurationPartie();
+//            var res2=calculMouvementSimpleService.calcul(plateau2, joueurCourant, configurationPartie);
+//
+//            LOGGER.info("mvt java: {}", res2);
+//
+//            LOGGER.info("nb mvt js: {}", res.size());
+//
+//            LOGGER.info("nb mvt java: {}", res2.getMapMouvements().size());
+//
+//            compare(res,res2.getMapMouvements());
+//
+//        } else {
+//            LOGGER.info("Impossible de continuer");
+//        }
+    }
+
     private void compare(List<JsonReponse> res, Map<PieceCouleurPosition, List<IMouvement>> res2) {
 
         Map<PieceCouleurPosition, Set<Position>> mapJs=new HashMap<>();
