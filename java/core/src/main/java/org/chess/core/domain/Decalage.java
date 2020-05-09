@@ -7,8 +7,8 @@ import java.util.StringJoiner;
 
 public class Decalage {
 
-    final int rangee;
-    final int colonne;
+    private final int rangee;
+    private final int colonne;
 
     public Decalage(int rangee, int colonne) {
         this.rangee = rangee;

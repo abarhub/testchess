@@ -56,6 +56,12 @@ public class DeplacementService {
             concat(decalageFou,decalageTour)
     );
 
+    private final List<Decalage> decalageRoi=ImmutableList.copyOf(list(
+            decalage(1,1), decalage(1,0),decalage(1,-1),
+            decalage(0,1), decalage(0,-1),
+            decalage(-1,1), decalage(-1,0),decalage(-1,-1)
+    ));
+
     public List<Decalage> getDecalageCavalier(){
         return decalageCavalier;
     }
@@ -98,6 +104,10 @@ public class DeplacementService {
 
     public List<Decalage> getDecalageReine() {
         return decalageReine;
+    }
+
+    public List<Decalage> getDecalageRoi() {
+        return decalageRoi;
     }
 
     private Decalage decalage(int rangee, int colonne){
