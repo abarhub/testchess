@@ -2,6 +2,7 @@ package org.chess.core.utils;
 
 import com.google.common.base.Verify;
 import org.chess.core.domain.ColonneEnum;
+import org.chess.core.domain.Decalage;
 import org.chess.core.domain.Position;
 import org.chess.core.domain.RangeeEnum;
 
@@ -40,5 +41,10 @@ public class PositionTools {
     public static Optional<Position> getPosition(Position position, int decalageRange, int decalageColonne) {
         Verify.verifyNotNull(position);
         return getPosition(position.getRangee(), decalageRange, position.getColonne(), decalageColonne);
+    }
+
+    public static Optional<Position> getPosition(Position position, Decalage decalage) {
+        Verify.verifyNotNull(position);
+        return getPosition(position.getRangee(), decalage.getRangee(), position.getColonne(), decalage.getColonne());
     }
 }

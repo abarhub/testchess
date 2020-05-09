@@ -195,7 +195,15 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("k7/8/8/8/3Pp3/8/8/K7 b - d3 0 1", "e4", liste("e3", "d3")), // en passant noir
                 Arguments.of("k7/8/8/8/4pP2/8/8/K7 b - f3 0 1", "e4", liste("e3", "f3")), // en passant noir
                 Arguments.of("r3k1r1/p2n1p1p/7p/4p2n/pPP5/b3pp2/8/R4K1q w KQkq - 0 1", "b4", liste()), // roi attaque echecs et mat
-                Arguments.of("r3k1r1/p2n1p1p/7p/4p2n/pPP5/b3pp2/8/R4K1q w KQkq - 0 1", "c4", liste()) // roi attaque echecs et mat
+                Arguments.of("r3k1r1/p2n1p1p/7p/4p2n/pPP5/b3pp2/8/R4K1q w KQkq - 0 1", "c4", liste()), // roi attaque echecs et mat
+
+                // cavalier
+                Arguments.of("4k3/8/8/8/3N4/8/8/4K3 w - - 0 1", "d4", liste("e6","f5", "f3", "e2", "c2", "b3", "b5", "c6")), // cavalier blanc
+                Arguments.of("4k3/8/8/5N2/8/8/8/4K3 w - - 0 1", "f5", liste("g7","h6", "h4", "g3", "e3", "d4", "d6", "e7")), // cavalier blanc
+                Arguments.of("4k3/8/8/8/3N4/1p3P2/8/4K3 w - - 0 1", "d4", liste("e6","f5", "e2", "c2", "b3", "b5", "c6")), // cavalier blanc
+                Arguments.of("4k3/8/8/8/8/8/8/4K2N w - - 0 1", "h1", liste("f2","g3")), // cavalier blanc coin
+                Arguments.of("7k/8/8/3n4/8/8/8/7K b - - 0 1", "d5", liste("e7", "f6", "f4", "e3", "c3", "b4", "b6", "c7")), // cavalier noir
+                Arguments.of("7k/8/8/3n4/8/2P1p3/8/7K b - - 0 1", "d5", liste("e7", "f6", "f4", "c3", "b4", "b6", "c7")) // cavalier noir
         );
     }
 
