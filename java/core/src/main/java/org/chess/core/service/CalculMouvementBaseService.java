@@ -306,11 +306,20 @@ public class CalculMouvementBaseService {
         }
 
         // test du roi
-        for(var range=-1;range<=1;range++){
-            for(var colonne=-1;colonne<=1;colonne++){
-                if(range!=0&&colonne!=0){
-                    if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, range, colonne, Piece.ROI)) {
-                        return true;
+        if(true){
+            List<Decalage> decalageList=deplacementService.getDecalageRoi();
+            for(var decalage2:decalageList){
+                if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, decalage2.getRangee(), decalage2.getColonne(), Piece.ROI)) {
+                    return true;
+                }
+            }
+        } else {
+            for (var range = -1; range <= 1; range++) {
+                for (var colonne = -1; colonne <= 1; colonne++) {
+                    if (range != 0 && colonne != 0) {
+                        if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, range, colonne, Piece.ROI)) {
+                            return true;
+                        }
                     }
                 }
             }
