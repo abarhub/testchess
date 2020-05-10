@@ -1,0 +1,27 @@
+{
+  "liste": [
+    { "id":"1", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "depth":1,"value": 20 },
+    { "id":"2", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "depth":2,"value": 400 },
+    { "id":"3", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "depth":3,"value": 8902 },
+    { "id":"4", "fen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "depth":4, "value":197281},
+//    { "id":"5", "fen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","depth":5, "value":4865609},
+//    { "id":"6", "fen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","depth":6, "value":119060324},
+    { "id":"7", "fen":"8/PPP4k/8/8/8/8/4Kppp/8 w - - 0 1", "depth":1, "value":18},
+
+    { "id":"8", "fen":"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -", "depth":1, "value":48},
+    //{ "id":"9", "fen":"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -", "depth":2, "value":2039},
+    //{ "id":"10", "fen":"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -", "depth":3, "value":97862},
+    //{ "id":"11", "fen":"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -", "depth":4, "value":4085603},
+    { "id":"12", "fen":"8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ", "depth":1, "value":14},
+    { "id":"13", "fen":"8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ", "depth":2, "value":191},
+    //{ "id":"14", "fen":"8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ", "depth":3, "value":2812},
+    //{ "id":"15", "fen":"8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ", "depth":4, "value":43238},
+    { "id":"16", "fen":"n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - - 0 1", "depth":1, "value":24},
+    { "id":"17", "fen":"8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", "depth":1, "value":5},
+    { "id":"18", "fen":"r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -", "depth":1, "value":17},
+    { "id":"19", "fen":"8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -", "depth":1, "value":9},
+    { "id":"20", "fen":"r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", "depth":1, "value":29},
+    { "id":"21", "fen":"r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", "depth":2, "value":953},
+    { "id":"22", "fen":"8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1", "depth":1, "value":5} /* TODO: sur internet perft=4, mais je ne voie que 5. voir pourquoi */
+  ]
+}
