@@ -1,7 +1,9 @@
 package org.chess.core.utils;
 
 
+import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.chess.core.testjs.Test1;
 import org.chess.core.utils.StreamGobbler;
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -23,11 +26,13 @@ public class StockFishService {
     public static final Logger LOGGER = LoggerFactory.getLogger(StockFishService.class);
 
 
-    public long getPerft(String fen, int depth) throws IOException, InterruptedException {
+    public PerftStockfich getPerft(String fen, int depth) throws IOException, InterruptedException {
         List<String> liste=new ArrayList<>();
         List<String> listeErreur=new ArrayList<>();
         String cmd="D:/temp/stockfish/stockfish-11-win/Windows/stockfish_20011801_x64.exe";
         BlockingQueue<String> queue=new LinkedBlockingQueue<>();
+        PerftStockfich perftStockfich=new PerftStockfich();
+        perftStockfich.setMap(new HashMap<>());
 
         //queue.add("position fen "+fen);
         //queue.add("go perft "+depth);
@@ -66,15 +71,34 @@ public class StockFishService {
             throw new RuntimeException("Erreur pendant l'execution du programme");
         }
 
+        int etat=0;
+
         for(String s:liste){
-            if(s!=null&&s.startsWith("Nodes searched: ")){
+            if(s!=null&&s.startsWith("Stockfish ")&&etat==0) {
+                etat = 1;
+            } if(etat==1){
+                if(StringUtils.isNotBlank(s)){
+                    if(s.contains(":")){
+                        int pos=s.indexOf(':');
+                        String position=s.substring(0,pos).trim();
+                        String nbStr=s.substring(pos+1).trim();
+                        Long nb=Long.parseLong(nbStr);
+                        Verify.verify(position.matches("^[a-h][1-8][a-h][1-8]$"));
+                        Verify.verify(nb>=0,"nb=%s",nb);
+                        Verify.verify(!perftStockfich.getMap().containsKey(position));
+                        perftStockfich.getMap().put(position,nb);
+                    }
+                } else {
+                    etat=2;
+                }
+            }if(s!=null&&s.startsWith("Nodes searched: ")&&etat==2){
                 String s2=s.substring(16).trim();
                 long n=Long.parseLong(s2);
-                return n;
+                perftStockfich.setPertf(n);
             }
         }
 
-        return 0;
+        return perftStockfich;
     }
 
     private int exec(String cmd, Consumer<String> consumer, Consumer<String> consumerError, BlockingQueue<String> queue) throws IOException, InterruptedException {

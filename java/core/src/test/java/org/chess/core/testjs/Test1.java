@@ -1,9 +1,12 @@
 package org.chess.core.testjs;
 
+import com.google.common.base.Verify;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.chess.core.domain.*;
 import org.chess.core.notation.NotationFEN;
 import org.chess.core.service.CalculMouvementSimpleService;
+import org.chess.core.utils.PerftStockfich;
 import org.chess.core.utils.PlateauTools;
 import org.chess.core.utils.StockFishService;
 import org.junit.jupiter.api.BeforeEach;
@@ -349,9 +352,190 @@ public class Test1 {
 
         StockFishService stockFishService=new StockFishService();
 
-        long res=stockFishService.getPerft(fen,depth);
+        PerftStockfich perftStockfich=stockFishService.getPerft(fen,depth);
+
+        long res=perftStockfich.getPertf();
+        LOGGER.info("res={}",res);
+    }
+
+    @Test
+    public void test8() throws Exception {
+
+        String fen=null;
+        int depth=1;
+        int no=1;
+
+        no=1;
+        no=2;
+        no=3;
+        no=4;
+
+        if(no==1) {
+            fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            depth = 1;
+        } else if(no==2){
+            fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            depth = 3;
+        } else if(no==3){
+            fen = "8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1";
+            depth = 1;
+        } else if(no==4){
+            fen = "8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -";
+            depth = 2;
+        } else {
+            fail("Erreur");
+        }
+
+
+        StockFishService stockFishService=new StockFishService();
+
+        PerftStockfich perftStockfich=stockFishService.getPerft(fen,depth);
+
+        long res=perftStockfich.getPertf();
 
         LOGGER.info("res={}",res);
+
+        LOGGER.info("perftStockfich={}",perftStockfich);
+
+        Partie partie=notationFEN.createPlateau(fen);
+
+        long perftJava=calculPerf(partie, depth);
+
+        //assertEquals(res, perftJava);
+
+        if(res==perftJava){
+            LOGGER.info("aucune difference");
+        } else {
+
+            long nb=0;
+            for(Long l:perftStockfich.getMap().values()){
+                nb+=l;
+            }
+            assertEquals(perftStockfich.getPertf(),nb);
+
+            var res2 = calculMouvementSimpleService.calcul(partie.getPlateau(), partie.getJoueurCourant(), partie.getConfigurationPartie());
+
+            Map<String,Long> mapPerfJava=new HashMap<>();
+
+            Map<PieceCouleurPosition, List<IMouvement>> map = res2.getMapMouvements();
+
+            Map<String,List<IMouvement>> map2=new HashMap<>();
+
+            for(var entry:map.entrySet()){
+
+                for(IMouvement mvt:entry.getValue()){
+                    var pos=mvt.getPositionSource();
+                    var key=mvt.getPositionSource().toString()+mvt.getPositionDestination().toString();
+
+                    Plateau plateau2 = new Plateau(partie.getPlateau());
+                    plateau2.move(mvt.getPositionSource(), mvt);
+                    PlateauTools plateauTools = new PlateauTools();
+                    ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(partie.getConfigurationPartie(), entry.getKey(), mvt);
+                    configurationPartie2.setJoueurTrait(calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()));
+
+                    Partie partie2=new Partie(plateau2,
+                            calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()),
+                            partie.getInformationPartie(),configurationPartie2);
+
+                    long perftJava2=calculPerf(partie2, depth-1);
+
+                    if(mapPerfJava.containsKey(key)){
+                        mapPerfJava.put(key,mapPerfJava.get(key)+perftJava2);
+                    } else {
+                        mapPerfJava.put(key,perftJava2);
+                    }
+
+                    if(!map2.containsKey(key)){
+                        map2.put(key, Lists.newArrayList());
+                    }
+                    map2.get(key).add(mvt);
+
+//                    var res3 = calculMouvementSimpleService.calcul(plateau2,
+//                            calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()),
+//                            configurationPartie2);
+
+
+                }
+            }
+
+            LOGGER.info("perf java: {}", mapPerfJava);
+
+            long res4=mapPerfJava.values().stream().mapToLong(x -> x).sum();
+
+            assertEquals(perftJava, res4);
+
+            Set<String> set=new TreeSet<>();
+
+            set.addAll(perftStockfich.getMap().keySet());
+            set.addAll(mapPerfJava.keySet());
+
+            for(String pos2:set){
+
+                long n1=0;
+                long n2=0;
+
+                if(perftStockfich.getMap().containsKey(pos2)) {
+                    n1=perftStockfich.getMap().get(pos2);
+                }
+
+                if(mapPerfJava.containsKey(pos2)){
+                    n2=mapPerfJava.get(pos2);
+                }
+
+                if(n1==n2){
+                    LOGGER.info("{} OK ({}=={})",pos2, n1,n2);
+                } else {
+                    LOGGER.info("{} Différent ({}=={})",pos2, n1,n2);
+
+                    var tmp=map2.get(pos2);
+
+                    Partie partie3=new Partie(partie);
+
+                    calculDifference(pos2,tmp,partie3, depth-1);
+                }
+
+            }
+
+        }
+
+    }
+
+    private void calculDifference(String pos2, List<IMouvement> tmp, Partie partie, int depth) throws IOException, InterruptedException {
+
+        Verify.verify(tmp!=null);
+        Verify.verify(!tmp.isEmpty());
+
+        for(IMouvement mvt:tmp) {
+
+            Plateau plateau2 = new Plateau(partie.getPlateau());
+            plateau2.move(mvt.getPositionSource(), mvt);
+            PlateauTools plateauTools = new PlateauTools();
+            var p=new PieceCouleurPosition(mvt.getPiece(),mvt.getJoueur(),mvt.getPositionSource());
+            ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(partie.getConfigurationPartie(), p, mvt);
+            configurationPartie2.setJoueurTrait(calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()));
+
+            Partie partie2 = new Partie(plateau2,
+                    calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()),
+                    partie.getInformationPartie(), configurationPartie2);
+
+            long perftJava2=calculPerf(partie2, depth);
+
+            String fen=notationFEN.serialize(partie2);
+
+            StockFishService stockFishService=new StockFishService();
+
+            PerftStockfich perftStockfich=stockFishService.getPerft(fen,depth);
+
+            long res=perftStockfich.getPertf();
+
+            LOGGER.info("res={}",res);
+
+            LOGGER.info("perftStockfich={}",perftStockfich);
+
+            LOGGER.info("perftJava2={}",perftJava2);
+
+        }
+
     }
 
     private void verifieJs(Partie partie, String fen, List<Test02> listeErreur) throws IOException, InterruptedException {
