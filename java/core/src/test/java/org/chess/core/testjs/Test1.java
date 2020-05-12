@@ -5,6 +5,7 @@ import org.chess.core.domain.*;
 import org.chess.core.notation.NotationFEN;
 import org.chess.core.service.CalculMouvementSimpleService;
 import org.chess.core.utils.PlateauTools;
+import org.chess.core.utils.StockFishService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -315,6 +316,42 @@ public class Test1 {
 
         }
 
+    }
+
+    @Test
+    public void test7() throws Exception {
+
+        String fen=null;
+        int depth=1;
+        int no=1;
+
+        no=1;
+        no=2;
+        no=3;
+        no=4;
+
+        if(no==1) {
+            fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            depth = 1;
+        } else if(no==2){
+            fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            depth = 3;
+        } else if(no==3){
+            fen = "8/7p/p5pb/4k3/P1pPn3/8/P5PP/1rB2RK1 b - d3 0 1";
+            depth = 1;
+        } else if(no==4){
+            fen = "8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -";
+            depth = 2;
+        } else {
+            fail("Erreur");
+        }
+
+
+        StockFishService stockFishService=new StockFishService();
+
+        long res=stockFishService.getPerft(fen,depth);
+
+        LOGGER.info("res={}",res);
     }
 
     private void verifieJs(Partie partie, String fen, List<Test02> listeErreur) throws IOException, InterruptedException {
