@@ -6,6 +6,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.chess.core.domain.*;
 import org.chess.core.notation.NotationFEN;
 import org.chess.core.service.CalculMouvementSimpleService;
+import org.chess.core.utils.CalculPerft;
 import org.chess.core.utils.PerftStockfich;
 import org.chess.core.utils.PlateauTools;
 import org.chess.core.utils.StockFishService;
@@ -332,6 +333,8 @@ public class Test1 {
         no=2;
         no=3;
         no=4;
+        no=5;
+        no=6;
 
         if(no==1) {
             fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -344,6 +347,12 @@ public class Test1 {
             depth = 1;
         } else if(no==4){
             fen = "8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -";
+            depth = 2;
+        } else if(no==5){
+            fen = "k7/8/8/8/5p2/8/6P1/K7 w - - 0 1";
+            depth = 2;
+        } else if(no==6){
+            fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
             depth = 2;
         } else {
             fail("Erreur");
@@ -369,6 +378,7 @@ public class Test1 {
         no=2;
         no=3;
         no=4;
+        no=5;
 
         if(no==1) {
             fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -381,6 +391,9 @@ public class Test1 {
             depth = 1;
         } else if(no==4){
             fen = "8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -";
+            depth = 2;
+        } else if(no==5){
+            fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
             depth = 2;
         } else {
             fail("Erreur");
@@ -399,7 +412,8 @@ public class Test1 {
 
         Partie partie=notationFEN.createPlateau(fen);
 
-        long perftJava=calculPerf(partie, depth);
+        CalculPerft calculPerft=new CalculPerft();
+        long perftJava=calculPerft.calculPerft(partie, depth);
 
         //assertEquals(res, perftJava);
 
@@ -424,20 +438,12 @@ public class Test1 {
             for(var entry:map.entrySet()){
 
                 for(IMouvement mvt:entry.getValue()){
-                    var pos=mvt.getPositionSource();
                     var key=mvt.getPositionSource().toString()+mvt.getPositionDestination().toString();
 
-                    Plateau plateau2 = new Plateau(partie.getPlateau());
-                    plateau2.move(mvt.getPositionSource(), mvt);
-                    PlateauTools plateauTools = new PlateauTools();
-                    ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(partie.getConfigurationPartie(), entry.getKey(), mvt);
-                    configurationPartie2.setJoueurTrait(calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()));
+                    Partie partie2=new Partie(partie);
+                    partie2.mouvement(mvt);
 
-                    Partie partie2=new Partie(plateau2,
-                            calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()),
-                            partie.getInformationPartie(),configurationPartie2);
-
-                    long perftJava2=calculPerf(partie2, depth-1);
+                    long perftJava2=calculPerft.calculPerft(partie2, depth-1);
 
                     if(mapPerfJava.containsKey(key)){
                         mapPerfJava.put(key,mapPerfJava.get(key)+perftJava2);
@@ -449,11 +455,6 @@ public class Test1 {
                         map2.put(key, Lists.newArrayList());
                     }
                     map2.get(key).add(mvt);
-
-//                    var res3 = calculMouvementSimpleService.calcul(plateau2,
-//                            calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()),
-//                            configurationPartie2);
-
 
                 }
             }
@@ -491,7 +492,7 @@ public class Test1 {
 
                     Partie partie3=new Partie(partie);
 
-                    calculDifference(pos2,tmp,partie3, depth-1);
+                    calculDifference(tmp,partie3, depth-1);
                 }
 
             }
@@ -500,25 +501,19 @@ public class Test1 {
 
     }
 
-    private void calculDifference(String pos2, List<IMouvement> tmp, Partie partie, int depth) throws IOException, InterruptedException {
+    private void calculDifference(List<IMouvement> tmp, Partie partie, int depth) throws IOException, InterruptedException {
 
         Verify.verify(tmp!=null);
         Verify.verify(!tmp.isEmpty());
 
+        CalculPerft calculPerft=new CalculPerft();
+
         for(IMouvement mvt:tmp) {
 
-            Plateau plateau2 = new Plateau(partie.getPlateau());
-            plateau2.move(mvt.getPositionSource(), mvt);
-            PlateauTools plateauTools = new PlateauTools();
-            var p=new PieceCouleurPosition(mvt.getPiece(),mvt.getJoueur(),mvt.getPositionSource());
-            ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(partie.getConfigurationPartie(), p, mvt);
-            configurationPartie2.setJoueurTrait(calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()));
+            Partie partie2=new Partie(partie);
+            partie2.mouvement(mvt);
 
-            Partie partie2 = new Partie(plateau2,
-                    calculMouvementSimpleService.joueurAdversaire(partie.getJoueurCourant()),
-                    partie.getInformationPartie(), configurationPartie2);
-
-            long perftJava2=calculPerf(partie2, depth);
+            long perftJava2=calculPerft.calculPerft(partie2, depth);
 
             String fen=notationFEN.serialize(partie2);
 

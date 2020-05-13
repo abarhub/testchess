@@ -815,7 +815,9 @@ public class CalculMouvementBaseService {
 
     private void ajouteAttaqueEnPassant(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, Position positionAttaque) {
         var decalage3 = declageColonne(piece.getPosition().getColonne(), positionAttaque.getColonne());
-        Verify.verify(decalage3 == 1 || decalage3 == -1);
+        Verify.verify(decalage3 == 1 || decalage3 == -1,
+                "decalage=%s, pos=%s, posAttaque=%s",
+                decalage3, piece.getPosition(), positionAttaque);
         var pieceAttaqueOpt = PositionTools.getPosition(piece.getPosition(), 0, decalage3);
         Verify.verify(pieceAttaqueOpt.isPresent());
         var pieceAttaque = pieceAttaqueOpt.get();
