@@ -800,11 +800,13 @@ public class CalculMouvementBaseService {
         if (derniercoupOpt.isPresent()) {
             var positionAttaque = derniercoupOpt.get();
             if (piece.getCouleur() == Couleur.Blanc) {
-                if (piece.getPosition().getRangee() == RangeeEnum.RANGEE5 && positionAttaque.getRangee() == RangeeEnum.RANGEE6) {
+                if (piece.getPosition().getRangee() == RangeeEnum.RANGEE5 && positionAttaque.getRangee() == RangeeEnum.RANGEE6
+                    &&Math.abs(PositionTools.differenceColonne(piece.getPosition(),positionAttaque))==1) {
                     ajouteAttaqueEnPassant(piece, plateau, mouvements, positionAttaque);
                 }
             } else {
-                if (piece.getPosition().getRangee() == RangeeEnum.RANGEE4 && positionAttaque.getRangee() == RangeeEnum.RANGEE3) {
+                if (piece.getPosition().getRangee() == RangeeEnum.RANGEE4 && positionAttaque.getRangee() == RangeeEnum.RANGEE3
+                    &&Math.abs(PositionTools.differenceColonne(piece.getPosition(),positionAttaque))==1) {
                     ajouteAttaqueEnPassant(piece, plateau, mouvements, positionAttaque);
                 }
             }

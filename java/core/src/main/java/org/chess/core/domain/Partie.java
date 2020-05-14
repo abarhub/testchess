@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
 import org.chess.core.exception.NotImplementedException;
+import org.chess.core.notation.NotationFEN;
 import org.chess.core.utils.PlateauTools;
 
 
@@ -202,5 +203,10 @@ public class Partie {
 
     public ConfigurationPartie getConfigurationPartie() {
         return configurationPartie;
+    }
+
+    public String getFen(){
+        NotationFEN notationFEN=new NotationFEN();
+        return notationFEN.serialize(this);
     }
 }

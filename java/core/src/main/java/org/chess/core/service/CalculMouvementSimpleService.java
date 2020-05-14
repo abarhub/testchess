@@ -3,8 +3,10 @@ package org.chess.core.service;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.chess.core.domain.*;
+import org.chess.core.notation.NotationFEN;
 import org.chess.core.utils.PlateauTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         boolean roiEnEchec = roiEnEchecs(plateau, positionRoi, joueurAdversaire(joueurCourant), etatPartie);
 
         if (roiEnEchec) {
-            // si echec, recherche des coup pour stoper echec
+            // si echec, recherche des coup pour stopper echec
 
             resultat = rechercheMouvementStoperEchecRoi(plateau, joueurCourant, positionRoi, etatPartie);
         } else {
@@ -62,11 +64,25 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
             resultat = listeMouvement;
         }
 
+        calculEtatJeux(resultat, roiEnEchec);
+
         //dureeTotal.add(Duration.between(debut, Instant.now()));
 //        stopWatch.stop();
         //stopWatch2.stop();
         stopWatch2.suspend();
         return resultat;
+    }
+
+    private void calculEtatJeux(ListeMouvements2 resultat, boolean roiEnEchec) {
+        if(MapUtils.isEmpty(resultat.getMapMouvements())){
+            if(roiEnEchec){
+                resultat.setEtatJeux(EtatJeux.EchecEtMat);
+            } else {
+                resultat.setEtatJeux(EtatJeux.Pat);
+            }
+        } else {
+            resultat.setEtatJeux(EtatJeux.EnCours);
+        }
     }
 
 
@@ -101,27 +117,37 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
                     while (iter.hasNext()) {
                         var mouvement = iter.next();
 
-                        Plateau plateauApresModification = new Plateau((Plateau) plateau);
-                        //plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
-                        plateauApresModification.move(tmp.getKey().getPosition(), mouvement);
-
-                        if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
+                        var p=plateau.getCase(mouvement.getPositionDestination());
+                        if(p!=null&&p.getPiece()==Piece.ROI){
                             iter.remove();
-                        }
-                    }
-                } else {
-                    if (mvtAVerifier(tmp.getKey().getPosition(), positionRoi, plateau)) {
-                        var iter = tmp.getValue().iterator();
-                        Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
-                        while (iter.hasNext()) {
-                            var mouvement = iter.next();
-
-                            Plateau plateauApresModification = new Plateau((Plateau) plateau);
+                        } else {
+                            Plateau plateauApresModification = new Plateau(plateau);
                             //plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
                             plateauApresModification.move(tmp.getKey().getPosition(), mouvement);
 
                             if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
                                 iter.remove();
+                            }
+                        }
+                    }
+                } else {
+                    if (mvtAVerifier(tmp.getKey().getPosition(), positionRoi, plateau, tmp)) {
+                        var iter = tmp.getValue().iterator();
+                        Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
+                        while (iter.hasNext()) {
+                            var mouvement = iter.next();
+
+                            var p=plateau.getCase(mouvement.getPositionDestination());
+                            if(p!=null&&p.getPiece()==Piece.ROI){
+                                iter.remove();
+                            } else {
+                                Plateau plateauApresModification = new Plateau((Plateau) plateau);
+                                //plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
+                                plateauApresModification.move(tmp.getKey().getPosition(), mouvement);
+
+                                if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
+                                    iter.remove();
+                                }
                             }
                         }
                     } else {
@@ -156,9 +182,11 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         }
     }
 
-    private boolean mvtAVerifier(Position positionSrc, Position positionRoi, IPlateau plateau) {
+    private boolean mvtAVerifier(Position positionSrc, Position positionRoi, IPlateau plateau, Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp2) {
         int x, y;
-        if (positionSrc.getRangee() == positionRoi.getRangee()) {
+        if(tmp2.getKey().getPiece()==Piece.PION&&isMouvementEnPassant(tmp2)){
+            return true;
+        } else if (positionSrc.getRangee() == positionRoi.getRangee()) {
             // ils sont sur la même ligne
             int min = Math.min(positionSrc.getColonne().getNo(), positionRoi.getColonne().getNo());
             int max = Math.max(positionSrc.getColonne().getNo(), positionRoi.getColonne().getNo());
@@ -201,6 +229,9 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         }
     }
 
+    private boolean isMouvementEnPassant(Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp2){
+        return tmp2.getValue().stream().anyMatch(x -> x instanceof MouvementEnPassant);
+    }
 
     private boolean roiAttaqueApresDeplacement(IPlateau plateau, Position positionRoi, Couleur couleurAttaquant, EtatPartie etatPartie) {
         return plateau.getStreamPosition()

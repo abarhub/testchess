@@ -129,6 +129,11 @@ public class Plateau implements IPlateau {
         Preconditions.checkNotNull(mouvement);
         Preconditions.checkNotNull(positionSrc);
         Preconditions.checkState(positionSrc.equals(mouvement.getPositionSource()));
+        var pieceAttaque=getCase(mouvement.getPositionDestination());
+        if(pieceAttaque!=null){
+            Preconditions.checkState(pieceAttaque.getCouleur()!=mouvement.getJoueur());
+            Preconditions.checkState(pieceAttaque.getPiece()!=Piece.ROI);
+        }
         if (mouvement instanceof MouvementSimple) {
             MouvementSimple mouvementSimple= (MouvementSimple) mouvement;
             Position positionDest = mouvementSimple.getPositionDestination();
@@ -186,10 +191,10 @@ public class Plateau implements IPlateau {
             final var pieceSource = getCase(positionSrc);
             Verify.verifyNotNull(pieceSource);
             Verify.verify(pieceSource.getPiece()==Piece.PION);
-            final var pieceAttaque = getCase(mouvementEnPassant.getPieceAttaquee());
-            Verify.verifyNotNull(pieceAttaque);
-            Verify.verify(pieceAttaque.getPiece()==Piece.PION);
-            Verify.verify(pieceAttaque.getCouleur()!=pieceSource.getCouleur());
+            final var pieceAttaque2 = getCase(mouvementEnPassant.getPieceAttaquee());
+            Verify.verifyNotNull(pieceAttaque2);
+            Verify.verify(pieceAttaque2.getPiece()==Piece.PION);
+            Verify.verify(pieceAttaque2.getCouleur()!=pieceSource.getCouleur());
             Verify.verify(mouvementEnPassant.getPieceAttaquee().getRangee()==positionSrc.getRangee());
             Verify.verify(Math.abs(mouvementEnPassant.getPieceAttaquee().getColonne().getNo()-positionSrc.getColonne().getNo())==1);
             Verify.verify(mouvementEnPassant.getPieceAttaquee().getColonne()==positionDest.getColonne());

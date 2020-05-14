@@ -4,11 +4,15 @@ import com.google.common.base.Verify;
 import org.apache.commons.collections4.CollectionUtils;
 import org.chess.core.domain.*;
 import org.chess.core.service.CalculMouvementSimpleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
 public class CalculPerft {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(CalculPerft.class);
 
     private CalculMouvementSimpleService calculMouvementSimpleService=new CalculMouvementSimpleService();
 
@@ -44,6 +48,10 @@ public class CalculPerft {
                             ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(configurationPartie, tmp.getKey(), tmp2);
                             var res2= calculPerf(plateau2, calculMouvementSimpleService.joueurAdversaire(joueurCourant), depth - 1, configurationPartie2);
                             resultat+=res2.getPerft();
+//                            if(depth==2) {
+//                                LOGGER.info("depth={}, perft={}, mvt={},total={}", depth, res2.getPerft(),
+//                                        "" + tmp2.getPositionSource() + tmp2.getPositionDestination(), resultat);
+//                            }
                         }
                     }
                 }

@@ -307,6 +307,12 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("k7/8/8/8/4pP2/8/8/K7 b - f3 0 1", "e4", liste("e3", "f3")), // en passant noir
                 Arguments.of("r3k1r1/p2n1p1p/7p/4p2n/pPP5/b3pp2/8/R4K1q w KQkq - 0 1", "b4", liste()), // roi attaque echecs et mat
                 Arguments.of("r3k1r1/p2n1p1p/7p/4p2n/pPP5/b3pp2/8/R4K1q w KQkq - 0 1", "c4", liste()), // roi attaque echecs et mat
+                Arguments.of("k7/8/8/4Pp2/8/8/8/K7 w - f6 0 2", "e5", liste("e6", "f6")), // en passant blanc
+                Arguments.of("k7/8/8/4Pp2/8/8/8/K7 w - - 0 2", "e5", liste("e6")), // en passant blanc
+                Arguments.of("k7/8/8/3P1p2/8/8/8/K7 w - f6 0 2", "d5", liste("d6")), // deplacement normal
+                Arguments.of("8/2p5/3p4/KP5r/1R3pPk/8/4P3/8 b - g3 0 1", "f4", liste("f3")), // en passant impossible a cause de l'echecs au roi
+
+
 
                 // cavalier
                 Arguments.of("4k3/8/8/8/3N4/8/8/4K3 w - - 0 1", "d4", liste("e6","f5", "f3", "e2", "c2", "b3", "b5", "c6")), // cavalier blanc

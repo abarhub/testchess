@@ -335,6 +335,7 @@ public class Test1 {
         no=4;
         no=5;
         no=6;
+        no=7;
 
         if(no==1) {
             fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -352,6 +353,9 @@ public class Test1 {
             fen = "k7/8/8/8/5p2/8/6P1/K7 w - - 0 1";
             depth = 2;
         } else if(no==6){
+            fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
+            depth = 2;
+        } else if(no==7){
             fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
             depth = 2;
         } else {
@@ -379,6 +383,7 @@ public class Test1 {
         no=3;
         no=4;
         no=5;
+        no=6;
 
         if(no==1) {
             fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -393,6 +398,9 @@ public class Test1 {
             fen = "8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -";
             depth = 2;
         } else if(no==5){
+            fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
+            depth = 2;
+        } else if(no==6){
             fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
             depth = 2;
         } else {
@@ -499,6 +507,72 @@ public class Test1 {
 
         }
 
+    }
+
+    @Test
+    public void test9() throws Exception {
+
+        String fen=null;
+        int depth=1;
+        int no=1;
+
+        no=1;
+
+        if(no==1){
+            fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
+            depth = 2;
+        }
+
+
+        Partie partie=notationFEN.createPlateau(fen);
+
+        CalculPerft calculPerft=new CalculPerft();
+
+        LOGGER.info("debut ...");
+        long perftJava=calculPerft.calculPerft(partie, depth);
+        LOGGER.info("fin");
+
+        LOGGER.info("perftJava={}", perftJava);
+
+        var res2 = calculMouvementSimpleService.calcul(partie.getPlateau(), partie.getJoueurCourant(), partie.getConfigurationPartie());
+
+        Map<String,Long> mapPerfJava=new HashMap<>();
+
+        Map<PieceCouleurPosition, List<IMouvement>> map = res2.getMapMouvements();
+
+        Map<String,List<IMouvement>> map2=new HashMap<>();
+
+        for(var entry:map.entrySet()){
+
+            for(IMouvement mvt:entry.getValue()){
+                var key=mvt.getPositionSource().toString()+mvt.getPositionDestination().toString();
+
+                Partie partie2=new Partie(partie);
+                partie2.mouvement(mvt);
+
+                long perftJava2=calculPerft.calculPerft(partie2, depth-1);
+
+                if(mapPerfJava.containsKey(key)){
+                    mapPerfJava.put(key,mapPerfJava.get(key)+perftJava2);
+                } else {
+                    mapPerfJava.put(key,perftJava2);
+                }
+
+                if(!map2.containsKey(key)){
+                    map2.put(key, Lists.newArrayList());
+                }
+                map2.get(key).add(mvt);
+
+            }
+        }
+
+        LOGGER.info("perf java: {}", mapPerfJava);
+
+        long res4=mapPerfJava.values().stream().mapToLong(x -> x).sum();
+
+        LOGGER.info("perf java: total={}, detail={}", perftJava, res4);
+
+        assertEquals(perftJava, res4);
     }
 
     private void calculDifference(List<IMouvement> tmp, Partie partie, int depth) throws IOException, InterruptedException {

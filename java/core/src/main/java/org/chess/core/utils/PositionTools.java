@@ -47,4 +47,12 @@ public class PositionTools {
         Verify.verifyNotNull(position);
         return getPosition(position.getRangee(), decalage.getRangee(), position.getColonne(), decalage.getColonne());
     }
+
+    public static int differenceColonne(Position position,Position position2){
+        return position.getColonne().getNo()-position2.getColonne().getNo();
+    }
+
+    public static int differenceRangee(Position position,Position position2){
+        return position.getRangee().getNo()-position2.getRangee().getNo();
+    }
 }
