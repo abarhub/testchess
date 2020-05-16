@@ -183,18 +183,21 @@ public class Partie {
     }
 
     public void mouvement(IMouvement mouvement){
+        Preconditions.checkNotNull(mouvement);
+        Preconditions.checkState(joueurCourant==configurationPartie.getJoueurTrait());
         plateau.move(mouvement.getPositionSource(),mouvement);
 
         PlateauTools plateauTools=new PlateauTools();
         PieceCouleurPosition pieceCouleurPosition =new PieceCouleurPosition(mouvement.getPiece(),
                 mouvement.getJoueur(),mouvement.getPositionSource());
-        plateauTools.updateConfiguration(configurationPartie,pieceCouleurPosition,mouvement);
+        plateauTools.updateConfiguration2(configurationPartie, configurationPartie,pieceCouleurPosition,mouvement);
 
         if (joueurCourant == Couleur.Blanc) {
             joueurCourant = Couleur.Noir;
         } else {
             joueurCourant = Couleur.Blanc;
         }
+        Verify.verify(joueurCourant==configurationPartie.getJoueurTrait());
     }
 
     public InformationPartie getInformationPartie() {

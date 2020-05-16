@@ -6,9 +6,21 @@ import java.util.Optional;
 
 public class PlateauTools {
 
-    public ConfigurationPartie updateConfiguration(ConfigurationPartie configurationPartie, PieceCouleurPosition piece, IMouvement mouvement) {
+    public ConfigurationPartie updateConfiguration(ConfigurationPartie configurationPartie,
+                                                   PieceCouleurPosition piece, IMouvement mouvement) {
         ConfigurationPartie configurationPartie2=new ConfigurationPartie(configurationPartie);
+        updateConfiguration2(configurationPartie2, configurationPartie,piece, mouvement);
+        return configurationPartie2;
+    }
+
+    public void updateConfiguration2(ConfigurationPartie configurationPartie2,
+                                     ConfigurationPartie configurationPartie, PieceCouleurPosition piece, IMouvement mouvement) {
         configurationPartie2.setPriseEnPassant(Optional.empty());
+        if (configurationPartie.getJoueurTrait() == Couleur.Blanc) {
+            configurationPartie2.setJoueurTrait(Couleur.Noir);
+        } else {
+            configurationPartie2.setJoueurTrait(Couleur.Blanc);
+        }
         if(mouvement instanceof MouvementRoque){
             if(piece.getCouleur()== Couleur.Blanc) {
                 configurationPartie2.setRoqueNoirRoi(false);
@@ -45,7 +57,6 @@ public class PlateauTools {
 //            }
 //            configurationPartie2.setPriseEnPassant(position);
         }
-        return configurationPartie2;
     }
 
 }
