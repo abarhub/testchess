@@ -48,10 +48,10 @@ public class CalculPerft {
                             ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(configurationPartie, tmp.getKey(), tmp2);
                             var res2= calculPerf(plateau2, calculMouvementSimpleService.joueurAdversaire(joueurCourant), depth - 1, configurationPartie2);
                             resultat+=res2.getPerft();
-//                            if(depth==2) {
-//                                LOGGER.info("depth={}, perft={}, mvt={},total={}", depth, res2.getPerft(),
-//                                        "" + tmp2.getPositionSource() + tmp2.getPositionDestination(), resultat);
-//                            }
+                            if(depth==2) {
+                                LOGGER.info("depth={}, perft={}, mvt={},total={}", depth, res2.getPerft(),
+                                        "" + tmp2.getPositionSource() + tmp2.getPositionDestination(), resultat);
+                            }
                         }
                     }
                 }

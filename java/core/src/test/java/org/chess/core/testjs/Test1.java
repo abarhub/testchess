@@ -384,6 +384,9 @@ public class Test1 {
         no=4;
         no=5;
         no=6;
+        no=7;
+        no=8;
+        no=9;
 
         if(no==1) {
             fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -403,10 +406,20 @@ public class Test1 {
         } else if(no==6){
             fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
             depth = 2;
+        } else if(no==7){
+            fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -";
+            depth = 2;
+        } else if(no==8){
+            fen = "7k/5p2/5p1K/8/1p6/2P5/P7/8 w - - 0 1";
+            depth = 2;
+        } else if(no==9){
+            fen = "7k/5p2/7K/7P/1p6/2P5/P7/8 w - - 0 1";
+            depth = 2;
         } else {
             fail("Erreur");
         }
 
+        LOGGER.info("fen={}",fen);
 
         StockFishService stockFishService=new StockFishService();
 
@@ -509,6 +522,7 @@ public class Test1 {
 
     }
 
+    // compare le perft X avec le perft-1
     @Test
     public void test9() throws Exception {
 
@@ -517,12 +531,28 @@ public class Test1 {
         int no=1;
 
         no=1;
+        no=2;
+        no=3;
+        no=4;
 
         if(no==1){
             fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
             depth = 2;
+        } else if(no==2){
+            fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -";
+            depth = 2;
+        } else if(no==3){
+            fen = "7k/8/8/8/1p6/2P5/P7/7K w - - 0 1";
+            depth = 2;
+        } else if(no==4){
+            fen = "7k/5p2/7K/7P/1p6/2P5/P7/8 w - - 0 1";
+            depth = 2;
+        } else if(no==4){
+            fen = "7k/5p2/5p1K/8/1p6/2P5/P7/8 w - - 0 1";
+            depth = 2;
         }
 
+        LOGGER.info("fen={}",fen);
 
         Partie partie=notationFEN.createPlateau(fen);
 
@@ -573,6 +603,31 @@ public class Test1 {
         LOGGER.info("perf java: total={}, detail={}", perftJava, res4);
 
         assertEquals(perftJava, res4);
+    }
+
+    // affiche tous les déplacements
+    @Test
+    public void test10() throws Exception {
+
+        String fen=null;
+        int no=1;
+
+        no=1;
+        no=2;
+
+        if(no==1){
+            fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQkq a3 0 1";
+        } else if(no==2){
+            fen = "7k/5p2/5p1K/8/1pP5/8/P7/8 b - - 0 1";
+        }
+
+        LOGGER.info("fen={}",fen);
+
+        Partie partie=notationFEN.createPlateau(fen);
+
+        var res2 = calculMouvementSimpleService.calcul(partie.getPlateau(), partie.getJoueurCourant(), partie.getConfigurationPartie());
+
+        LOGGER.info("res2={}", res2);
     }
 
     private void calculDifference(List<IMouvement> tmp, Partie partie, int depth) throws IOException, InterruptedException {

@@ -311,6 +311,8 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("k7/8/8/4Pp2/8/8/8/K7 w - - 0 2", "e5", liste("e6")), // en passant blanc
                 Arguments.of("k7/8/8/3P1p2/8/8/8/K7 w - f6 0 2", "d5", liste("d6")), // deplacement normal
                 Arguments.of("8/2p5/3p4/KP5r/1R3pPk/8/4P3/8 b - g3 0 1", "f4", liste("f3")), // en passant impossible a cause de l'echecs au roi
+                Arguments.of("r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQkq a3 0 1", "b4", liste("a3","b3","c3")), // en passant + attaque de l'autre coté
+
 
 
 
