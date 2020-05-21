@@ -371,6 +371,7 @@ public class Test1 {
         LOGGER.info("res={}",res);
     }
 
+    // compare entre le calcul Java et Stockfish
     @Test
     public void test8() throws Exception {
 
@@ -387,6 +388,7 @@ public class Test1 {
         no=7;
         no=8;
         no=9;
+        no=10;
 
         if(no==1) {
             fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -414,6 +416,9 @@ public class Test1 {
             depth = 2;
         } else if(no==9){
             fen = "7k/5p2/7K/7P/1p6/2P5/P7/8 w - - 0 1";
+            depth = 2;
+        } else if(no==10){
+            fen = "r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -";
             depth = 2;
         } else {
             fail("Erreur");
