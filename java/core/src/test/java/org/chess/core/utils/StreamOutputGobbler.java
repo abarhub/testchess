@@ -33,7 +33,7 @@ public class StreamOutputGobbler implements Runnable {
             do {
                 elt = queue.take();
                 if(elt!=null) {
-                    LOGGER.info("write: {}",elt);
+                    LOGGER.trace("write: {}",elt);
                     writer.append(elt);
                     writer.newLine();
                     writer.flush();

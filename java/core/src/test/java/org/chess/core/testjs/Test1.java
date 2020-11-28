@@ -389,6 +389,7 @@ public class Test1 {
         no=8;
         no=9;
         no=10;
+        no=11;
 
         if(no==1) {
             fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -419,6 +420,9 @@ public class Test1 {
             depth = 2;
         } else if(no==10){
             fen = "r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -";
+            depth = 2;
+        } else if(no==11){
+            fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -";
             depth = 2;
         } else {
             fail("Erreur");

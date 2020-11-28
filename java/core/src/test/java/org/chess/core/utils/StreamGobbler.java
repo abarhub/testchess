@@ -26,7 +26,7 @@ public class StreamGobbler implements Runnable {
         try {
             new BufferedReader(new InputStreamReader(inputStream)).lines()
                     .forEach(x-> {
-                        LOGGER.info("x:{}",x);
+                        LOGGER.trace("x:{}",x);
                         consumer.accept(x);
                     });
             LOGGER.info("fin input");

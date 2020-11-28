@@ -46,7 +46,7 @@ public class StockFishService {
 
         int res=exec(cmd, x-> {
 
-            LOGGER.info("output={}",x);
+            LOGGER.trace("output={}",x);
             if(liste.isEmpty()){
                 try {
                     Thread.sleep(5*1000L);
