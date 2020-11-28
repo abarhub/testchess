@@ -23,7 +23,7 @@ public class PlateauTools {
         }
         if(mouvement instanceof MouvementRoque){
             if(piece.getCouleur()== Couleur.Blanc) {
-                configurationPartie2.setRoqueNoirRoi(false);
+                configurationPartie2.setRoqueBlancRoi(false);
                 configurationPartie2.setRoqueBlancDame(false);
             } else {
                 configurationPartie2.setRoqueNoirRoi(false);
@@ -31,8 +31,13 @@ public class PlateauTools {
             }
         } else if(mouvement instanceof MouvementSimple){
             if(piece.getPiece()==Piece.ROI){
-                configurationPartie2.setRoqueNoirRoi(false);
-                configurationPartie2.setRoqueNoirDame(false);
+                if(piece.getCouleur()== Couleur.Blanc) {
+                    configurationPartie2.setRoqueBlancRoi(false);
+                    configurationPartie2.setRoqueBlancDame(false);
+                } else {
+                    configurationPartie2.setRoqueNoirRoi(false);
+                    configurationPartie2.setRoqueNoirDame(false);
+                }
             } else if(piece.getPiece()==Piece.PION){
                 if(piece.getCouleur()==Couleur.Blanc){
                     if(mouvement.getPositionSource().getRangee()==RangeeEnum.RANGEE2 &&
