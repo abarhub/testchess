@@ -46,6 +46,10 @@ public class TestPerft {
         test=1;
         test=2;
 //        test=3;
+        test=4;
+        test=5;
+        test=6;
+        test=7;
 
         if(test==1) {
             fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -58,6 +62,24 @@ public class TestPerft {
         } else if(test==3){
             fen="r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/2KR3R b Kq - 0 1";
             depth=1;
+        } else if(test==4){
+            fen="r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -";
+            depth=3;
+            positionSrc=new Position(RangeeEnum.RANGEE2, ColonneEnum.COLONNEE);
+            positionDest=new Position(RangeeEnum.RANGEE3, ColonneEnum.COLONNED);
+        } else if(test==5) {
+            fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2NB1Q1p/PPPB1PPP/R3K2R b KQkq - 0 1";
+            depth = 2;
+        } else if(test==6) {
+            fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2NB1Q1p/PPPB1PPP/R3K2R b KQkq - 0 1";
+            depth = 2;
+            positionSrc=new Position(RangeeEnum.RANGEE3, ColonneEnum.COLONNEH);
+            positionDest=new Position(RangeeEnum.RANGEE2, ColonneEnum.COLONNEG);
+        } else if(test==7) {
+            fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2NB1Q2/PPPB1PpP/R3K2R w KQkq - 0 1";
+            depth = 1;
+//            positionSrc=new Position(RangeeEnum.RANGEE3, ColonneEnum.COLONNEH);
+//            positionDest=new Position(RangeeEnum.RANGEE2, ColonneEnum.COLONNEG);
         }
 
         Partie partie = notationFEN.createPlateau(fen);
@@ -66,13 +88,13 @@ public class TestPerft {
         ResultatPerft perftJava=null;
         Instant debut=null;
         Instant fin=null;
-//        try(PrintWriter out=new PrintWriter(Files.newBufferedWriter(Paths.get("D:\\temp\\tmp3/test.txt"), StandardOpenOption.TRUNCATE_EXISTING))) {
+        try(PrintWriter out=new PrintWriter(Files.newBufferedWriter(Paths.get("D:\\temp\\tmp3/test.txt"), StandardOpenOption.TRUNCATE_EXISTING))) {
             debut = Instant.now();
-//            perftJava = calculPerft.calculPerft2(partie, depth, true, out, positionSrc, positionDest);
-        perftJava = calculPerft.calculPerft2(partie, depth, false, null, positionSrc, positionDest);
+            perftJava = calculPerft.calculPerft2(partie, depth, true, out, positionSrc, positionDest);
+//        perftJava = calculPerft.calculPerft2(partie, depth, true, null, positionSrc, positionDest);
             fin = Instant.now();
-//            out.flush();
-//        }
+            out.flush();
+        }
 
 
         LOGGER.info("perft({}): {}", depth, perftJava.getPerft());

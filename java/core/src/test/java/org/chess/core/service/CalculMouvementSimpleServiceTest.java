@@ -289,6 +289,7 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("8/8/8/8/2K1k3/8/8/8 b - - 0 1", "e4", liste("f5", "f4","f3","e5","e3")), // roi noir a cote du roi blanc
                 Arguments.of("8/8/3K4/8/3k4/8/8/8 w - - 0 1", "d6", liste("c6", "c7","d7","e7","e6")), // roi blanc a cote du roi noir
                 Arguments.of("8/8/3K4/8/3k4/8/8/8 b - - 0 1", "d4", liste("c4", "c3","d3","e4","e3")), // roi noir a cote du roi blanc
+                Arguments.of("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2NB1Q2/PPPB1PpP/R3K2R w KQkq - 0 1", "e1", liste("e2", "d1", "c1")), // roi blanc, pion empeche un roque
 
 
                 // déplacement pion
