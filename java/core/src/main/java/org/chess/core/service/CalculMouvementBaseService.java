@@ -292,11 +292,12 @@ public class CalculMouvementBaseService {
         }
 
         // test pion
+        // TODO: voir pour interdire le deplacement du pion si cela met en echecs le roi du pion
         int decalage;
         if(couleurAttaquant==Couleur.Blanc){
-            decalage=1;
-        } else {
             decalage=-1;
+        } else {
+            decalage=1;
         }
         if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, decalage, 1, Piece.PION)) {
             return true;
