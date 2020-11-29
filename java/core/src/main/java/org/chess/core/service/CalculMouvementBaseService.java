@@ -63,11 +63,6 @@ public class CalculMouvementBaseService {
                     Optional<Position> optPosition = PositionTools.getPosition(piece.getPosition(), ligne2, colonne2);
                     if (optPosition.isPresent()) {
                         ajoutePositionPiece(mouvements, optPosition.get(), piece, plateau);
-//						if (tousMouvementRois) {
-//							ajoutePositionRois(plateau, liste, ligne3, colonne3, joueurCourant);
-//						} else if (!caseAttaque(plateau, couleurContraire(piece.getCouleur()), ligne3, colonne3)) {
-//							ajoutePositionRois(plateau, liste, ligne3, colonne3, joueurCourant);
-//						}
                     }
                 }
             }
@@ -79,75 +74,8 @@ public class CalculMouvementBaseService {
     }
 
     private void ajoutRoqueRoi(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, EtatPartie etatPartie) {
-//        if (false) {
-//            ajoutRoqueRoiSansTestAttaque(piece, plateau, mouvements, etatPartie);
-//        } else {
             ajoutRoqueRoiTestAttaque(piece, plateau, mouvements, etatPartie);
-//        }
     }
-
-//    private void ajoutRoqueRoiSansTestAttaque(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, EtatPartie etatPartie) {
-//        final RangeeEnum rangeRoi;
-//        final Couleur couleurRoi = piece.getCouleur();
-//
-//        if (couleurRoi == Couleur.Blanc) {
-//            rangeRoi = RangeeEnum.RANGEE1;
-//        } else {
-//            rangeRoi = RangeeEnum.RANGEE8;
-//        }
-//
-//        if (isPosition(piece, rangeRoi, ColonneEnum.COLONNEE, couleurRoi)) {
-//            var positionRoi = new Position(rangeRoi, ColonneEnum.COLONNEE);
-//            if (etatPartie.roquePossible(couleurRoi, true)) {
-//                // roque coté roi
-//                Position posTour = new Position(rangeRoi, ColonneEnum.COLONNEH);
-//                PieceCouleur tour = plateau.getCase(posTour);
-//                if (tour != null && tour.getPiece() == Piece.TOUR && tour.getCouleur() == couleurRoi) {
-//                    boolean caseNonVide = false;
-//
-//                    for (int i = 1; i < 3; i++) {
-//                        ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEE.getNo() + i);
-//                        final Position position = new Position(rangeRoi, colonneEnum);
-//                        PieceCouleur tmp = plateau.getCase(position);
-//                        if (tmp != null) {
-//                            caseNonVide = true;
-//                            break;
-//                        }
-//                    }
-//
-//                    if (!caseNonVide) {
-//                        MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEG),
-//                                true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF), couleurRoi);
-//                        mouvements.add(mouvementRoque);
-//                    }
-//                }
-//            }
-//
-//            if (etatPartie.roquePossible(couleurRoi, false)) {
-//
-//                // roque cote reine
-//                Position posTour2 = new Position(rangeRoi, ColonneEnum.COLONNEA);
-//                PieceCouleur tour2 = plateau.getCase(posTour2);
-//                if (tour2 != null && tour2.getPiece() == Piece.TOUR && tour2.getCouleur() == couleurRoi) {
-//                    boolean caseNonVide = false;
-//                    for (int i = 1; i < 3; i++) {
-//                        ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEA.getNo() + i);
-//                        final Position position = new Position(rangeRoi, colonneEnum);
-//                        PieceCouleur tmp = plateau.getCase(position);
-//                        if (tmp != null) {
-//                            caseNonVide = true;
-//                            break;
-//                        }
-//                    }
-//                    if (!caseNonVide) {
-//                        MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEC),
-//                                false, posTour2, new Position(rangeRoi, ColonneEnum.COLONNED), couleurRoi);
-//                        mouvements.add(mouvementRoque);
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     private void ajoutRoqueRoiTestAttaque(PieceCouleurPosition piece, IPlateau plateau, List<IMouvement> mouvements, EtatPartie etatPartie) {
         final RangeeEnum rangeRoi;
@@ -180,22 +108,18 @@ public class CalculMouvementBaseService {
                     if (tour != null && tour.getPiece() == Piece.TOUR && tour.getCouleur() == couleurRoi) {
                         boolean caseNonVide = false;
                         boolean caseAttaque = false;
-//                        if (caseAttaquee(plateau, posTour, joueurAdversaire(couleurRoi), etatPartie)) {
-//                            caseAttaque = true;
-//                        } else {
-                            for (int i = 1; i < 3; i++) {
-                                ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEE.getNo() + i);
-                                final Position position = new Position(rangeRoi, colonneEnum);
-                                PieceCouleur tmp = plateau.getCase(position);
-                                if (tmp != null) {
-                                    caseNonVide = true;
-                                    break;
-                                } else if (caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
-                                    caseAttaque = true;
-                                    break;
-                                }
+                        for (int i = 1; i < 3; i++) {
+                            ColonneEnum colonneEnum = ColonneEnum.get(ColonneEnum.COLONNEE.getNo() + i);
+                            final Position position = new Position(rangeRoi, colonneEnum);
+                            PieceCouleur tmp = plateau.getCase(position);
+                            if (tmp != null) {
+                                caseNonVide = true;
+                                break;
+                            } else if (caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
+                                caseAttaque = true;
+                                break;
                             }
-//                        }
+                        }
                         if (!caseNonVide && !caseAttaque) {
                             MouvementRoque mouvementRoque = new MouvementRoque(piece.getPosition(), new Position(rangeRoi, ColonneEnum.COLONNEG),
                                     true, posTour, new Position(rangeRoi, ColonneEnum.COLONNEF), couleurRoi);
@@ -247,47 +171,18 @@ public class CalculMouvementBaseService {
         }
     }
 
-    private boolean caseAttaquee(IPlateau plateau, Position position, Couleur couleurAttaquant,
-                                 EtatPartie etatPartie) {
-//        if(true) {
-            return caseAttaquee3(plateau,position,couleurAttaquant,etatPartie);
-//        } else {
-//            return caseAttaquee2(plateau,position,couleurAttaquant,etatPartie);
-//        }
-    }
+    private boolean caseAttaquee(IPlateau plateau, Position positionTestee, Couleur couleurAttaquant, EtatPartie etatPartie) {
 
-    private boolean caseAttaquee3(IPlateau plateau, Position positionTestee, Couleur couleurAttaquant, EtatPartie etatPartie) {
-
-        Position position;
         Optional<Position> positionOpt;
         PieceCouleur piece;
 
         // test cavalier
 
-        if(true){
-            var decalagesList=deplacementService.getDecalageInverseCavalier();
+        var decalagesList=deplacementService.getDecalageInverseCavalier();
 
-            for(var decalage:decalagesList){
-                if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, decalage.getRangee(), decalage.getColonne(), Piece.CAVALIER)) {
-                    return true;
-                }
-            }
-
-        } else {
-            for (var range : Lists.newArrayList(-2, 2)) {
-                for (var colonne : Lists.newArrayList(-1, 1)) {
-                    if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, range, colonne, Piece.CAVALIER)) {
-                        return true;
-                    }
-                }
-            }
-
-            for (var range : Lists.newArrayList(-1, 1)) {
-                for (var colonne : Lists.newArrayList(-2, 2)) {
-                    if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, range, colonne, Piece.CAVALIER)) {
-                        return true;
-                    }
-                }
+        for(var decalage:decalagesList){
+            if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, decalage.getRangee(), decalage.getColonne(), Piece.CAVALIER)) {
+                return true;
             }
         }
 
@@ -307,22 +202,10 @@ public class CalculMouvementBaseService {
         }
 
         // test du roi
-        if(true){
-            List<Decalage> decalageList=deplacementService.getDecalageRoi();
-            for(var decalage2:decalageList){
-                if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, decalage2.getRangee(), decalage2.getColonne(), Piece.ROI)) {
-                    return true;
-                }
-            }
-        } else {
-            for (var range = -1; range <= 1; range++) {
-                for (var colonne = -1; colonne <= 1; colonne++) {
-                    if (range != 0 && colonne != 0) {
-                        if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, range, colonne, Piece.ROI)) {
-                            return true;
-                        }
-                    }
-                }
+        List<Decalage> decalageList=deplacementService.getDecalageRoi();
+        for(var decalage2:decalageList){
+            if (verifieCaseAttaquee(plateau, positionTestee, couleurAttaquant, decalage2.getRangee(), decalage2.getColonne(), Piece.ROI)) {
+                return true;
             }
         }
 
@@ -524,20 +407,6 @@ public class CalculMouvementBaseService {
         }
         return false;
     }
-
-//    private boolean caseAttaquee2(IPlateau plateau, Position position, Couleur couleurAttaquant,
-//                                 EtatPartie etatPartie) {
-//        Preconditions.checkNotNull(plateau);
-//        Preconditions.checkNotNull(position);
-//        Preconditions.checkNotNull(couleurAttaquant);
-//
-//        return plateau.getStreamPosition()
-//                .filter(x -> x.getCouleur() == couleurAttaquant)
-//                .map(pos -> getMouvements(plateau, pos, etatPartie))
-//                .flatMap(x -> x.stream())
-//                .map(x -> x.getPositionDestination())
-//                .anyMatch(x -> x.equals(position));
-//    }
 
     public Couleur joueurAdversaire(Couleur couleur) {
         Preconditions.checkNotNull(couleur);

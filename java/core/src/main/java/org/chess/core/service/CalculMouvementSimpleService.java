@@ -6,8 +6,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.chess.core.domain.*;
-import org.chess.core.notation.NotationFEN;
-import org.chess.core.utils.PlateauTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +32,6 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Preconditions.checkNotNull(joueurCourant);
         Preconditions.checkNotNull(etatPartie);
 
-        //Instant debut= Instant.now();
-        //stopWatch.start();
         if (stopWatch2.isStopped()) {
             stopWatch2.start();
         } else {
@@ -66,9 +62,6 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
 
         calculEtatJeux(resultat, roiEnEchec);
 
-        //dureeTotal.add(Duration.between(debut, Instant.now()));
-//        stopWatch.stop();
-        //stopWatch2.stop();
         stopWatch2.suspend();
         return resultat;
     }
@@ -261,7 +254,6 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Preconditions.checkNotNull(joueur);
         Preconditions.checkNotNull(etatPartie);
 
-        //Instant debut= Instant.now();
         start(stopWatchListeDeplacement);
         var res = new ListeMouvements2();
 
@@ -276,7 +268,6 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
                 });
         res.setMapMouvements(map);
 
-        //dureeListeMouvement.add(Duration.between(debut, Instant.now()));
         stop(stopWatchListeDeplacement);
         return res;
     }
