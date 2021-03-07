@@ -192,13 +192,19 @@ public class CalculMouvementBisService implements CalculMouvementService {
         stop(stopWatchSupprEchecs);
     }
 
-    private void supprimeDeplacementRoitAttaque(IPlateau plateau, Couleur joueurCourant, Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp) {
-        var iter = tmp.getValue().iterator();
-        Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
+    private void supprimeDeplacementRoitAttaque(IPlateau plateau, Couleur joueurCourant, Map.Entry<PieceCouleurPosition, List<IMouvement>> deplacementRoi) {
+        var iter = deplacementRoi.getValue().iterator();
+        Verify.verify(deplacementRoi.getKey().getCouleur() == joueurCourant);
         while (iter.hasNext()) {
             var mouvement = iter.next();
-            if (this.caseAttaquee(plateau, mouvement.getPositionDestination(),
-                    joueurAdversaire(joueurCourant), true)) {
+//            if (this.caseAttaquee(plateau, mouvement.getPositionDestination(),
+//                    joueurAdversaire(joueurCourant), true)) {
+//                iter.remove();
+//            }
+            IPlateau plateauApresModification = new Plateau((Plateau) plateau);
+            plateauApresModification.move(deplacementRoi.getKey().getPosition(), mouvement.getPositionDestination());
+
+            if (roiAttaqueApresDeplacement(plateauApresModification, mouvement.getPositionDestination(), joueurAdversaire(joueurCourant))) {
                 iter.remove();
             }
         }
@@ -349,12 +355,11 @@ public class CalculMouvementBisService implements CalculMouvementService {
         if (false) {
             return caseAttaquee(plateau, positionRoi, couleurAttaquant, false);
         } else {
-            //Couleur couleurAttaquant=joueurAdversaire(joueurCourant);
             return plateau.getStreamPosition()
                     .filter(x -> x.getCouleur() == couleurAttaquant)
-                    .filter(x -> x.getPiece() == Piece.FOU || x.getPiece() == Piece.TOUR || x.getPiece() == Piece.REINE)
-                    .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos))
-                    .anyMatch(x -> x.contains(positionRoi));
+                    .map(pos -> calculMouvementBaseService.getMouvementsAttaque(plateau, pos))
+                    .flatMap(x -> x.stream())
+                    .anyMatch(x -> x.getPositionDestination().equals(positionRoi));
         }
     }
 
@@ -434,7 +439,13 @@ public class CalculMouvementBisService implements CalculMouvementService {
         return plateau.getStreamPosition()
                 .filter(x -> x.getCouleur() == couleurAttaquant)
                 .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos))
-                .anyMatch(x -> x.contains(position));
+                //.anyMatch(x -> x.contains(position))
+                .flatMap(x -> x.stream())
+                .anyMatch(x -> {
+                    return x.getPositionDestination().equals(position);
+                        }
+                )
+                ;
     }
 
     public Optional<PieceCouleur> getPiece(IPlateau plateau, Position position) {

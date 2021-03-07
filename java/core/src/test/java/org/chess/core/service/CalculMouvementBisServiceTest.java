@@ -113,8 +113,8 @@ class CalculMouvementBisServiceTest {
                 //Arguments.of("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ", 14),
                 //Arguments.of("n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - - 0 1", 24)
                 Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 1, 5),
-                Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 1, 39),
-                Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 1, 237),
+                Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 2, 39),
+                Arguments.of("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - -", 3, 237),
                 Arguments.of("r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -", 1, 17),
                 Arguments.of("r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -", 2, 341),
                 Arguments.of("r3k2r/p6p/8/B7/1pp1p3/3b4/P6P/R3K2R w KQkq -", 3, 6666),
