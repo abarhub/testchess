@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableList;
 import org.chess.core.notation.NotationFEN;
 import org.chess.core.utils.PlateauTools;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,22 +62,22 @@ public class Partie {
         }
     }
 
-    public void mouvement(IMouvement mouvement){
+    public void mouvement(IMouvement mouvement) {
         Preconditions.checkNotNull(mouvement);
-        Preconditions.checkState(joueurCourant==configurationPartie.getJoueurTrait());
-        plateau.move(mouvement.getPositionSource(),mouvement);
+        Preconditions.checkState(joueurCourant == configurationPartie.getJoueurTrait());
+        plateau.move(mouvement.getPositionSource(), mouvement);
 
-        PlateauTools plateauTools=new PlateauTools();
-        PieceCouleurPosition pieceCouleurPosition =new PieceCouleurPosition(mouvement.getPiece(),
-                mouvement.getJoueur(),mouvement.getPositionSource());
-        plateauTools.updateConfiguration(configurationPartie, configurationPartie,pieceCouleurPosition,mouvement);
+        PlateauTools plateauTools = new PlateauTools();
+        PieceCouleurPosition pieceCouleurPosition = new PieceCouleurPosition(mouvement.getPiece(),
+                mouvement.getJoueur(), mouvement.getPositionSource());
+        plateauTools.updateConfiguration(configurationPartie, configurationPartie, pieceCouleurPosition, mouvement);
 
         if (joueurCourant == Couleur.Blanc) {
             joueurCourant = Couleur.Noir;
         } else {
             joueurCourant = Couleur.Blanc;
         }
-        Verify.verify(joueurCourant==configurationPartie.getJoueurTrait());
+        Verify.verify(joueurCourant == configurationPartie.getJoueurTrait());
     }
 
     public InformationPartie getInformationPartie() {
@@ -89,8 +88,8 @@ public class Partie {
         return configurationPartie;
     }
 
-    public String getFen(){
-        NotationFEN notationFEN=new NotationFEN();
+    public String getFen() {
+        NotationFEN notationFEN = new NotationFEN();
         return notationFEN.serialize(this);
     }
 }

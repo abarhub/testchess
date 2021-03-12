@@ -11,7 +11,7 @@ public class MouvementEnPassant implements IMouvement {
     private final Position pieceAttaquee;
     private final Couleur joueur;
 
-    public MouvementEnPassant(Position positionSource, Position positionDestination, Position pieceAttaquee,Couleur joueur) {
+    public MouvementEnPassant(Position positionSource, Position positionDestination, Position pieceAttaquee, Couleur joueur) {
         Preconditions.checkNotNull(positionSource);
         Preconditions.checkNotNull(positionDestination);
         Preconditions.checkNotNull(pieceAttaquee);
@@ -19,7 +19,7 @@ public class MouvementEnPassant implements IMouvement {
         this.positionSource = positionSource;
         this.positionDestination = positionDestination;
         this.pieceAttaquee = pieceAttaquee;
-        this.joueur=joueur;
+        this.joueur = joueur;
     }
 
     @Override

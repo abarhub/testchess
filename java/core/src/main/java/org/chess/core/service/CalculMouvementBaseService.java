@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Cette classe calcul les déplacements sans prendre en compte l'échec du roi
+ */
 public class CalculMouvementBaseService {
 
     private DeplacementService deplacementService = new DeplacementService();

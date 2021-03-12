@@ -6,7 +6,6 @@ import org.chess.core.domain.Decalage;
 import org.chess.core.domain.Position;
 import org.chess.core.domain.RangeeEnum;
 
-
 import java.util.Optional;
 
 public class PositionTools {
@@ -48,11 +47,11 @@ public class PositionTools {
         return getPosition(position.getRangee(), decalage.getRangee(), position.getColonne(), decalage.getColonne());
     }
 
-    public static int differenceColonne(Position position,Position position2){
-        return position.getColonne().getNo()-position2.getColonne().getNo();
+    public static int differenceColonne(Position position, Position position2) {
+        return position.getColonne().getNo() - position2.getColonne().getNo();
     }
 
-    public static int differenceRangee(Position position,Position position2){
-        return position.getRangee().getNo()-position2.getRangee().getNo();
+    public static int differenceRangee(Position position, Position position2) {
+        return position.getRangee().getNo() - position2.getRangee().getNo();
     }
 }

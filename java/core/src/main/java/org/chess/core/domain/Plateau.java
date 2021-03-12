@@ -6,7 +6,6 @@ import org.chess.core.exception.NotImplementedException;
 import org.chess.core.utils.Check;
 import org.chess.core.utils.IteratorPlateau;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -129,21 +128,21 @@ public class Plateau implements IPlateau {
         Preconditions.checkNotNull(mouvement);
         Preconditions.checkNotNull(positionSrc);
         Preconditions.checkState(positionSrc.equals(mouvement.getPositionSource()));
-        var pieceAttaque=getCase(mouvement.getPositionDestination());
-        if(pieceAttaque!=null){
-            Preconditions.checkState(pieceAttaque.getCouleur()!=mouvement.getJoueur());
-            Preconditions.checkState(pieceAttaque.getPiece()!=Piece.ROI);
+        var pieceAttaque = getCase(mouvement.getPositionDestination());
+        if (pieceAttaque != null) {
+            Preconditions.checkState(pieceAttaque.getCouleur() != mouvement.getJoueur());
+            Preconditions.checkState(pieceAttaque.getPiece() != Piece.ROI);
         }
         if (mouvement instanceof MouvementSimple) {
-            MouvementSimple mouvementSimple= (MouvementSimple) mouvement;
+            MouvementSimple mouvementSimple = (MouvementSimple) mouvement;
             Position positionDest = mouvementSimple.getPositionDestination();
             Verify.verifyNotNull(positionDest);
             Verify.verify(!positionSrc.equals(positionDest));
 
             PieceCouleur p = getCase(positionSrc);
             Verify.verifyNotNull(p, "La case source est vide");
-            if(mouvementSimple.getPromotion().isPresent()){
-                PieceCouleur p2=new PieceCouleur(mouvementSimple.getPiece(),p.getCouleur());
+            if (mouvementSimple.getPromotion().isPresent()) {
+                PieceCouleur p2 = new PieceCouleur(mouvementSimple.getPiece(), p.getCouleur());
                 setCase(positionSrc, null);
                 setCase(positionDest, p2);
             } else {
@@ -185,26 +184,26 @@ public class Plateau implements IPlateau {
 
             setCase(posTourSrc, null);
             setCase(posTourDest, pTour);
-        } else if(mouvement instanceof MouvementEnPassant) {
-            MouvementEnPassant mouvementEnPassant= (MouvementEnPassant) mouvement;
+        } else if (mouvement instanceof MouvementEnPassant) {
+            MouvementEnPassant mouvementEnPassant = (MouvementEnPassant) mouvement;
             Position positionDest = mouvement.getPositionDestination();
             final var pieceSource = getCase(positionSrc);
             Verify.verifyNotNull(pieceSource);
-            Verify.verify(pieceSource.getPiece()==Piece.PION);
+            Verify.verify(pieceSource.getPiece() == Piece.PION);
             final var pieceAttaque2 = getCase(mouvementEnPassant.getPieceAttaquee());
             Verify.verifyNotNull(pieceAttaque2);
-            Verify.verify(pieceAttaque2.getPiece()==Piece.PION);
-            Verify.verify(pieceAttaque2.getCouleur()!=pieceSource.getCouleur());
-            Verify.verify(mouvementEnPassant.getPieceAttaquee().getRangee()==positionSrc.getRangee());
-            Verify.verify(Math.abs(mouvementEnPassant.getPieceAttaquee().getColonne().getNo()-positionSrc.getColonne().getNo())==1);
-            Verify.verify(mouvementEnPassant.getPieceAttaquee().getColonne()==positionDest.getColonne());
-            Verify.verify(Math.abs(mouvementEnPassant.getPieceAttaquee().getRangee().getNo()-positionDest.getRangee().getNo())==1);
-            var p=new PieceCouleur(mouvementEnPassant.getPiece(),mouvementEnPassant.getJoueur());
+            Verify.verify(pieceAttaque2.getPiece() == Piece.PION);
+            Verify.verify(pieceAttaque2.getCouleur() != pieceSource.getCouleur());
+            Verify.verify(mouvementEnPassant.getPieceAttaquee().getRangee() == positionSrc.getRangee());
+            Verify.verify(Math.abs(mouvementEnPassant.getPieceAttaquee().getColonne().getNo() - positionSrc.getColonne().getNo()) == 1);
+            Verify.verify(mouvementEnPassant.getPieceAttaquee().getColonne() == positionDest.getColonne());
+            Verify.verify(Math.abs(mouvementEnPassant.getPieceAttaquee().getRangee().getNo() - positionDest.getRangee().getNo()) == 1);
+            var p = new PieceCouleur(mouvementEnPassant.getPiece(), mouvementEnPassant.getJoueur());
             setCase(positionSrc, null);
             setCase(positionDest, p);
             setCase(mouvementEnPassant.getPieceAttaquee(), null);
         } else {
-            throw new NotImplementedException("type de mouvement non géré:"+mouvement.getClass());
+            throw new NotImplementedException("type de mouvement non géré:" + mouvement.getClass());
         }
     }
 

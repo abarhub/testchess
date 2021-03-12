@@ -10,59 +10,59 @@ import java.util.List;
 
 public class DeplacementService {
 
-    private final List<Decalage> decalageCavalier= ImmutableList.copyOf(list(
-            decalage(2,1),decalage(2,-1),
-            decalage(-2,1),decalage(-2,-1),
-            decalage(1,2),decalage(1,-2),
-            decalage(-1,2),decalage(-1,-2)));
+    private final List<Decalage> decalageCavalier = ImmutableList.copyOf(list(
+            decalage(2, 1), decalage(2, -1),
+            decalage(-2, 1), decalage(-2, -1),
+            decalage(1, 2), decalage(1, -2),
+            decalage(-1, 2), decalage(-1, -2)));
 
-    private final List<Decalage> decalageInverseCavalier=ImmutableList.copyOf(decalageCavalier);
+    private final List<Decalage> decalageInverseCavalier = ImmutableList.copyOf(decalageCavalier);
 
-    private final List<Decalage> decalageDeplacementPionBlanc= ImmutableList.copyOf(list(
-            decalage(-1,0)
+    private final List<Decalage> decalageDeplacementPionBlanc = ImmutableList.copyOf(list(
+            decalage(-1, 0)
     ));
 
-    private final List<Decalage> decalageMangePionBlanc= ImmutableList.copyOf(list(
-            decalage(-1,1), decalage(-1,-1)
+    private final List<Decalage> decalageMangePionBlanc = ImmutableList.copyOf(list(
+            decalage(-1, 1), decalage(-1, -1)
     ));
 
-    private final List<Decalage> decalageEnPassantPionBlanc= ImmutableList.copyOf(list(
-            decalage(-1,1), decalage(-1,-1)
+    private final List<Decalage> decalageEnPassantPionBlanc = ImmutableList.copyOf(list(
+            decalage(-1, 1), decalage(-1, -1)
     ));
 
-    private final List<Decalage> decalageDeplacementPionNoir= ImmutableList.copyOf(list(
-            decalage(1,0)
+    private final List<Decalage> decalageDeplacementPionNoir = ImmutableList.copyOf(list(
+            decalage(1, 0)
     ));
 
-    private final List<Decalage> decalageMangePionNoir= ImmutableList.copyOf(list(
-            decalage(1,1), decalage(1,-1)
+    private final List<Decalage> decalageMangePionNoir = ImmutableList.copyOf(list(
+            decalage(1, 1), decalage(1, -1)
     ));
 
-    private final List<Decalage> decalageEnPassantPionNoir= ImmutableList.copyOf(list(
-            decalage(1,1), decalage(1,-1)
+    private final List<Decalage> decalageEnPassantPionNoir = ImmutableList.copyOf(list(
+            decalage(1, 1), decalage(1, -1)
     ));
 
-    private final List<Decalage> decalageFou=ImmutableList.copyOf(list(
-            decalage(1,1), decalage(1,-1),
-            decalage(-1,1), decalage(-1,-1)
+    private final List<Decalage> decalageFou = ImmutableList.copyOf(list(
+            decalage(1, 1), decalage(1, -1),
+            decalage(-1, 1), decalage(-1, -1)
     ));
 
-    private final List<Decalage> decalageTour=ImmutableList.copyOf(list(
-            decalage(1,0), decalage(0,1),
-            decalage(-1,0), decalage(0,-1)
+    private final List<Decalage> decalageTour = ImmutableList.copyOf(list(
+            decalage(1, 0), decalage(0, 1),
+            decalage(-1, 0), decalage(0, -1)
     ));
 
-    private final List<Decalage> decalageReine=ImmutableList.copyOf(
-            concat(decalageFou,decalageTour)
+    private final List<Decalage> decalageReine = ImmutableList.copyOf(
+            concat(decalageFou, decalageTour)
     );
 
-    private final List<Decalage> decalageRoi=ImmutableList.copyOf(list(
-            decalage(1,1), decalage(1,0),decalage(1,-1),
-            decalage(0,1), decalage(0,-1),
-            decalage(-1,1), decalage(-1,0),decalage(-1,-1)
+    private final List<Decalage> decalageRoi = ImmutableList.copyOf(list(
+            decalage(1, 1), decalage(1, 0), decalage(1, -1),
+            decalage(0, 1), decalage(0, -1),
+            decalage(-1, 1), decalage(-1, 0), decalage(-1, -1)
     ));
 
-    public List<Decalage> getDecalageCavalier(){
+    public List<Decalage> getDecalageCavalier() {
         return decalageCavalier;
     }
 
@@ -110,22 +110,22 @@ public class DeplacementService {
         return decalageRoi;
     }
 
-    private Decalage decalage(int rangee, int colonne){
-        return DecalageTools.decalage(rangee,colonne);
+    private Decalage decalage(int rangee, int colonne) {
+        return DecalageTools.decalage(rangee, colonne);
     }
 
-    private <T> List<T> list(T... liste){
-        if(liste==null){
+    private <T> List<T> list(T... liste) {
+        if (liste == null) {
             return new ArrayList<>();
         } else {
             return Arrays.asList(liste);
         }
     }
 
-    private <T> List<T> concat(List<T>... liste){
-        List<T> list=new ArrayList<>();
-        if(liste!=null){
-            for(var tmp:liste){
+    private <T> List<T> concat(List<T>... liste) {
+        List<T> list = new ArrayList<>();
+        if (liste != null) {
+            for (var tmp : liste) {
                 list.addAll(tmp);
             }
         }

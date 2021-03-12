@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * Cette classe calcul les déplacements en prenant en compte l'échec du roi
+ */
 public class CalculMouvementSimpleService implements CalculMouvementService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CalculMouvementSimpleService.class);

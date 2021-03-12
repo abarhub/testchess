@@ -26,7 +26,7 @@ public class MouvementSimple implements IMouvement {
         this.attaque = attaque;
         this.piece = piece;
         this.joueur = joueur;
-        this.promotion=Optional.empty();
+        this.promotion = Optional.empty();
     }
 
     public MouvementSimple(Position positionSource, Position positionDestination, boolean attaque,
@@ -41,7 +41,7 @@ public class MouvementSimple implements IMouvement {
         this.attaque = attaque;
         this.piece = piece;
         this.joueur = joueur;
-        this.promotion=Optional.of(promotion);
+        this.promotion = Optional.of(promotion);
     }
 
     public Position getPositionSource() {

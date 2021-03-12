@@ -13,9 +13,9 @@ import java.util.List;
 
 public class IteratorPlateau {
 
-    private static final List<RangeeEnum> LISTE_RANGEE=Arrays.asList(RangeeEnum.values());
+    private static final List<RangeeEnum> LISTE_RANGEE = Arrays.asList(RangeeEnum.values());
 
-    private static final List<ColonneEnum> LISTE_COLONNES=Arrays.asList(ColonneEnum.values());
+    private static final List<ColonneEnum> LISTE_COLONNES = Arrays.asList(ColonneEnum.values());
 
     public static Iterable<RangeeEnum> getIterableRangee() {
         return Lists.newArrayList(LISTE_RANGEE);

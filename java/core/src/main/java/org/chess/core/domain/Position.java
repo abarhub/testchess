@@ -46,17 +46,17 @@ public class Position {
         return colonne.getText() + rangee.getText();
     }
 
-    public static Position getPosition(String pos){
+    public static Position getPosition(String pos) {
         Preconditions.checkState(StringUtils.isNotBlank(pos), "pos=%s", pos);
-        Preconditions.checkState(StringUtils.length(pos)==2, "pos=%s", pos);
-        char c=pos.charAt(0);
-        char c2=pos.charAt(1);
-        Preconditions.checkState((c>='a'&&c<='h')||(c>='A'&&c<='H'));
-        Preconditions.checkState(c2>='1'&&c2<='8');
-        RangeeEnum rangeeEnum=RangeeEnum.get(Character.toLowerCase(c2)-'1'+1);
-        Verify.verifyNotNull(rangeeEnum,"pos=%s",pos);
-        ColonneEnum colonneEnum=ColonneEnum.get(c-'a'+1);
-        Verify.verifyNotNull(colonneEnum,"pos=%s",pos);
-        return new Position(rangeeEnum,colonneEnum);
+        Preconditions.checkState(StringUtils.length(pos) == 2, "pos=%s", pos);
+        char c = pos.charAt(0);
+        char c2 = pos.charAt(1);
+        Preconditions.checkState((c >= 'a' && c <= 'h') || (c >= 'A' && c <= 'H'));
+        Preconditions.checkState(c2 >= '1' && c2 <= '8');
+        RangeeEnum rangeeEnum = RangeeEnum.get(Character.toLowerCase(c2) - '1' + 1);
+        Verify.verifyNotNull(rangeeEnum, "pos=%s", pos);
+        ColonneEnum colonneEnum = ColonneEnum.get(c - 'a' + 1);
+        Verify.verifyNotNull(colonneEnum, "pos=%s", pos);
+        return new Position(rangeeEnum, colonneEnum);
     }
 }

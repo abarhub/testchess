@@ -33,7 +33,7 @@ public class ConfigurationPartie implements EtatPartie {
         joueurTrait = configurationPartie.joueurTrait;
         nbDemiCoupSansCapture = configurationPartie.getNbDemiCoupSansCapture();
         nbCoup = configurationPartie.nbCoup;
-        priseEnPassant=configurationPartie.priseEnPassant;
+        priseEnPassant = configurationPartie.priseEnPassant;
     }
 
     public boolean isRoqueBlancRoi() {
@@ -109,20 +109,20 @@ public class ConfigurationPartie implements EtatPartie {
     @Override
     public boolean roquePossible(Couleur joueur, boolean coteRoi) {
         Preconditions.checkNotNull(joueur);
-        if(joueur==Couleur.Blanc){
-            if(coteRoi){
+        if (joueur == Couleur.Blanc) {
+            if (coteRoi) {
                 return roqueBlancRoi;
             } else {
                 return roqueBlancDame;
             }
-        } else if(joueur==Couleur.Noir){
-            if(coteRoi){
+        } else if (joueur == Couleur.Noir) {
+            if (coteRoi) {
                 return roqueNoirRoi;
             } else {
                 return roqueNoirDame;
             }
         } else {
-            throw new NotImplementedException("joueur invalide:"+joueur);
+            throw new NotImplementedException("joueur invalide:" + joueur);
         }
     }
 }

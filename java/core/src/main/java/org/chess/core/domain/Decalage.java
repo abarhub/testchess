@@ -1,7 +1,5 @@
 package org.chess.core.domain;
 
-import com.google.common.base.Verify;
-
 import java.util.Objects;
 import java.util.StringJoiner;
 
