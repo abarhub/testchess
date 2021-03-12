@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-public class ListeMouvements2 {
+public class ListeMouvements {
 
     private EtatJeux etatJeux;
 
@@ -32,7 +32,7 @@ public class ListeMouvements2 {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", ListeMouvements2.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", ListeMouvements.class.getSimpleName() + "[", "]")
                 .add("etatJeux=" + etatJeux)
                 .add("mapMouvements=" + mapMouvements)
                 .toString();

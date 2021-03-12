@@ -24,11 +24,11 @@ public class CalculMouvementSimpleService implements CalculMouvementService {
     private StopWatch stopWatchGenereDeplacement = new StopWatch();
 
     @Override
-    public ListeMouvements2 calcul(Plateau plateau, Couleur joueurCourant) {
+    public ListeMouvements calcul(Plateau plateau, Couleur joueurCourant) {
         return calcul(plateau, joueurCourant, new HistoriqueCoups());
     }
 
-    public ListeMouvements2 calcul(Plateau plateau, Couleur joueurCourant, EtatPartie etatPartie) {
+    public ListeMouvements calcul(Plateau plateau, Couleur joueurCourant, EtatPartie etatPartie) {
         Preconditions.checkNotNull(plateau);
         Preconditions.checkNotNull(joueurCourant);
         Preconditions.checkNotNull(etatPartie);
@@ -38,7 +38,7 @@ public class CalculMouvementSimpleService implements CalculMouvementService {
         } else {
             stopWatch2.resume();
         }
-        ListeMouvements2 resultat;
+        ListeMouvements resultat;
 
         // recherche du roi du joueur courant
         Position positionRoi = rechercheRoi(plateau, joueurCourant);
@@ -67,7 +67,7 @@ public class CalculMouvementSimpleService implements CalculMouvementService {
         return resultat;
     }
 
-    private void calculEtatJeux(ListeMouvements2 resultat, boolean roiEnEchec) {
+    private void calculEtatJeux(ListeMouvements resultat, boolean roiEnEchec) {
         if (MapUtils.isEmpty(resultat.getMapMouvements())) {
             if (roiEnEchec) {
                 resultat.setEtatJeux(EtatJeux.EchecEtMat);
@@ -80,7 +80,7 @@ public class CalculMouvementSimpleService implements CalculMouvementService {
     }
 
 
-    private ListeMouvements2 rechercheMouvementStoperEchecRoi(IPlateau plateau, Couleur joueurCourant, Position positionRoi, EtatPartie etatPartie) {
+    private ListeMouvements rechercheMouvementStoperEchecRoi(IPlateau plateau, Couleur joueurCourant, Position positionRoi, EtatPartie etatPartie) {
         var listeMouvement = getPieceJoueur(plateau, joueurCourant, etatPartie);
 
         suppressionMouvementMiseEnEchecsRoi(plateau, listeMouvement, positionRoi, joueurCourant, etatPartie, true);
@@ -88,7 +88,7 @@ public class CalculMouvementSimpleService implements CalculMouvementService {
         return listeMouvement;
     }
 
-    private void suppressionMouvementMiseEnEchecsRoi(IPlateau plateau, ListeMouvements2 listeMouvement,
+    private void suppressionMouvementMiseEnEchecsRoi(IPlateau plateau, ListeMouvements listeMouvement,
                                                      Position positionRoi, Couleur joueurCourant, EtatPartie etatPartie,
                                                      boolean enleveAutresMouvements) {
         Preconditions.checkNotNull(plateau);
@@ -248,13 +248,13 @@ public class CalculMouvementSimpleService implements CalculMouvementService {
         return caseAttaquee(plateau, positionRoi, joueurAdversaire, etatPartie);
     }
 
-    public ListeMouvements2 getPieceJoueur(IPlateau plateau, Couleur joueur, EtatPartie etatPartie) {
+    public ListeMouvements getPieceJoueur(IPlateau plateau, Couleur joueur, EtatPartie etatPartie) {
         Preconditions.checkNotNull(plateau);
         Preconditions.checkNotNull(joueur);
         Preconditions.checkNotNull(etatPartie);
 
         start(stopWatchListeDeplacement);
-        var res = new ListeMouvements2();
+        var res = new ListeMouvements();
 
         Map<PieceCouleurPosition, List<IMouvement>> map = new HashMap<>();
         plateau.getStreamPosition()

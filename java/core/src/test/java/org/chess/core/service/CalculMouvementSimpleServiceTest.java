@@ -7,9 +7,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.chess.core.domain.*;
 import org.chess.core.notation.NotationFEN;
-import org.chess.core.utils.*;
+import org.chess.core.utils.CalculPerft;
+import org.chess.core.utils.Perf;
+import org.chess.core.utils.PerfListJson;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -101,34 +102,34 @@ class CalculMouvementSimpleServiceTest {
 
         // vérifications
         LOGGER.info("res={}", res);
-        assertEquals(perfRef, res, "fen="+plateau+"\n"+ getPlateau(partie));
+        assertEquals(perfRef, res, "fen=" + plateau + "\n" + getPlateau(partie));
     }
 
 
     private static Stream<Arguments> provideCalculPerfOK2() throws FileNotFoundException {
 
         File file = new File(CalculMouvementSimpleServiceTest.class.getClassLoader().getResource("perfOk.json").getFile());
-        Reader reader=new FileReader(file);
-        Gson gson=new Gson();
-        var res=gson.fromJson(reader, PerfListJson.class);
+        Reader reader = new FileReader(file);
+        Gson gson = new Gson();
+        var res = gson.fromJson(reader, PerfListJson.class);
 
         assertNotNull(res);
         assertTrue(CollectionUtils.isNotEmpty(res.getListe()));
 
-        List<Arguments> liste=new ArrayList<>();
+        List<Arguments> liste = new ArrayList<>();
 
-        List<String> listeId=new ArrayList<>();
+        List<String> listeId = new ArrayList<>();
 
-        for(var perft:res.getListe()){
-            var id=perft.getId();
-            var fen=perft.getFen();
-            var depth=perft.getDepth();
-            var value=perft.getValue();
+        for (var perft : res.getListe()) {
+            var id = perft.getId();
+            var fen = perft.getFen();
+            var depth = perft.getDepth();
+            var value = perft.getValue();
 
-            assertTrue(StringUtils.isNotBlank(id), ()->"id="+id);
-            assertTrue(StringUtils.isNotBlank(fen), ()->"id="+id);
-            assertTrue(depth>0, ()->"id="+id);
-            assertTrue(value>0, ()->"id="+id);
+            assertTrue(StringUtils.isNotBlank(id), () -> "id=" + id);
+            assertTrue(StringUtils.isNotBlank(fen), () -> "id=" + id);
+            assertTrue(depth > 0, () -> "id=" + id);
+            assertTrue(value > 0, () -> "id=" + id);
 
             assertFalse(listeId.contains(id));
             listeId.add(id);
@@ -150,7 +151,7 @@ class CalculMouvementSimpleServiceTest {
 
         // vérifications
         LOGGER.info("res={}", res);
-        assertEquals(perfRef, res, "fen="+plateau+"\n"+ getPlateau(partie));
+        assertEquals(perfRef, res, "fen=" + plateau + "\n" + getPlateau(partie));
     }
 
     private static Stream<Arguments> provideCalculPerfBug() {
@@ -200,33 +201,33 @@ class CalculMouvementSimpleServiceTest {
 
         // vérifications
         LOGGER.info("res={}", res);
-        assertEquals(perfRef, res, "fen="+plateau+"\n"+ getPlateau(partie));
+        assertEquals(perfRef, res, "fen=" + plateau + "\n" + getPlateau(partie));
     }
 
     private static Stream<Arguments> provideCalculPerfBug2() throws FileNotFoundException {
 
         File file = new File(CalculMouvementSimpleServiceTest.class.getClassLoader().getResource("perfBug.json").getFile());
-        Reader reader=new FileReader(file);
-        Gson gson=new Gson();
-        var res=gson.fromJson(reader, PerfListJson.class);
+        Reader reader = new FileReader(file);
+        Gson gson = new Gson();
+        var res = gson.fromJson(reader, PerfListJson.class);
 
         assertNotNull(res);
         assertTrue(CollectionUtils.isNotEmpty(res.getListe()));
 
-        List<Arguments> liste=new ArrayList<>();
+        List<Arguments> liste = new ArrayList<>();
 
-        List<String> listeId=new ArrayList<>();
+        List<String> listeId = new ArrayList<>();
 
-        for(var perft:res.getListe()){
-            var id=perft.getId();
-            var fen=perft.getFen();
-            var depth=perft.getDepth();
-            var value=perft.getValue();
+        for (var perft : res.getListe()) {
+            var id = perft.getId();
+            var fen = perft.getFen();
+            var depth = perft.getDepth();
+            var value = perft.getValue();
 
-            assertTrue(StringUtils.isNotBlank(id), ()->"id="+id);
-            assertTrue(StringUtils.isNotBlank(fen), ()->"id="+id);
-            assertTrue(depth>0, ()->"id="+id);
-            assertTrue(value>0, ()->"id="+id);
+            assertTrue(StringUtils.isNotBlank(id), () -> "id=" + id);
+            assertTrue(StringUtils.isNotBlank(fen), () -> "id=" + id);
+            assertTrue(depth > 0, () -> "id=" + id);
+            assertTrue(value > 0, () -> "id=" + id);
 
             assertFalse(listeId.contains(id));
             listeId.add(id);
@@ -249,7 +250,7 @@ class CalculMouvementSimpleServiceTest {
 
         // vérifications
         LOGGER.info("res={}", res);
-        assertEquals(perfRef, res, "fen="+plateau+"\n"+ getPlateau(partie));
+        assertEquals(perfRef, res, "fen=" + plateau + "\n" + getPlateau(partie));
     }
 
     private static Stream<Arguments> provideTestDeplacementPiece() {
@@ -285,17 +286,17 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("r3k2r/8/8/8/8/1R6/8/4K3 b kq - 0 1", "e8", liste("d8", "d7", "e7", "f7", "f8", "g8", "c8")), // roque noir
                 Arguments.of("r3k2r/8/8/8/8/R7/8/4K3 b kq - 0 1", "e8", liste("d8", "d7", "e7", "f7", "f8", "g8", "c8")), // roque noir
                 Arguments.of("rnb2k1r/pp1Pbppp/2p5/2q5/2B5/2P5/PP1QNnPP/RNB1K2R w KQ - 3 9", "e1", liste("f1", "g1")), // roque blanc
-                Arguments.of("8/8/8/8/2K1k3/8/8/8 w - - 0 1", "c4", liste("b5", "b4","b3","c5","c3")), // roi blanc a cote du roi noir
-                Arguments.of("8/8/8/8/2K1k3/8/8/8 b - - 0 1", "e4", liste("f5", "f4","f3","e5","e3")), // roi noir a cote du roi blanc
-                Arguments.of("8/8/3K4/8/3k4/8/8/8 w - - 0 1", "d6", liste("c6", "c7","d7","e7","e6")), // roi blanc a cote du roi noir
-                Arguments.of("8/8/3K4/8/3k4/8/8/8 b - - 0 1", "d4", liste("c4", "c3","d3","e4","e3")), // roi noir a cote du roi blanc
+                Arguments.of("8/8/8/8/2K1k3/8/8/8 w - - 0 1", "c4", liste("b5", "b4", "b3", "c5", "c3")), // roi blanc a cote du roi noir
+                Arguments.of("8/8/8/8/2K1k3/8/8/8 b - - 0 1", "e4", liste("f5", "f4", "f3", "e5", "e3")), // roi noir a cote du roi blanc
+                Arguments.of("8/8/3K4/8/3k4/8/8/8 w - - 0 1", "d6", liste("c6", "c7", "d7", "e7", "e6")), // roi blanc a cote du roi noir
+                Arguments.of("8/8/3K4/8/3k4/8/8/8 b - - 0 1", "d4", liste("c4", "c3", "d3", "e4", "e3")), // roi noir a cote du roi blanc
                 Arguments.of("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2NB1Q2/PPPB1PpP/R3K2R w KQkq - 0 1", "e1", liste("e2", "d1", "c1")), // roi blanc, pion empeche un roque
 
 
                 // déplacement pion
                 Arguments.of("1k6/8/8/8/8/8/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4")),
-                Arguments.of("1k6/8/8/8/8/5p2/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4","f3")),
-                Arguments.of("1k6/8/8/8/8/3p4/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4","d3")),
+                Arguments.of("1k6/8/8/8/8/5p2/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4", "f3")),
+                Arguments.of("1k6/8/8/8/8/3p4/4P3/1K6 w - - 0 1", "e2", liste("e3", "e4", "d3")),
                 Arguments.of("k7/8/8/3Pp3/8/8/8/K7 w - e6 0 1", "d5", liste("d6", "e6")), // en passant blanc
                 Arguments.of("k7/8/8/2pP4/8/8/8/K7 w - c6 0 1", "d5", liste("d6", "c6")), // en passant blanc
                 Arguments.of("k7/8/8/3Pp3/8/8/8/K7 w - - 0 1", "d5", liste("d6")), // en passant blanc
@@ -312,16 +313,14 @@ class CalculMouvementSimpleServiceTest {
                 Arguments.of("k7/8/8/4Pp2/8/8/8/K7 w - - 0 2", "e5", liste("e6")), // en passant blanc
                 Arguments.of("k7/8/8/3P1p2/8/8/8/K7 w - f6 0 2", "d5", liste("d6")), // deplacement normal
                 Arguments.of("8/2p5/3p4/KP5r/1R3pPk/8/4P3/8 b - g3 0 1", "f4", liste("f3")), // en passant impossible a cause de l'echecs au roi
-                Arguments.of("r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQkq a3 0 1", "b4", liste("a3","b3","c3")), // en passant + attaque de l'autre coté
-
-
+                Arguments.of("r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQkq a3 0 1", "b4", liste("a3", "b3", "c3")), // en passant + attaque de l'autre coté
 
 
                 // cavalier
-                Arguments.of("4k3/8/8/8/3N4/8/8/4K3 w - - 0 1", "d4", liste("e6","f5", "f3", "e2", "c2", "b3", "b5", "c6")), // cavalier blanc
-                Arguments.of("4k3/8/8/5N2/8/8/8/4K3 w - - 0 1", "f5", liste("g7","h6", "h4", "g3", "e3", "d4", "d6", "e7")), // cavalier blanc
-                Arguments.of("4k3/8/8/8/3N4/1p3P2/8/4K3 w - - 0 1", "d4", liste("e6","f5", "e2", "c2", "b3", "b5", "c6")), // cavalier blanc
-                Arguments.of("4k3/8/8/8/8/8/8/4K2N w - - 0 1", "h1", liste("f2","g3")), // cavalier blanc coin
+                Arguments.of("4k3/8/8/8/3N4/8/8/4K3 w - - 0 1", "d4", liste("e6", "f5", "f3", "e2", "c2", "b3", "b5", "c6")), // cavalier blanc
+                Arguments.of("4k3/8/8/5N2/8/8/8/4K3 w - - 0 1", "f5", liste("g7", "h6", "h4", "g3", "e3", "d4", "d6", "e7")), // cavalier blanc
+                Arguments.of("4k3/8/8/8/3N4/1p3P2/8/4K3 w - - 0 1", "d4", liste("e6", "f5", "e2", "c2", "b3", "b5", "c6")), // cavalier blanc
+                Arguments.of("4k3/8/8/8/8/8/8/4K2N w - - 0 1", "h1", liste("f2", "g3")), // cavalier blanc coin
                 Arguments.of("7k/8/8/3n4/8/8/8/7K b - - 0 1", "d5", liste("e7", "f6", "f4", "e3", "c3", "b4", "b6", "c7")), // cavalier noir
                 Arguments.of("7k/8/8/3n4/8/2P1p3/8/7K b - - 0 1", "d5", liste("e7", "f6", "f4", "c3", "b4", "b6", "c7")) // cavalier noir
         );
@@ -337,10 +336,10 @@ class CalculMouvementSimpleServiceTest {
         final Partie partie = notationFEN.createPlateau(plateau);
 
         final Position positionPieceTeste = Position.getPosition(position);
-        assertNotNull(positionPieceTeste,()-> "piece teste="+position);
+        assertNotNull(positionPieceTeste, () -> "piece teste=" + position);
 
-        var p=partie.getPlateau().getCase(positionPieceTeste);
-        assertNotNull(p,()-> "piece teste="+positionPieceTeste);
+        var p = partie.getPlateau().getCase(positionPieceTeste);
+        assertNotNull(p, () -> "piece teste=" + positionPieceTeste);
 
         final List<Position> listeDeplacementPossible = getListePosition(deplacementsPossible);
 
@@ -355,25 +354,25 @@ class CalculMouvementSimpleServiceTest {
         var liste = getListeMouvements(positionPieceTeste, map);
 
         var plus = diff(liste, listeDeplacementPossible);
-        assertTrue(plus.isEmpty(), () -> "plus=" + plus+" ("+positionPieceTeste+"):\n"+ getPlateau(partie));
+        assertTrue(plus.isEmpty(), () -> "plus=" + plus + " (" + positionPieceTeste + "):\n" + getPlateau(partie));
 
         var moins = diff(listeDeplacementPossible, liste);
-        assertTrue(moins.isEmpty(), () -> "moins=" + moins+" ("+positionPieceTeste+"):\n"+ getPlateau(partie));
+        assertTrue(moins.isEmpty(), () -> "moins=" + moins + " (" + positionPieceTeste + "):\n" + getPlateau(partie));
     }
 
     private static Stream<Arguments> provideCalculPerfJson() throws IOException {
-        String contenu=null;
-        try(InputStream inputStream = CalculMouvementSimpleServiceTest.class
-                .getClassLoader().getResourceAsStream("perf_test1.json")){
-                contenu=IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        String contenu = null;
+        try (InputStream inputStream = CalculMouvementSimpleServiceTest.class
+                .getClassLoader().getResourceAsStream("perf_test1.json")) {
+            contenu = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         }
         assertNotNull(contenu);
         Gson gson = new Gson();
-        Perf[] tab=gson.fromJson(contenu, Perf[].class);
+        Perf[] tab = gson.fromJson(contenu, Perf[].class);
         assertNotNull(tab);
-        assertTrue(tab.length>0);
-        Stream.Builder<Arguments> buf=Stream.builder();
-        for(Perf perf:tab){
+        assertTrue(tab.length > 0);
+        Stream.Builder<Arguments> buf = Stream.builder();
+        for (Perf perf : tab) {
             buf.add(Arguments.of(perf.getFen(), perf.getDepth(), perf.getNodes()));
         }
         return buf.build();
@@ -391,12 +390,12 @@ class CalculMouvementSimpleServiceTest {
 
         // vérifications
         LOGGER.info("res={}", res);
-        assertEquals(perfRef, res, "fen="+plateau+"\n"+ getPlateau(partie));
+        assertEquals(perfRef, res, "fen=" + plateau + "\n" + getPlateau(partie));
     }
 
     // methodes utilitaires
 
-    private long nbCoups(ListeMouvements2 listeMouvements) {
+    private long nbCoups(ListeMouvements listeMouvements) {
         long nb = 0;
         for (Map.Entry<PieceCouleurPosition, List<IMouvement>> entry : listeMouvements.getMapMouvements().entrySet()) {
             nb += entry.getValue().size();
@@ -405,8 +404,8 @@ class CalculMouvementSimpleServiceTest {
     }
 
     private long calculPerf(Partie partie, int depth) {
-        CalculPerft calculPerft=new CalculPerft();
-        return calculPerft.calculPerft(partie,depth);
+        CalculPerft calculPerft = new CalculPerft();
+        return calculPerft.calculPerft(partie, depth);
     }
 
     private static List<String> liste(String... liste) {
@@ -439,18 +438,18 @@ class CalculMouvementSimpleServiceTest {
             for (var s : deplacementsPossible) {
                 Position p = Position.getPosition(s);
                 assertNotNull(p);
-                assertFalse(listeDeplacementPossible.contains(p), ()-> "liste="+listeDeplacementPossible+", contient:"+p+", liste2="+deplacementsPossible);
+                assertFalse(listeDeplacementPossible.contains(p), () -> "liste=" + listeDeplacementPossible + ", contient:" + p + ", liste2=" + deplacementsPossible);
                 listeDeplacementPossible.add(p);
             }
         }
         return listeDeplacementPossible;
     }
 
-    private String getPlateau(Partie partie){
+    private String getPlateau(Partie partie) {
         return getPlateau(partie.getPlateau());
     }
 
-    private String getPlateau(Plateau plateau){
-        return plateau.getRepresentation2().replaceAll(" ","_");
+    private String getPlateau(Plateau plateau) {
+        return plateau.getRepresentation2().replaceAll(" ", "_");
     }
 }

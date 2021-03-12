@@ -40,7 +40,7 @@ public class ChessService {
             CalculMouvementSimpleService calculMouvementSimpleService = new CalculMouvementSimpleService();
             NotationFEN notationFEN = new NotationFEN();
             Partie partie = notationFEN.createPlateau(chessBordMvtDTO.getFen());
-            ListeMouvements2 res = calculMouvementSimpleService.calcul(partie.getPlateau(), partie.getJoueurCourant());
+            ListeMouvements res = calculMouvementSimpleService.calcul(partie.getPlateau(), partie.getJoueurCourant());
             LOGGER.info("res={}", res);
             if (res != null && res.getMapMouvements() != null) {
                 Position p = Position.getPosition(chessBordMvtDTO.getMouvement());
