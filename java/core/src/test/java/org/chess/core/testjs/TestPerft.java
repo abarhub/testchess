@@ -90,8 +90,7 @@ public class TestPerft {
         Instant fin=null;
         try(PrintWriter out=new PrintWriter(Files.newBufferedWriter(Paths.get("D:\\temp\\tmp3/test.txt"), StandardOpenOption.TRUNCATE_EXISTING))) {
             debut = Instant.now();
-            perftJava = calculPerft.calculPerft2(partie, depth, true, out, positionSrc, positionDest);
-//        perftJava = calculPerft.calculPerft2(partie, depth, true, null, positionSrc, positionDest);
+            perftJava = calculPerft.calculPerft(partie, depth, true, out, positionSrc, positionDest);
             fin = Instant.now();
             out.flush();
         }

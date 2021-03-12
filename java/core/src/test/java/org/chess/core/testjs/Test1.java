@@ -17,10 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -726,7 +723,7 @@ public class Test1 {
                             Plateau plateau2 = new Plateau(plateau);
                             plateau2.move(tmp.getKey().getPosition(), tmp2);
                             PlateauTools plateauTools = new PlateauTools();
-                            ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(configurationPartie, tmp.getKey(), tmp2);
+                            ConfigurationPartie configurationPartie2 = plateauTools.createConfiguration(configurationPartie, tmp.getKey(), tmp2);
                             construitDeplacement(plateau2,
                                     calculMouvementSimpleService.joueurAdversaire(joueurCourant),
                                     configurationPartie2, noDepthErreur - 1, consumer);
@@ -897,7 +894,7 @@ public class Test1 {
                             Plateau plateau2 = new Plateau(plateau);
                             plateau2.move(tmp.getKey().getPosition(), tmp2);
                             PlateauTools plateauTools=new PlateauTools();
-                            ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(configurationPartie, tmp.getKey(), tmp2);
+                            ConfigurationPartie configurationPartie2 = plateauTools.createConfiguration(configurationPartie, tmp.getKey(), tmp2);
                             resultat += calculPerf(plateau2, calculMouvementSimpleService.joueurAdversaire(joueurCourant), depth - 1, configurationPartie2);
                         }
                     }

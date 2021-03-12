@@ -23,19 +23,12 @@ public class CalculPerft {
 
     public long calculPerft(Partie partie, int depth) {
         Preconditions.checkNotNull(partie);
-        ResultatPerft resultatPerft = calculPerft2(partie, depth, false, null, null, null);
+        ResultatPerft resultatPerft = calculPerft(partie, depth, false, null, null, null);
         Verify.verifyNotNull(resultatPerft);
         return resultatPerft.getPerft();
     }
 
-    public long calculPerftAfficheNiveau1(Partie partie, int depth) {
-        Preconditions.checkNotNull(partie);
-        ResultatPerft resultatPerft = calculPerft2(partie, depth, true, null, null, null);
-        Verify.verifyNotNull(resultatPerft);
-        return resultatPerft.getPerft();
-    }
-
-    public ResultatPerft calculPerft2(Partie partie, int depth, boolean afficheNiveau, PrintWriter writer, Position logPositionSrc, Position logPositionCible) {
+    public ResultatPerft calculPerft(Partie partie, int depth, boolean afficheNiveau, PrintWriter writer, Position logPositionSrc, Position logPositionCible) {
         Preconditions.checkNotNull(partie);
         Preconditions.checkState(partie.getConfigurationPartie().getJoueurTrait() == partie.getJoueurCourant());
 
@@ -57,7 +50,7 @@ public class CalculPerft {
                         for (var tmp2 : tmp.getValue()) {
                             Partie partie2 = new Partie(partie);
                             partie2.mouvement(tmp2);
-                            var res2 = calculPerft2(partie2, depth - 1, false, null, null, null);
+                            var res2 = calculPerft(partie2, depth - 1, false, null, null, null);
                             resultat += res2.getPerft();
                             if (writer != null) {
                                 writer.println("" + tmp2.getPositionSource() + tmp2.getPositionDestination() + ":" + res2.getPerft());

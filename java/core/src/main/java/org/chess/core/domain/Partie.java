@@ -3,7 +3,6 @@ package org.chess.core.domain;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
-import org.chess.core.exception.NotImplementedException;
 import org.chess.core.notation.NotationFEN;
 import org.chess.core.utils.PlateauTools;
 
@@ -14,8 +13,6 @@ import java.util.List;
 public class Partie {
 
     private final Plateau plateau;
-    //private final Joueur joueurBlanc;
-    //private final Joueur joueurNoir;
     private final List<DemiCoup> listeCoupsBlancs;
     private final List<DemiCoup> listeCoupsNoirs;
     private final InformationPartie informationPartie;
@@ -66,122 +63,6 @@ public class Partie {
         }
     }
 
-    public void setMove(DemiCoup demiCoup) {
-        Preconditions.checkNotNull(demiCoup);
-        if (demiCoup instanceof DemiCoupDeplacement) {
-            setMove(((DemiCoupDeplacement) demiCoup).getSrc(), ((DemiCoupDeplacement) demiCoup).getDest());
-        } else if (demiCoup instanceof DemiCoupRoque) {
-            setRoque(((DemiCoupRoque) demiCoup).getSrc(), ((DemiCoupRoque) demiCoup).getDest());
-        } else {
-            throw new NotImplementedException();
-        }
-    }
-
-    public void setMove(Position src, Position dest) {
-
-        verificationDeplacementCommun(src, dest);
-
-        PieceCouleur pieceSource;
-        pieceSource = plateau.getCase(src);
-
-        PieceCouleur pieceDestination = plateau.getCase(dest);
-
-        if (pieceDestination != null) {
-            Verify.verify(pieceDestination.getCouleur() != joueurCourant);
-            Verify.verify(pieceDestination.getPiece() != Piece.ROI);
-        }
-
-        boolean mangePiece = pieceDestination != null;
-        Piece promotion = null;
-        boolean echec = false;
-        boolean echecEtMat = false;
-
-        plateau.move(src, dest);
-
-        //echec=calculEchecs(plateau,couleurContraire(joueurCourant));
-
-        DemiCoupDeplacement demiCoupDeplacement = new DemiCoupDeplacement(pieceSource.getPiece(),
-                src, dest, mangePiece, promotion, echec, echecEtMat);
-
-        if (joueurCourant == Couleur.Blanc) {
-            listeCoupsBlancs.add(demiCoupDeplacement);
-            joueurCourant = Couleur.Noir;
-        } else {
-            listeCoupsNoirs.add(demiCoupDeplacement);
-            joueurCourant = Couleur.Blanc;
-        }
-    }
-
-//	private boolean calculEchecs(Plateau plateau, Couleur joueur) {
-//		CalculMouvementsService calculMouvementsService=new CalculMouvementsService();
-//		calculMouvementsService.caseAttaque(new Partie(plateau,joueur,new InformationPartie()),
-//				couleurContraire(joueur),);
-//	}
-
-    public void setRoque(Position src, Position dest) {
-
-        verificationDeplacementCommun(src, dest);
-
-        PieceCouleur pieceSource;
-        pieceSource = plateau.getCase(src);
-
-        Verify.verifyNotNull(pieceSource);
-        Verify.verify(pieceSource.getPiece() == Piece.ROI);
-        Verify.verify(pieceSource.getCouleur() == joueurCourant);
-        if (joueurCourant == Couleur.Blanc) {
-            Verify.verify(src.getRangee() == RangeeEnum.RANGEE1);
-        } else {
-            Verify.verify(src.getRangee() == RangeeEnum.RANGEE8);
-        }
-        Verify.verify(src.getColonne() == ColonneEnum.COLONNEE);
-
-        Verify.verify(dest.getRangee() == dest.getRangee());
-
-        boolean echec = false;
-        boolean echecEtMat = false;
-
-        plateau.move(src, dest);
-
-        // TODO: faire les verifications + deplacement de la tour
-        if (true) {
-            throw new UnsupportedOperationException("Le roque n'est pas implementé");
-        }
-
-        DemiCoupRoque demiCoupRoque = new DemiCoupRoque(src, dest, echec, echecEtMat);
-
-        if (joueurCourant == Couleur.Blanc) {
-            listeCoupsBlancs.add(demiCoupRoque);
-            joueurCourant = Couleur.Noir;
-        } else {
-            listeCoupsNoirs.add(demiCoupRoque);
-            joueurCourant = Couleur.Blanc;
-        }
-    }
-
-    public Couleur couleurContraire(Couleur couleur) {
-        Verify.verifyNotNull(couleur);
-        if (couleur == Couleur.Blanc) {
-            return Couleur.Noir;
-        } else {
-            return Couleur.Blanc;
-        }
-    }
-
-    private void verificationDeplacementCommun(Position src, Position dest) {
-
-        Verify.verifyNotNull(src);
-        Verify.verifyNotNull(dest);
-        Verify.verify(!src.equals(dest));
-
-        PieceCouleur pieceSource;
-        pieceSource = plateau.getCase(src);
-
-        Verify.verifyNotNull(pieceSource, "la piece source n'existe pas (pos=" + src + ")");
-        Verify.verify(pieceSource.getCouleur() == joueurCourant,
-                "la piece source n'est pas de la couleur du joueur " +
-                        "qui doit jouer (" + pieceSource + "<>" + joueurCourant + ")");
-    }
-
     public void mouvement(IMouvement mouvement){
         Preconditions.checkNotNull(mouvement);
         Preconditions.checkState(joueurCourant==configurationPartie.getJoueurTrait());
@@ -190,7 +71,7 @@ public class Partie {
         PlateauTools plateauTools=new PlateauTools();
         PieceCouleurPosition pieceCouleurPosition =new PieceCouleurPosition(mouvement.getPiece(),
                 mouvement.getJoueur(),mouvement.getPositionSource());
-        plateauTools.updateConfiguration2(configurationPartie, configurationPartie,pieceCouleurPosition,mouvement);
+        plateauTools.updateConfiguration(configurationPartie, configurationPartie,pieceCouleurPosition,mouvement);
 
         if (joueurCourant == Couleur.Blanc) {
             joueurCourant = Couleur.Noir;

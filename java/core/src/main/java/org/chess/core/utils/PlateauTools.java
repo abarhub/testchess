@@ -6,61 +6,54 @@ import java.util.Optional;
 
 public class PlateauTools {
 
-    public ConfigurationPartie updateConfiguration(ConfigurationPartie configurationPartie,
+    public ConfigurationPartie createConfiguration(ConfigurationPartie configurationPartie,
                                                    PieceCouleurPosition piece, IMouvement mouvement) {
         ConfigurationPartie configurationPartie2=new ConfigurationPartie(configurationPartie);
-        updateConfiguration2(configurationPartie2, configurationPartie,piece, mouvement);
+        updateConfiguration(configurationPartie2, configurationPartie,piece, mouvement);
         return configurationPartie2;
     }
 
-    public void updateConfiguration2(ConfigurationPartie configurationPartie2,
-                                     ConfigurationPartie configurationPartie, PieceCouleurPosition piece, IMouvement mouvement) {
-        configurationPartie2.setPriseEnPassant(Optional.empty());
-        if (configurationPartie.getJoueurTrait() == Couleur.Blanc) {
-            configurationPartie2.setJoueurTrait(Couleur.Noir);
+    public void updateConfiguration(ConfigurationPartie configurationPartieResultat,
+                                    ConfigurationPartie configurationPartieInitiale, PieceCouleurPosition piece, IMouvement mouvement) {
+        configurationPartieResultat.setPriseEnPassant(Optional.empty());
+        if (configurationPartieInitiale.getJoueurTrait() == Couleur.Blanc) {
+            configurationPartieResultat.setJoueurTrait(Couleur.Noir);
         } else {
-            configurationPartie2.setJoueurTrait(Couleur.Blanc);
+            configurationPartieResultat.setJoueurTrait(Couleur.Blanc);
         }
         if(mouvement instanceof MouvementRoque){
             if(piece.getCouleur()== Couleur.Blanc) {
-                configurationPartie2.setRoqueBlancRoi(false);
-                configurationPartie2.setRoqueBlancDame(false);
+                configurationPartieResultat.setRoqueBlancRoi(false);
+                configurationPartieResultat.setRoqueBlancDame(false);
             } else {
-                configurationPartie2.setRoqueNoirRoi(false);
-                configurationPartie2.setRoqueNoirDame(false);
+                configurationPartieResultat.setRoqueNoirRoi(false);
+                configurationPartieResultat.setRoqueNoirDame(false);
             }
         } else if(mouvement instanceof MouvementSimple){
             if(piece.getPiece()==Piece.ROI){
                 if(piece.getCouleur()== Couleur.Blanc) {
-                    configurationPartie2.setRoqueBlancRoi(false);
-                    configurationPartie2.setRoqueBlancDame(false);
+                    configurationPartieResultat.setRoqueBlancRoi(false);
+                    configurationPartieResultat.setRoqueBlancDame(false);
                 } else {
-                    configurationPartie2.setRoqueNoirRoi(false);
-                    configurationPartie2.setRoqueNoirDame(false);
+                    configurationPartieResultat.setRoqueNoirRoi(false);
+                    configurationPartieResultat.setRoqueNoirDame(false);
                 }
             } else if(piece.getPiece()==Piece.PION){
                 if(piece.getCouleur()==Couleur.Blanc){
                     if(mouvement.getPositionSource().getRangee()==RangeeEnum.RANGEE2 &&
                             mouvement.getPositionDestination().getRangee()==RangeeEnum.RANGEE4){
                         Optional<Position> position = PositionTools.getPosition(mouvement.getPositionDestination(), -1, 0);
-                        configurationPartie2.setPriseEnPassant(position);
+                        configurationPartieResultat.setPriseEnPassant(position);
                     }
                 } else {
                     if(mouvement.getPositionSource().getRangee()==RangeeEnum.RANGEE7 &&
                             mouvement.getPositionDestination().getRangee()==RangeeEnum.RANGEE5){
                         Optional<Position> position = PositionTools.getPosition(mouvement.getPositionDestination(), 1, 0);
-                        configurationPartie2.setPriseEnPassant(position);
+                        configurationPartieResultat.setPriseEnPassant(position);
                     }
                 }
             }
         } else if(mouvement instanceof MouvementEnPassant){
-//            Optional<Position> position;
-//            if(piece.getCouleur()== Couleur.Blanc) {
-//                position= PositionTools.getPosition(mouvement.getPositionDestination(),-1,0);
-//            } else {
-//                position= PositionTools.getPosition(mouvement.getPositionDestination(),1,0);
-//            }
-//            configurationPartie2.setPriseEnPassant(position);
         }
     }
 
