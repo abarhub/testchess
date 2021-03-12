@@ -28,12 +28,9 @@ class CalculMouvementBisServiceTest {
 
     private NotationFEN notationFEN = new NotationFEN();
 
-//    private InformationPartieService informationPartieService=new InformationPartieService();
-
     @BeforeEach
     void setUp() {
         calculMouvementBisService = new CalculMouvementBisService();
-//        ReflectionTestUtils.setField(notationFEN, "informationPartieService", informationPartieService);
     }
 
     @Test
@@ -121,7 +118,8 @@ class CalculMouvementBisServiceTest {
                 Arguments.of("8/5p2/8/2k3P1/p3K3/8/1P6/8 b - -", 3, 795),
                 Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 1, 29),
                 Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 2, 953),
-                Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 3, 27990)
+                Arguments.of("r3k2r/pb3p2/5npp/n2p4/1p1PPB2/6P1/P2N1PBP/R3K2R b KQkq -", 3, 27990),
+                Arguments.of("8/p7/8/1P6/K1k3pP/6P1/8/8 b - h3 0 1", 1, 8)
         );
     }
 
@@ -131,12 +129,10 @@ class CalculMouvementBisServiceTest {
 
         Partie partie = notationFEN.createPlateau(plateau);
 
-        CalculPerft calculPerft=new CalculPerft();
+        CalculPerft calculPerft = new CalculPerft();
 
         // methode testée
-        //long res = calculPerf(partie, depth);
-        //long res=calculPerft.calculPerft(partie, depth);
-        long res=calculPerft.calculPerftAfficheNiveau1(partie, depth);
+        long res = calculPerft.calculPerftAfficheNiveau1(partie, depth);
 
         // vérifications
         LOGGER.info("fen={}", plateau);
@@ -160,7 +156,7 @@ class CalculMouvementBisServiceTest {
 
             Partie partie = notationFEN.createPlateau(plateau);
 
-            CalculPerft calculPerft=new CalculPerft();
+            CalculPerft calculPerft = new CalculPerft();
 
             // methode testée
             Instant debut = Instant.now();
@@ -191,9 +187,7 @@ class CalculMouvementBisServiceTest {
 
             Partie partie = notationFEN.createPlateau(plateau);
 
-            PlateauBis plateau2 = new PlateauBis(partie.getPlateau());
-
-            CalculPerft calculPerft=new CalculPerft();
+            CalculPerft calculPerft = new CalculPerft();
 
             // methode testée
             Instant debut = Instant.now();
@@ -213,23 +207,13 @@ class CalculMouvementBisServiceTest {
 
         String plateau = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-        final int max = 4;
-
-        //for(int i=0;i<=max;i++) {
-
         int depth = 4;
 
         LOGGER.info("depth={}", depth);
 
         Partie partie = notationFEN.createPlateau(plateau);
 
-        Plateau plateau2 = partie.getPlateau();
-
-        if (false) {
-            plateau2 = new PlateauBis(partie.getPlateau());
-        }
-
-        CalculPerft calculPerft=new CalculPerft();
+        CalculPerft calculPerft = new CalculPerft();
 
         // methode testée
         Instant debut = Instant.now();
@@ -262,28 +246,22 @@ class CalculMouvementBisServiceTest {
 
         final int depth = 1;
         //final int perfRef=39;
-        final int perfRef=8;
+        final int perfRef = 8;
 
         LOGGER.info("depth={}", depth);
 
 
         Partie partie = notationFEN.createPlateau(plateau);
 
-        //AnalyseDeplacement2 analyseDeplacement;
-        //analyseDeplacement=new AnalyseDeplacement();
-        //analyseDeplacement=new AnalyseDeplacement2(depth);
-
-        CalculPerft calculPerft=new CalculPerft();
+        CalculPerft calculPerft = new CalculPerft();
 
         // methode testée
-        //long res = calculPerf(partie, depth, analyseDeplacement);
-        long res=calculPerft.calculPerft(partie, depth);
+        long res = calculPerft.calculPerft(partie, depth);
 
         // vérifications
         LOGGER.info("fen={}", plateau);
         LOGGER.info("depth={}", depth);
         LOGGER.info("res={}", res);
-//        LOGGER.info("res_analyse={}", analyseDeplacement.getMap());
         assertEquals(perfRef, res);
     }
 
@@ -296,58 +274,6 @@ class CalculMouvementBisServiceTest {
         }
         return nb;
     }
-
-    /*private long calculPerf(Partie partie, int depth) {
-
-        return calculPerf(partie.getPlateau(), partie.getJoueurCourant(), depth, null);
-    }*/
-
-//    private long calculPerf(Partie partie, int depth, IDeplacement deplacement) {
-//
-//        return calculPerf(partie.getPlateau(), partie.getJoueurCourant(), depth, deplacement);
-//    }
-
-    /*private long calculPerf(Plateau plateau, Couleur joueurCourant, int depth, IDeplacement deplacement) {
-        long resultat = 0;
-
-        if (depth <= 0) {
-            resultat = 1;
-        } else {
-            var res = calculMouvementBisService.calcul(plateau, joueurCourant);
-
-            var map = res.getMapMouvements();
-            assertNotNull(map);
-            if (!map.isEmpty()) {
-                var iter = map.entrySet().iterator();
-                while (iter.hasNext()) {
-                    Entry<PieceCouleurPosition, List<IMouvement>> tmp = iter.next();
-                    if (!CollectionUtils.isEmpty(tmp.getValue())) {
-                        for (var tmp2 : tmp.getValue()) {
-//                            if(plateau instanceof PlateauBis){
-//                                PlateauBis plateau2= (PlateauBis) plateau;
-//                                plateau2.move(tmp.getKey().getPosition(), tmp2.getPosition());
-//                                resultat += calculPerf(plateau2, calculMouvementBisService.joueurAdversaire(joueurCourant), depth - 1);
-//                                plateau2.undo();
-//                            } else {
-                            //Partie partie2 = new Partie(partie);
-                            if(deplacement!=null){
-                                deplacement.move(plateau, tmp.getKey().getPosition(), tmp2, joueurCourant, depth);
-                            }
-                            Plateau plateau2 = new Plateau(plateau);
-                            //assertEquals(joueurCourant, partie2.getJoueurCourant());
-                            //plateau2.move(tmp.getKey().getPosition(), tmp2.getPosition());
-                            plateau2.move(tmp.getKey().getPosition(), tmp2);
-                            //partie2.setMove(tmp.getKey().getPosition(), tmp2.getPosition());
-                            //assertEquals(calculMouvementBisService.joueurAdversaire(joueurCourant), partie2.getJoueurCourant());
-                            resultat += calculPerf(plateau2, calculMouvementBisService.joueurAdversaire(joueurCourant), depth - 1, deplacement);
-//                            }
-                        }
-                    }
-                }
-            }
-        }
-        return resultat;
-    }*/
 
     private String affichePlateau(Plateau plateau) {
         return plateau.getRepresentation2().replaceAll(" ", "_");

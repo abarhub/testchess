@@ -409,52 +409,6 @@ class CalculMouvementSimpleServiceTest {
         return calculPerft.calculPerft(partie,depth);
     }
 
-//    private long calculPerf0(Partie partie, int depth) {
-//
-//        return calculPerf(partie.getPlateau(), partie.getJoueurCourant(), depth, partie.getConfigurationPartie());
-//    }
-
-//    private long calculPerf(Plateau plateau, Couleur joueurCourant, int depth, ConfigurationPartie configurationPartie) {
-//        long resultat = 0;
-//
-//        if (depth <= 0) {
-//            resultat = 1;
-//        } else {
-//            var res = calculMouvementSimpleService.calcul(plateau, joueurCourant, configurationPartie);
-//
-//            var map = res.getMapMouvements();
-//            assertNotNull(map);
-//            if (!map.isEmpty()) {
-//                var iter = map.entrySet().iterator();
-//                while (iter.hasNext()) {
-//                    Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp = iter.next();
-//                    if (!CollectionUtils.isEmpty(tmp.getValue())) {
-//                        for (var tmp2 : tmp.getValue()) {
-////                            if(plateau instanceof PlateauBis){
-////                                PlateauBis plateau2= (PlateauBis) plateau;
-////                                plateau2.move(tmp.getKey().getPosition(), tmp2.getPosition());
-////                                resultat += calculPerf(plateau2, calculMouvementBisService.joueurAdversaire(joueurCourant), depth - 1);
-////                                plateau2.undo();
-////                            } else {
-//                            //Partie partie2 = new Partie(partie);
-//                            Plateau plateau2 = new Plateau(plateau);
-//                            //assertEquals(joueurCourant, partie2.getJoueurCourant());
-//                            //plateau2.move(tmp.getKey().getPosition(), tmp2.getPosition());
-//                            plateau2.move(tmp.getKey().getPosition(), tmp2);
-//                            PlateauTools plateauTools=new PlateauTools();
-//                            ConfigurationPartie configurationPartie2 = plateauTools.updateConfiguration(configurationPartie, tmp.getKey(), tmp2);
-//                            //partie2.setMove(tmp.getKey().getPosition(), tmp2.getPosition());
-//                            //assertEquals(calculMouvementBisService.joueurAdversaire(joueurCourant), partie2.getJoueurCourant());
-//                            resultat += calculPerf(plateau2, calculMouvementSimpleService.joueurAdversaire(joueurCourant), depth - 1, configurationPartie2);
-////                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return resultat;
-//    }
-
     private static List<String> liste(String... liste) {
         if (liste == null) {
             return Lists.newArrayList();

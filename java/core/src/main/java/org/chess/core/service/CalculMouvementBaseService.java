@@ -116,7 +116,7 @@ public class CalculMouvementBaseService {
                             if (tmp != null) {
                                 caseNonVide = true;
                                 break;
-                            } else if (colonneEnum == ColonneEnum.COLONNEG &&
+                            } else if (//colonneEnum == ColonneEnum.COLONNEG &&
                                     caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
                                 caseAttaque = true;
                                 break;
@@ -157,7 +157,7 @@ public class CalculMouvementBaseService {
                             if (tmp != null) {
                                 caseNonVide = true;
                                 break;
-                            } else if (i > 1 && colonneEnum == ColonneEnum.COLONNEC &&
+                            } else if (i > 1 && //colonneEnum == ColonneEnum.COLONNEC &&
                                     caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
                                 caseAttaque = true;
                                 break;
