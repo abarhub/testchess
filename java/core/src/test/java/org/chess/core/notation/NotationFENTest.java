@@ -150,18 +150,22 @@ public class NotationFENTest {
 
     public static Stream<Arguments> provideCreatePlateauTestEnPassant() {
         return Stream.of(
-                Arguments.of("rnb2b1r/pp1qp1pp/P4k1n/3pP3/1P1P1p1P/R1p2NP1/2PNKP2/2BQ1B1R w KQkq - 0 1", Optional.empty()),
-                Arguments.of("r1b1kb1r/pp1pp1pp/nqp2p2/5P2/8/PP5N/R4KnP/2B4R w KQkq - 0 1", Optional.empty()),
-                Arguments.of("r1b1kb1r/pp1pp1pp/nqp2p2/5P2/8/PP5N/R5nP/2B3KR w KQkq - 0 1", Optional.empty()),
-                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", Optional.empty()),
-                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e3 0 1", Optional.of(Position.getPosition("e3"))),
-                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 1", Optional.of(Position.getPosition("c6")))
+                Arguments.of("rnb2b1r/pp1qp1pp/P4k1n/3pP3/1P1P1p1P/R1p2NP1/2PNKP2/2BQ1B1R w KQkq - 0 1", Optional.empty(), Couleur.Blanc, true, true, true, true),
+                Arguments.of("r1b1kb1r/pp1pp1pp/nqp2p2/5P2/8/PP5N/R4KnP/2B4R w KQkq - 0 1", Optional.empty(), Couleur.Blanc, true, true, true, true),
+                Arguments.of("r1b1kb1r/pp1pp1pp/nqp2p2/5P2/8/PP5N/R5nP/2B3KR w KQkq - 0 1", Optional.empty(), Couleur.Blanc, true, true, true, true),
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", Optional.empty(), Couleur.Blanc, true, true, true, true),
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e3 0 1", Optional.of(Position.getPosition("e3")), Couleur.Blanc, true, true, true, true),
+                Arguments.of("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 1", Optional.of(Position.getPosition("c6")), Couleur.Blanc, true, true, true, true),
+                Arguments.of("8/p7/8/1P6/K1k3pP/6P1/8/8 b - h3 0 1", Optional.of(Position.getPosition("h3")), Couleur.Noir, false, false, false, false)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideCreatePlateauTestEnPassant")
-    public void createPlateauTestEnPassant(String fenFormat, Optional<Position> enPassant) {
+    public void createPlateauTestEnPassant(String fenFormat, Optional<Position> enPassant,
+                                           Couleur joueurCourant, boolean isRoqueBlancRoi,
+                                           boolean isRoqueBlancDame, boolean isRoqueNoirRoi,
+                                           boolean isRoqueNoirDame) {
 
         // methode testée
         Partie partie = notationFEN.createPlateau(fenFormat);
@@ -171,14 +175,14 @@ public class NotationFENTest {
 
         assertNotNull(partie.getConfigurationPartie());
 
-        assertEquals(Couleur.Blanc, partie.getJoueurCourant());
+        assertEquals(joueurCourant, partie.getJoueurCourant());
 
         ConfigurationPartie config = partie.getConfigurationPartie();
 
-        assertEquals(true, config.isRoqueBlancRoi());
-        assertEquals(true, config.isRoqueBlancDame());
-        assertEquals(true, config.isRoqueNoirRoi());
-        assertEquals(true, config.isRoqueNoirDame());
+        assertEquals(isRoqueBlancRoi, config.isRoqueBlancRoi());
+        assertEquals(isRoqueBlancDame, config.isRoqueBlancDame());
+        assertEquals(isRoqueNoirRoi, config.isRoqueNoirRoi());
+        assertEquals(isRoqueNoirDame, config.isRoqueNoirDame());
 
         assertEquals(0, config.getNbDemiCoupSansCapture());
 
