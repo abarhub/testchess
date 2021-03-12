@@ -11,6 +11,7 @@ import org.chess.core.utils.PerftStockfich;
 import org.chess.core.utils.PlateauTools;
 import org.chess.core.utils.StockFishService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled("Les tests fonctions avec un serveur en js ou avec Stockfish")
 public class Test1 {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Test1.class);

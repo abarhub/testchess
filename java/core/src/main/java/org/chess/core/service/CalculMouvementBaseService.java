@@ -13,14 +13,6 @@ public class CalculMouvementBaseService {
 
     private DeplacementService deplacementService = new DeplacementService();
 
-    public List<IMouvement> getMouvements(IPlateau plateau, PieceCouleurPosition piece) {
-        return getMouvements(plateau, piece, new HistoriqueCoups());
-    }
-
-    public List<IMouvement> getMouvementsAttaque(IPlateau plateau, PieceCouleurPosition piece) {
-        return getMouvements(plateau, piece, new HistoriqueCoups(), true);
-    }
-
     public List<IMouvement> getMouvements(IPlateau plateau, PieceCouleurPosition piece, EtatPartie etatPartie) {
         return getMouvements(plateau, piece, etatPartie, false);
     }
@@ -116,8 +108,7 @@ public class CalculMouvementBaseService {
                             if (tmp != null) {
                                 caseNonVide = true;
                                 break;
-                            } else if (//colonneEnum == ColonneEnum.COLONNEG &&
-                                    caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
+                            } else if (caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
                                 caseAttaque = true;
                                 break;
                             }
@@ -157,8 +148,7 @@ public class CalculMouvementBaseService {
                             if (tmp != null) {
                                 caseNonVide = true;
                                 break;
-                            } else if (i > 1 && //colonneEnum == ColonneEnum.COLONNEC &&
-                                    caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
+                            } else if (i > 1 && caseAttaquee(plateau, position, joueurAdversaire(couleurRoi), etatPartie)) {
                                 caseAttaque = true;
                                 break;
                             }

@@ -6,12 +6,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.chess.core.domain.*;
+import org.chess.core.utils.IteratorPlateau;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class CalculMouvementSimpleService extends AbstractCalculMouvementService implements CalculMouvementService {
+public class CalculMouvementSimpleService implements CalculMouvementService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CalculMouvementSimpleService.class);
 
@@ -24,7 +25,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
 
     @Override
     public ListeMouvements2 calcul(Plateau plateau, Couleur joueurCourant) {
-        return calcul(plateau,joueurCourant, new HistoriqueCoups());
+        return calcul(plateau, joueurCourant, new HistoriqueCoups());
     }
 
     public ListeMouvements2 calcul(Plateau plateau, Couleur joueurCourant, EtatPartie etatPartie) {
@@ -67,8 +68,8 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
     }
 
     private void calculEtatJeux(ListeMouvements2 resultat, boolean roiEnEchec) {
-        if(MapUtils.isEmpty(resultat.getMapMouvements())){
-            if(roiEnEchec){
+        if (MapUtils.isEmpty(resultat.getMapMouvements())) {
+            if (roiEnEchec) {
                 resultat.setEtatJeux(EtatJeux.EchecEtMat);
             } else {
                 resultat.setEtatJeux(EtatJeux.Pat);
@@ -104,14 +105,14 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
             if (tmp.getKey().getPiece() == Piece.ROI) {
                 supprimeDeplacementRoitAttaque(plateau, joueurCourant, tmp, etatPartie);
             } else {
-                if(enleveAutresMouvements) {
+                if (enleveAutresMouvements) {
                     var iter = tmp.getValue().iterator();
                     Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
                     while (iter.hasNext()) {
                         var mouvement = iter.next();
 
-                        var p=plateau.getCase(mouvement.getPositionDestination());
-                        if(p!=null&&p.getPiece()==Piece.ROI){
+                        var p = plateau.getCase(mouvement.getPositionDestination());
+                        if (p != null && p.getPiece() == Piece.ROI) {
                             iter.remove();
                         } else {
                             Plateau plateauApresModification = new Plateau(plateau);
@@ -130,12 +131,11 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
                         while (iter.hasNext()) {
                             var mouvement = iter.next();
 
-                            var p=plateau.getCase(mouvement.getPositionDestination());
-                            if(p!=null&&p.getPiece()==Piece.ROI){
+                            var p = plateau.getCase(mouvement.getPositionDestination());
+                            if (p != null && p.getPiece() == Piece.ROI) {
                                 iter.remove();
                             } else {
                                 Plateau plateauApresModification = new Plateau((Plateau) plateau);
-                                //plateauApresModification.move(tmp.getKey().getPosition(), mouvement.getPositionDestination());
                                 plateauApresModification.move(tmp.getKey().getPosition(), mouvement);
 
                                 if (roiAttaqueApresDeplacement(plateauApresModification, positionRoi, joueurAdversaire(joueurCourant), etatPartie)) {
@@ -166,8 +166,8 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Verify.verify(tmp.getKey().getCouleur() == joueurCourant);
         while (iter.hasNext()) {
             var mouvement = iter.next();
-            Plateau plateau2=new Plateau(plateau);
-            plateau2.move(tmp.getKey().getPosition(),mouvement);
+            Plateau plateau2 = new Plateau(plateau);
+            plateau2.move(tmp.getKey().getPosition(), mouvement);
             if (this.caseAttaquee(plateau2, mouvement.getPositionDestination(),
                     joueurAdversaire(joueurCourant), etatPartie)) {
                 iter.remove();
@@ -177,7 +177,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
 
     private boolean mvtAVerifier(Position positionSrc, Position positionRoi, IPlateau plateau, Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp2) {
         int x, y;
-        if(tmp2.getKey().getPiece()==Piece.PION&&isMouvementEnPassant(tmp2)){
+        if (tmp2.getKey().getPiece() == Piece.PION && isMouvementEnPassant(tmp2)) {
             return true;
         } else if (positionSrc.getRangee() == positionRoi.getRangee()) {
             // ils sont sur la même ligne
@@ -222,15 +222,14 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         }
     }
 
-    private boolean isMouvementEnPassant(Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp2){
+    private boolean isMouvementEnPassant(Map.Entry<PieceCouleurPosition, List<IMouvement>> tmp2) {
         return tmp2.getValue().stream().anyMatch(x -> x instanceof MouvementEnPassant);
     }
 
     private boolean roiAttaqueApresDeplacement(IPlateau plateau, Position positionRoi, Couleur couleurAttaquant, EtatPartie etatPartie) {
         return plateau.getStreamPosition()
                 .filter(x -> x.getCouleur() == couleurAttaquant)
-                //.filter(x -> x.getPiece() == Piece.FOU || x.getPiece() == Piece.TOUR || x.getPiece() == Piece.REINE ||)
-                .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos))
+                .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos, etatPartie))
                 .flatMap(x -> x.stream())
                 .map(x -> x.getPositionDestination())
                 .anyMatch(x -> x.equals(positionRoi));
@@ -241,7 +240,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         Preconditions.checkNotNull(joueurCourant);
         List<Position> liste = getPositionsPieces(plateau, joueurCourant, Piece.ROI);
         Verify.verifyNotNull(liste);
-        Verify.verify(liste.size() == 1, "liste: size=%s, %s",liste.size(),liste);
+        Verify.verify(liste.size() == 1, "liste: size=%s, %s", liste.size(), liste);
         return liste.get(0);
     }
 
@@ -294,7 +293,7 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
                 .filter(x -> x.getCouleur() == couleurAttaquant)
                 .map(pos -> calculMouvementBaseService.getMouvements(plateau, pos, etatPartie))
                 .flatMap(x -> x.stream())
-                .filter(x -> x.getPiece()!=Piece.PION || x.isAttaque())
+                .filter(x -> x.getPiece() != Piece.PION || x.isAttaque())
                 .map(x -> x.getPositionDestination())
                 .anyMatch(x -> x.equals(position));
     }
@@ -311,4 +310,38 @@ public class CalculMouvementSimpleService extends AbstractCalculMouvementService
         stopWatch.suspend();
     }
 
+    public Couleur joueurAdversaire(Couleur couleur) {
+        Preconditions.checkNotNull(couleur);
+        if (couleur == Couleur.Blanc) {
+            return Couleur.Noir;
+        } else {
+            return Couleur.Blanc;
+        }
+    }
+
+    public Optional<PieceCouleur> getPiece(IPlateau plateau, Position position) {
+        Preconditions.checkNotNull(plateau);
+        Preconditions.checkNotNull(position);
+        PieceCouleur piece = plateau.getCase(position);
+        return Optional.ofNullable(piece);
+    }
+
+    public List<Position> getPositionsPieces(IPlateau plateau, Couleur joueur, Piece piece) {
+        Preconditions.checkNotNull(plateau);
+        Preconditions.checkNotNull(joueur);
+        Preconditions.checkNotNull(piece);
+        List<Position> liste = new ArrayList<>();
+        for (Position pos : IteratorPlateau.getIterablePlateau()) {
+            if (pos != null) {
+                Optional<PieceCouleur> pieceOpt = getPiece(plateau, pos);
+                if (pieceOpt.isPresent()) {
+                    PieceCouleur p = pieceOpt.get();
+                    if (p.getCouleur() == joueur && p.getPiece() == piece) {
+                        liste.add(pos);
+                    }
+                }
+            }
+        }
+        return liste;
+    }
 }
