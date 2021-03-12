@@ -15,6 +15,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
+/**
+ * @Depreted : voir la classe CalculMouvementSimpleService
+ */
+@Deprecated(forRemoval = true)
 public class CalculMouvementBisService implements CalculMouvementService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CalculMouvementBisService.class);
